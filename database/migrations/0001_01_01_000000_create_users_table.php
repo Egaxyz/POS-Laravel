@@ -14,7 +14,9 @@ return new class extends Migration
         Schema::create('user', function (Blueprint $table) {
             $table->id();
             $table->string('nama', 50);
-            $table->string('password', 20);
+            $table->string('password', 255);
+            $table->enum('status',['aktif', 'nonaktif']);
+            $table->string('no_hp', 15);
         });
 
     }
@@ -24,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('user');
     }
 };

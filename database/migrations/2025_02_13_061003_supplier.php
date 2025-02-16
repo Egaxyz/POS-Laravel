@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('nama_perusahaan', 50);
             $table->string('kontak', 20);
             $table->string('alamat', 100);
+            $table->string('email', 100);
+            $table->enum('status', ['aktif', 'nonaktif']);
         });
     }
 
