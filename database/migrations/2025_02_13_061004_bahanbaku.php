@@ -11,15 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user', function (Blueprint $table) {
+        Schema::create('bahan_baku', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('supplier_id');
             $table->string('nama', 50);
-            $table->string('password', 255);
-            $table->enum('role', ['manager', 'karyawan']);
-            $table->enum('status',['aktif', 'nonaktif']);
-            $table->string('no_hp', 15);
-        });
+            $table->string('stok', 20);
+            $table->enum('satuan', ['kg', 'liter', 'gram', 'pcs']);
+            $table->string('harga_satuan', 20);
 
+            $table->foreign('supplier_id')->references('id')->on('supplier');
+        });
     }
 
     /**
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user');
+        Schema::dropIfExists('bahan_baku');
     }
 };

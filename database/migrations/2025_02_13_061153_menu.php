@@ -13,14 +13,15 @@ return new class extends Migration
     {
         Schema::create('menu', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('user_id');
             $table->string('nama_makanan', 50);
             $table->string('harga', 20);
             $table->string('stok', 100);
-            $table->unsignedBigInteger('user_id');
             $table->enum('kategori', ['makanan', 'minuman', 'snack']);
             $table->string('deskripsi', 200)->nullable();
             $table->string('gambar');
 
+            
             $table->foreign('user_id')->references('id')->on('user');
         });
     }

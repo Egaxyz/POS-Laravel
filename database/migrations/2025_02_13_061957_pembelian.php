@@ -15,10 +15,13 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('supplier_id');
+            $table->unsignedBigInteger('bahan_baku_id');
             $table->date('tanggal_pembelian');
             $table->enum('status_pembelian', ['Selesai', 'Pending', 'Gagal']);
             $table->string('gambar');
 
+            
+            $table->foreign('bahan_baku_id')->references('id')->on('bahan_baku');
             $table->foreign('user_id')->references('id')->on('user');
             $table->foreign('supplier_id')->references('id')->on('supplier');
         });
