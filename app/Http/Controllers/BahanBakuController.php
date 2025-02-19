@@ -8,19 +8,17 @@ use Illuminate\Http\Request;
 
 class BahanBakuController extends Controller
 {
-    public function index(Request $request){
-        $bahan = BahanBaku::all();
+    public function index()
+{
+    $supplier = Supplier::all();
+    $bahan = BahanBaku::all();
+    return view('Bahan_Baku.index', compact('supplier', 'bahan'));
+}
 
-         return response()->json([
-            'success' => true,
-            'message' => 'Data Bahan Berhasil Diambil',
-            'data' => $bahan,
-        ], 200);
-    }
     public function store(Request $request){
-        
+
         $validated = $request->validate([
-            'supplier_id'=>'required',
+            'supplier_id'=>'required|',
             'nama' => 'required',
             'stok' => 'required',
             'satuan' => 'required',
@@ -30,37 +28,30 @@ class BahanBakuController extends Controller
         $supplier = Supplier::all();
         $bahan = BahanBaku::create($validated);
         
-        return response()->json([
-            'success' => true,
-            'message' => 'Data Bahan Berhasil Ditambah',
-            'data' => $bahan, $supplier
-        ], 200);
+        return redirect()->route('Bahan-Baku', ['bahan'=>$bahan, 'supplier'=>$supplier])->with('success', 'Data Bahan Baku Berhasil Ditambahkan');
     }
-    public function update(Request $request, $id){
-        $supplier = Supplier::find($id);
+    public function update(Request $request, $id)
+{
+    $request->validate([
+        'supplier_id' => 'required|',
+        'nama' => 'required|',
+        'stok' => 'required|',
+        'satuan' => 'required|',
+        'harga_satuan' => 'required|',
+    ]);
 
-      $supplier -> nama_perusahaan = $request->nama_perusahaan;
-      $supplier -> kontak = $request->kontak;
-      $supplier -> alamat = $request->alamat;
-      $supplier -> email = $request->email;
-      $supplier -> status = $request->status;
-      $supplier->save();
+    $bahan = BahanBaku::find($id);
+    $bahan->update($request->all());
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Data Supplier Berhasil Diperbarui',
-            'data' => $supplier,
-        ], 200);
-    }
+    return redirect()->route('Bahan-Baku')->with('success', 'Data Bahan Baku Berhasil Diperbarui');
+}
+
 
     public function destroy(Request $request, $id){
-        $supplier = Supplier::find($id);
+        $bahan = BahanBaku::find($id);
 
-      $supplier -> delete();
+      $bahan -> delete();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Data Supplier Berhasil Dihapus',
-        ], 200);
+      return redirect()->route('Bahan-Baku', ['bahan'=>$bahan])->with('success', 'Data Bahan Baku Berhasil Dihapus');
     }
 }

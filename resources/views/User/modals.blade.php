@@ -8,7 +8,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" method="POST" action="{{ url('/superuser/pengguna') }}">
+                <form class="form-horizontal" method="POST" action="{{ url('/user') }}">
                     @csrf
                     <div id="method"></div>
                     <div class="form-group row">

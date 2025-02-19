@@ -12,7 +12,7 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Daftar Supplier</h1>
+                        <h1>Daftar Menu</h1>
                     </div>
                 </div>
             </div>
@@ -21,7 +21,7 @@
         <div class="card">
             <div class="card-header">
                 <button class="btn bg-primary" type="button" data-toggle="modal" data-target="#formModal"><i
-                        class="fas fa-plus-square"></i> Tambah Data Supplier</button>
+                        class="fas fa-plus-square"></i> Tambah Data Menu</button>
 
                 <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="collapse">
@@ -56,28 +56,31 @@
                 <table id="example1" class="table table-bordered table-striped">
                     <thead>
                         <tr>
-                            <th>Nama Perusahaan</th>
-                            <th>Kontak</th>
-                            <th>Alamat</th>
-                            <th>Email</th>
-                            <th>Status</th>
+                            <th>Nama</th>
+                            <th>Harga</th>
+                            <th>Stok</th>
+                            <th>Kategori</th>
+                            <th>Deskripsi</th>
+                            <th>Gambar</th>
                             <th>Menu</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($supplier as $data)
+                        @foreach ($menu as $data)
                             <tr>
-                                <td>{{ $data->nama_perusahaan }}</td>
-                                <td>{{ $data->kontak }}</td>
-                                <td>{{ $data->alamat }}</td>
-                                <td>{{ $data->email }}</td>
-                                <td>{{ $data->status }}</td>
+                                <td>{{ $data->nama_makanan }}</td>
+                                <td>{{ $data->harga }}</td>
+                                <td>{{ $data->stok }}</td>
+                                <td>{{ $data->kategori }}</td>
+                                <td>{{ $data->deskripsi }}</td>
+                                <td>{{ $data->gambar }}</td>
                                 <td>
                                     <button class="btn btn-success" type="button" data-toggle="modal"
                                         data-target="#formModal" data-mode="edit" data-id="{{ $data->id }}"
-                                        data-nama="{{ $data->nama_perusahaan }}" data-kontak="{{ $data->kontak }}"
-                                        data-alamat="{{ $data->alamat }}" data-email="{{ $data->email }}"
-                                        data-status="{{ $data->status }}">Edit</button>
+                                        data-nama="{{ $data->nama_makanan }}" data-harga="{{ $data->harga }}"
+                                        data-stok="{{ $data->stok }}" data-kategori="{{ $data->kategori }}"
+                                        data-deskripsi="{{ $data->deskripsi }}"
+                                        data-gambar="{{ $data->gambar }}">Edit</button>
                                     <button class="btn btn-danger" type="button" data-toggle="modal"
                                         data-target="#deleteModal" data-id="{{ $data->id }}">Delete</button>
                                 </td>
@@ -100,7 +103,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    Apakah Anda yakin ingin menghapus suppliler ini?
+                    Apakah Anda yakin ingin menghapus Menu ini?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
@@ -113,7 +116,7 @@
             </div>
         </div>
     </div>
-    @include('Supplier/modals')
+    @include('Menu/modals')
 @endsection
 
 @push('script')
@@ -123,40 +126,45 @@
             console.log(btn.data());
             const mode = btn.data('mode');
             const id = btn.data('id');
-            const nama_perusahaan = btn.data('nama');
-            const kontak = btn.data('kontak');
-            const alamat = btn.data('alamat');
-            const email = btn.data('email');
-            const status = btn.data('status');
+            const nama_makanan = btn.data('nama');
+            const harga = btn.data('harga');
+            const stok = btn.data('stok');
+            const kategori = btn.data('kategori');
+            const deskripsi = btn.data('deskripsi');
+            const gambar = btn.data('gambar');
             const modal = $(this);
 
             if (mode == 'edit') {
-                modal.find('.modal-title').text('Edit Data Supplier');
-                modal.find('#nama_perusahaan').val(nama_perusahaan);
-                modal.find('#kontak').val(kontak);
-                modal.find('#alamat').val(alamat)
-                modal.find('#email').val(email)
-                modal.find('#status').val(status)
-                modal.find('.modal-body form').attr('action', '{{ url('/supplier') }}/' +
+                modal.find('.modal-title').text('Edit Data Menu');
+                modal.find('#nama_makanan').val(nama_makanan);
+                modal.find('#harga').val(harga);
+                modal.find('#stok').val(stok)
+                modal.find('#kategori').val(kategori)
+                modal.find('#deskripsi').val(deskripsi)
+                modal.find('#gambar').val(gambar)
+                modal.find('.modal-body form').attr('action', '{{ url('/menu') }}/' +
                     id);
                 modal.find('#method').html('@method('PATCH')');
             } else {
-                modal.find('.modal-title').text('Input Data Supplier');
-                modal.find('#nama_perusahaan').val('');
-                modal.find('#alamat').val('');
-                modal.find('#email').val('');
-                modal.find('#kontak').val('');
-                modal.find('#status').val('');
+                modal.find('.modal-title').text('Input Data Menu');
+                modal.find('#nama_makanan').val('');
+                modal.find('#stok').val('');
+                modal.find('#kategori').val('');
+                modal.find('#harga').val('');
+                modal.find('#deskripsi').val('');
+                modal.find('#gambar').val('');
                 modal.find('#method').html('');
                 modal.find('.modal-body form').attr('action',
-                    '{{ url('/supplier') }}');
+                    '{{ url('/menu') }}');
 
+                modal.find('#passwordField').show();
+                modal.find('#password').attr('required', true);
             }
         });
 
         $(document).on('click', '[data-toggle="modal"][data-target="#deleteModal"]', function() {
             var userId = $(this).data('id');
-            $('#deleteForm').attr('action', '/supplier/' + userId);
+            $('#deleteForm').attr('action', '/menu/' + userId);
         });
     </script>
 @endpush

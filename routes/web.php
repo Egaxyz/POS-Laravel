@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BahanBakuController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MenuController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -14,6 +15,11 @@ Route::get('/user', [UserController::class, 'index'])->name('User');
 Route::post('/user', [UserController::class, 'store']);
 Route::patch('/user/{id}', [UserController::class, 'update']);
 Route::delete('/user/{id}', [UserController::class, 'destroy']);
+
+Route::get('/menu', [MenuController::class, 'index'])->name('Menu');
+Route::post('/menu', [MenuController::class, 'store']);
+Route::patch('/menu/{id}', [MenuController::class, 'update']);
+Route::delete('/menu/{id}', [MenuController::class, 'destroy']);
 
 Route::get('/supplier', [SupplierController::class, 'index'])->name('Supplier');
 Route::post('/supplier', [SupplierController::class, 'store']);

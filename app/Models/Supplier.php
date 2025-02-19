@@ -16,4 +16,8 @@ class Supplier extends Model
         'email',
         'status'
     ];
+    public function bahanBaku()
+{
+    return $this->hasMany(BahanBaku::class, 'supplier_id', 'id');
+}
 }

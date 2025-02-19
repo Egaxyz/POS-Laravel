@@ -12,7 +12,7 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Daftar Supplier</h1>
+                        <h1>Daftar Bahan Baku</h1>
                     </div>
                 </div>
             </div>
@@ -21,7 +21,7 @@
         <div class="card">
             <div class="card-header">
                 <button class="btn bg-primary" type="button" data-toggle="modal" data-target="#formModal"><i
-                        class="fas fa-plus-square"></i> Tambah Data Supplier</button>
+                        class="fas fa-plus-square"></i> Tambah Data Bahan Baku</button>
 
                 <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="collapse">
@@ -57,27 +57,27 @@
                     <thead>
                         <tr>
                             <th>Nama Perusahaan</th>
-                            <th>Kontak</th>
-                            <th>Alamat</th>
-                            <th>Email</th>
-                            <th>Status</th>
+                            <th>Nama</th>
+                            <th>Stok</th>
+                            <th>Satuan</th>
+                            <th>Harga Satuan</th>
                             <th>Menu</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($supplier as $data)
+                        @foreach ($bahan as $data)
                             <tr>
-                                <td>{{ $data->nama_perusahaan }}</td>
-                                <td>{{ $data->kontak }}</td>
-                                <td>{{ $data->alamat }}</td>
-                                <td>{{ $data->email }}</td>
-                                <td>{{ $data->status }}</td>
+                                <td>{{ $data->supplier->nama_perusahaan ?? '-' }}</td>
+                                <td>{{ $data->nama }}</td>
+                                <td>{{ $data->stok }}</td>
+                                <td>{{ $data->satuan }}</td>
+                                <td>{{ $data->harga_satuan }}</td>
                                 <td>
                                     <button class="btn btn-success" type="button" data-toggle="modal"
                                         data-target="#formModal" data-mode="edit" data-id="{{ $data->id }}"
-                                        data-nama="{{ $data->nama_perusahaan }}" data-kontak="{{ $data->kontak }}"
-                                        data-alamat="{{ $data->alamat }}" data-email="{{ $data->email }}"
-                                        data-status="{{ $data->status }}">Edit</button>
+                                        data-nama="{{ $data->nama }}" data-stok="{{ $data->stok }}"
+                                        data-satuan="{{ $data->satuan }}" data-harga="{{ $data->harga_satuan }}"
+                                        data-asal="{{ $data->supplier->id }}">Edit</button>
                                     <button class="btn btn-danger" type="button" data-toggle="modal"
                                         data-target="#deleteModal" data-id="{{ $data->id }}">Delete</button>
                                 </td>
@@ -100,7 +100,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    Apakah Anda yakin ingin menghapus suppliler ini?
+                    Apakah Anda yakin ingin menghapus bahan baku ini?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
@@ -113,7 +113,7 @@
             </div>
         </div>
     </div>
-    @include('Supplier/modals')
+    @include('Bahan_Baku/modals')
 @endsection
 
 @push('script')
@@ -123,40 +123,40 @@
             console.log(btn.data());
             const mode = btn.data('mode');
             const id = btn.data('id');
-            const nama_perusahaan = btn.data('nama');
-            const kontak = btn.data('kontak');
-            const alamat = btn.data('alamat');
-            const email = btn.data('email');
-            const status = btn.data('status');
+            const nama = btn.data('nama');
+            const stok = btn.data('stok');
+            const satuan = btn.data('satuan');
+            const harga_satuan = btn.data('harga');
+            const supplier_id = btn.data('asal');
             const modal = $(this);
 
             if (mode == 'edit') {
-                modal.find('.modal-title').text('Edit Data Supplier');
-                modal.find('#nama_perusahaan').val(nama_perusahaan);
-                modal.find('#kontak').val(kontak);
-                modal.find('#alamat').val(alamat)
-                modal.find('#email').val(email)
-                modal.find('#status').val(status)
-                modal.find('.modal-body form').attr('action', '{{ url('/supplier') }}/' +
+                modal.find('.modal-title').text('Edit Data Bahan Baku');
+                modal.find('#supplier_id').val(supplier_id);
+                modal.find('#nama').val(nama);
+                modal.find('#stok').val(stok);
+                modal.find('#satuan').val(satuan)
+                modal.find('#harga_satuan').val(harga_satuan)
+                modal.find('.modal-body form').attr('action', '{{ url('/bahan-baku') }}/' +
                     id);
                 modal.find('#method').html('@method('PATCH')');
             } else {
-                modal.find('.modal-title').text('Input Data Supplier');
-                modal.find('#nama_perusahaan').val('');
-                modal.find('#alamat').val('');
-                modal.find('#email').val('');
-                modal.find('#kontak').val('');
-                modal.find('#status').val('');
+                modal.find('.modal-title').text('Input Data Bahan Baku');
+                modal.find('#supplier_id').val('');
+                modal.find('#nama').val('');
+                modal.find('#satuan').val('');
+                modal.find('#harga_satuan').val('');
+                modal.find('#stok').val('');
                 modal.find('#method').html('');
                 modal.find('.modal-body form').attr('action',
-                    '{{ url('/supplier') }}');
+                    '{{ url('/bahan-baku') }}');
 
             }
         });
 
         $(document).on('click', '[data-toggle="modal"][data-target="#deleteModal"]', function() {
             var userId = $(this).data('id');
-            $('#deleteForm').attr('action', '/supplier/' + userId);
+            $('#deleteForm').attr('action', '/bahan-baku/' + userId);
         });
     </script>
 @endpush

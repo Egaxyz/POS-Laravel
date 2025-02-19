@@ -38,9 +38,6 @@
                         <a href="#" class="d-block">Ezio Joestar</a>
                     </div>
                 </div>
-
-
-                <!-- Sidebar Menu -->
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                         data-accordion="false">
@@ -51,24 +48,30 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a href="bahan-baku" class="nav-link">
+                                <i class="nav-icon fas fa-box"></i>
+                                <p>Bahan Baku</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-file-alt"></i>
+                                <i class="nav-icon fas fa-exchange-alt"></i>
                                 <p>
-                                    Laporan
+                                    Transaksi
                                     <i class="right fas fa-angle-left"></i>
                                 </p>
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="laporan-pembelian" class="nav-link">
+                                    <a href="pembelian" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>Laporan Pembelian</p>
+                                        <p>Pembelian</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="laporan-penjualan" class="nav-link">
+                                    <a href="penjualan" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>Laporan Penjualan</p>
+                                        <p>Penjualan</p>
                                     </a>
                                 </li>
                             </ul>
@@ -96,14 +99,10 @@
                                 </li>
                             </ul>
                         </li>
-
                     </ul>
-
                 </nav>
             </div>
         </aside>
-
-
         <!-- Main content -->
         <section class="content">
             @yield('content')

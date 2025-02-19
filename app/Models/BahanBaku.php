@@ -9,6 +9,7 @@ class BahanBaku extends Model
     public $table = 'bahan_baku';
     public $timestamps = false;
     protected $fillable = [
+        'supplier_id',
         'nama',
         'stok',
         'satuan',
@@ -17,6 +18,6 @@ class BahanBaku extends Model
 
     public function supplier()
     {
-        return $this->belongsTo(Supplier::class, 'supplier_id', 'supplier_id');
+        return $this->belongsTo(Supplier::class, 'supplier_id', 'id');
     }
 }
