@@ -10,11 +10,7 @@ class UserController extends Controller
     public function index(Request $request){
         $user = User::all();
 
-         return response()->json([
-            'success' => true,
-            'message' => 'Data Pengguna Berhasil Diambil',
-            'data' => $user,
-        ], 200);
+        return view('User/index', ['user'=>$user]);
     }
     public function store(Request $request){
         $validated = $request->validate([
@@ -26,11 +22,8 @@ class UserController extends Controller
         ]);
         $validated['password'] = bcrypt($validated['password']);
         $user = User::create($validated);
-        return response()->json([
-            'success' => true,
-            'message' => 'Data User Berhasil Ditambah',
-            'data' => $user,
-        ], 200);
+        return redirect()->route('User', ['user' => $user])
+                ->with('success', 'User Berhasil Ditambahkan');
     }
     public function update(Request $request, $id){
         $user = User::find($id);
@@ -38,14 +31,12 @@ class UserController extends Controller
       $user -> nama = $request->nama;
       $user -> password = bcrypt($request->password);
       $user -> no_hp = $request->no_hp;
+      $user -> role = $request->role;
       $user -> status = $request->status;
       $user->save();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Data User Berhasil Diperbarui',
-            'data' => $user,
-        ], 200);
+        return redirect()->route('User', ['user' => $user])
+                ->with('success', 'User Berhasil Diperbarui');
     }
 
     public function destroy(Request $request, $id){
@@ -53,9 +44,7 @@ class UserController extends Controller
 
       $user -> delete();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Data User Berhasil Dihapus',
-        ], 200);
+        return redirect()->route('User', ['user' => $user])
+                ->with('success', 'User Berhasil Dihapus');
     }
 }

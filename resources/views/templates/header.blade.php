@@ -89,7 +89,7 @@
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="pegawai" class="nav-link">
+                                    <a href="user" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Pegawai</p>
                                     </a>

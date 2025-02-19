@@ -10,11 +10,7 @@ class SupplierController extends Controller
     public function index(Request $request){
         $supplier = Supplier::all();
 
-         return response()->json([
-            'success' => true,
-            'message' => 'Data Supplier Berhasil Diambil',
-            'data' => $supplier,
-        ], 200);
+         return view('Supplier/index', ['supplier'=>$supplier]);
     }
     public function store(Request $request){
         $validated = $request->validate([
@@ -26,11 +22,7 @@ class SupplierController extends Controller
 
         ]);
         $supplier = Supplier::create($validated);
-        return response()->json([
-            'success' => true,
-            'message' => 'Data Supplier Berhasil Ditambah',
-            'data' => $supplier,
-        ], 200);
+        return redirect()->route('Supplier', ['supplier'=>$supplier])->with('success', 'Data Supplier Berhasil Ditambahkan');
     }
     public function update(Request $request, $id){
         $supplier = Supplier::find($id);
@@ -42,11 +34,7 @@ class SupplierController extends Controller
       $supplier -> status = $request->status;
       $supplier->save();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Data Supplier Berhasil Diperbarui',
-            'data' => $supplier,
-        ], 200);
+               return redirect()->route('Supplier', ['supplier'=>$supplier])->with('success', 'Data Supplier Berhasil Diperbarui');
     }
 
     public function destroy(Request $request, $id){
@@ -54,9 +42,6 @@ class SupplierController extends Controller
 
       $supplier -> delete();
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Data Supplier Berhasil Dihapus',
-        ], 200);
+                return redirect()->route('Supplier', ['supplier'=>$supplier])->with('success', 'Data Supplier Berhasil Dihapus');
     }
 }

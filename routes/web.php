@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BahanBakuController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
@@ -9,18 +10,18 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 
 Route::get('/',[HomeController::class, 'index']);
 
-Route::get('/user', [UserController::class, 'index']);
-Route::post('/user', [UserController::class, 'store'])
-    ->withoutMiddleware([VerifyCsrfToken::class]);
-Route::put('/user/{id}', [UserController::class, 'update'])
-    ->withoutMiddleware([VerifyCsrfToken::class]);
-Route::delete('/user/{id}', [UserController::class, 'destroy'])
-    ->withoutMiddleware([VerifyCsrfToken::class]);
+Route::get('/user', [UserController::class, 'index'])->name('User');
+Route::post('/user', [UserController::class, 'store']);
+Route::patch('/user/{id}', [UserController::class, 'update']);
+Route::delete('/user/{id}', [UserController::class, 'destroy']);
 
-Route::get('/supplier', [SupplierController::class, 'index']);
-Route::post('/supplier', [SupplierController::class, 'store'])
-    ->withoutMiddleware([VerifyCsrfToken::class]);
-Route::put('/supplier/{id}', [SupplierController::class, 'update'])
-    ->withoutMiddleware([VerifyCsrfToken::class]);
-Route::delete('/supplier/{id}', [SupplierController::class, 'destroy'])
+Route::get('/supplier', [SupplierController::class, 'index'])->name('Supplier');
+Route::post('/supplier', [SupplierController::class, 'store']);
+Route::patch('/supplier/{id}', [SupplierController::class, 'update']);
+Route::delete('/supplier/{id}', [SupplierController::class, 'destroy']);
+
+Route::get('/bahan-baku', [BahanBakuController::class, 'index'])->name('Bahan-Baku');
+Route::post('/bahan-baku', [BahanBakuController::class, 'store']);
+Route::patch('/bahan-baku/{id}', [BahanBakuController::class, 'update']);
+Route::delete('/bahan-baku/{id}', [BahanBakuController::class, 'destroy'])
     ->withoutMiddleware([VerifyCsrfToken::class]);
