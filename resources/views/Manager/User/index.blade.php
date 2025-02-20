@@ -1,4 +1,4 @@
-@extends('templates.header')
+@extends('Manager.templates_manager.header')
 @push('style')
     <link rel="stylesheet" href="{{ asset('assets') }}/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
     <link rel="stylesheet" href="{{ asset('assets') }}/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
@@ -12,7 +12,7 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Daftar Bahan Baku</h1>
+                        <h1>Daftar Karyawan</h1>
                     </div>
                 </div>
             </div>
@@ -21,7 +21,7 @@
         <div class="card">
             <div class="card-header">
                 <button class="btn bg-primary" type="button" data-toggle="modal" data-target="#formModal"><i
-                        class="fas fa-plus-square"></i> Tambah Data Bahan Baku</button>
+                        class="fas fa-plus-square"></i> Tambah Data Karyawan</button>
 
                 <div class="card-tools">
                     <button type="button" class="btn btn-tool" data-card-widget="collapse" title="collapse">
@@ -56,30 +56,36 @@
                 <table id="example1" class="table table-bordered table-striped">
                     <thead>
                         <tr>
-                            <th>Nama Perusahaan</th>
                             <th>Nama</th>
-                            <th>Stok</th>
-                            <th>Satuan</th>
-                            <th>Harga Satuan</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>No Hp</th>
                             <th>Menu</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($bahan as $data)
+                        @foreach ($user as $akun)
                             <tr>
-                                <td>{{ $data->supplier->nama_perusahaan ?? '-' }}</td>
-                                <td>{{ $data->nama }}</td>
-                                <td>{{ $data->stok }}</td>
-                                <td>{{ $data->satuan }}</td>
-                                <td>{{ $data->harga_satuan }}</td>
+                                <td>{{ $akun->nama }}</td>
+                                <td>
+                                    @if ($akun->role == 'manager')
+                                        <span class="">Manager</span>
+                                    @elseif ($akun->role == 'karyawan')
+                                        <span class="">Karyawan</span>
+                                    @else
+                                        {{ ucfirst($akun->role) }}
+                                    @endif
+                                </td>
+
+                                <td>{{ $akun->status }}</td>
+                                <td>{{ $akun->no_hp }}</td>
                                 <td>
                                     <button class="btn btn-success" type="button" data-toggle="modal"
-                                        data-target="#formModal" data-mode="edit" data-id="{{ $data->id }}"
-                                        data-nama="{{ $data->nama }}" data-stok="{{ $data->stok }}"
-                                        data-satuan="{{ $data->satuan }}" data-harga="{{ $data->harga_satuan }}"
-                                        data-asal="{{ $data->supplier->id }}">Edit</button>
+                                        data-target="#formModal" data-mode="edit" data-id="{{ $akun->id }}"
+                                        data-nama="{{ $akun->nama }}" data-role="{{ $akun->role }}"
+                                        data-status="{{ $akun->status }}" data-hp="{{ $akun->no_hp }}">Edit</button>
                                     <button class="btn btn-danger" type="button" data-toggle="modal"
-                                        data-target="#deleteModal" data-id="{{ $data->id }}">Delete</button>
+                                        data-target="#deleteModal" data-id="{{ $akun->id }}">Delete</button>
                                 </td>
                             </tr>
                         @endforeach
@@ -100,7 +106,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    Apakah Anda yakin ingin menghapus bahan baku ini?
+                    Apakah Anda yakin ingin menghapus karyawan ini?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
@@ -113,7 +119,7 @@
             </div>
         </div>
     </div>
-    @include('Bahan_Baku/modals')
+    @include('Manager/User/modals')
 @endsection
 
 @push('script')
@@ -124,39 +130,41 @@
             const mode = btn.data('mode');
             const id = btn.data('id');
             const nama = btn.data('nama');
-            const stok = btn.data('stok');
-            const satuan = btn.data('satuan');
-            const harga_satuan = btn.data('harga');
-            const supplier_id = btn.data('asal');
+            const role = btn.data('role');
+            const status = btn.data('status');
+            const no_hp = btn.data('hp');
             const modal = $(this);
 
             if (mode == 'edit') {
-                modal.find('.modal-title').text('Edit Data Bahan Baku');
-                modal.find('#supplier_id').val(supplier_id);
+                modal.find('.modal-title').text('Edit Data Karyawan');
                 modal.find('#nama').val(nama);
-                modal.find('#stok').val(stok);
-                modal.find('#satuan').val(satuan)
-                modal.find('#harga_satuan').val(harga_satuan)
-                modal.find('.modal-body form').attr('action', '{{ url('/bahan-baku') }}/' +
+                modal.find('#role').val(role);
+                modal.find('#status').val(status)
+                modal.find('#no_hp').val(no_hp)
+                modal.find('.modal-body form').attr('action', '{{ url('/manager/user') }}/' +
                     id);
                 modal.find('#method').html('@method('PATCH')');
+                modal.find('#passwordField').hide();
+                modal.find('#password').removeAttr('required');
             } else {
-                modal.find('.modal-title').text('Input Data Bahan Baku');
-                modal.find('#supplier_id').val('');
+                modal.find('.modal-title').text('Input Data Karyawan');
                 modal.find('#nama').val('');
-                modal.find('#satuan').val('');
-                modal.find('#harga_satuan').val('');
-                modal.find('#stok').val('');
+                modal.find('#password').val('');
+                modal.find('#role').val('');
+                modal.find('#status').val('');
+                modal.find('#no_hp').val('');
                 modal.find('#method').html('');
                 modal.find('.modal-body form').attr('action',
-                    '{{ url('/bahan-baku') }}');
+                    '{{ url('/manager/user') }}');
 
+                modal.find('#passwordField').show();
+                modal.find('#password').attr('required', true);
             }
         });
 
         $(document).on('click', '[data-toggle="modal"][data-target="#deleteModal"]', function() {
             var userId = $(this).data('id');
-            $('#deleteForm').attr('action', '/bahan-baku/' + userId);
+            $('#deleteForm').attr('action', '/manager/user/' + userId);
         });
     </script>
 @endpush

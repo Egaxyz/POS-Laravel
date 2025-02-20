@@ -10,7 +10,7 @@ class SupplierController extends Controller
     public function index(Request $request){
         $supplier = Supplier::all();
 
-         return view('Supplier/index', ['supplier'=>$supplier]);
+         return view('Manager/Supplier/index', ['supplier'=>$supplier]);
     }
     public function store(Request $request){
         $validated = $request->validate([
@@ -22,7 +22,16 @@ class SupplierController extends Controller
 
         ]);
         $supplier = Supplier::create($validated);
-        return redirect()->route('Supplier', ['supplier'=>$supplier])->with('success', 'Data Supplier Berhasil Ditambahkan');
+        $user = auth()->user();
+        if ($user->role == 'superuser') {
+        return redirect()->route('superuser.supplier')
+                ->with('success', 'Supplier Berhasil Ditambah');
+        } elseif ($user->role == 'manager') {
+            return redirect()->route('manager.supplier')
+                ->with('success', 'Supplier Berhasil Ditambah');
+       } else {
+            abort(403, 'Unauthorized action.');
+        }
     }
     public function update(Request $request, $id){
         $supplier = Supplier::find($id);
@@ -34,14 +43,31 @@ class SupplierController extends Controller
       $supplier -> status = $request->status;
       $supplier->save();
 
-               return redirect()->route('Supplier', ['supplier'=>$supplier])->with('success', 'Data Supplier Berhasil Diperbarui');
+      $user = auth()->user();
+        if ($user->role == 'superuser') {
+        return redirect()->route('superuser.supplier')
+                ->with('success', 'Supplier Berhasil Diperbarui');
+        } elseif ($user->role == 'manager') {
+            return redirect()->route('manager.supplier')
+                ->with('success', 'Supplier Berhasil Diperbarui');
+       } else {
+            abort(403, 'Unauthorized action.');
+        }
     }
 
     public function destroy(Request $request, $id){
         $supplier = Supplier::find($id);
 
       $supplier -> delete();
-
-                return redirect()->route('Supplier', ['supplier'=>$supplier])->with('success', 'Data Supplier Berhasil Dihapus');
+$user = auth()->user();
+        if ($user->role == 'superuser') {
+        return redirect()->route('superuser.supplier')
+                ->with('success', 'Supplier Berhasil Dihapus');
+        } elseif ($user->role == 'manager') {
+            return redirect()->route('manager.supplier')
+                ->with('success', 'Supplier Berhasil Dihapus');
+       } else {
+            abort(403, 'Unauthorized action.');
+        }
     }
 }

@@ -2,7 +2,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="formModalLabel">Tambah Data Pengguna</h5>
+                <h5 class="modal-title" id="formModalLabel">Tambah Data Pegawai</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -26,6 +26,7 @@
                         <select id="role" name="role" class="form-control">
                             <option value="manager">Manager</option>
                             <option value="karyawan">Karyawan</option>
+                            <option value="superuser">SuperUser</option>
                         </select>
 
                     </div>

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nama', 50);
             $table->string('password', 255);
-            $table->enum('role', ['manager', 'karyawan']);
+            $table->enum('role', ['manager', 'karyawan', 'superuser']);
             $table->enum('status',['aktif', 'nonaktif']);
             $table->string('no_hp', 15);
         });

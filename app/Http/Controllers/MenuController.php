@@ -12,7 +12,7 @@ class MenuController extends Controller
 {
     $user = User::all();
     $menu = Menu::all();
-    return view('Menu.index', compact('user', 'menu'));
+    return view('Karyawan.Menu.index', compact('user', 'menu'));
 }
 
     public function store(Request $request){
@@ -30,7 +30,17 @@ class MenuController extends Controller
         $user = User::all();
         $menu = Menu::create($validated);
         
-        return redirect()->route('Menu', ['user'=>$user, 'menu'=>$menu])->with('success', 'Data Menu Berhasil Ditambahkan');
+        $user = auth()->user();
+        
+        if ($user->role == 'superuser') {
+        return redirect()->route('superuser.menu')
+                ->with('success', 'Menu Berhasil Ditambah');
+        } elseif ($user->role == 'karyawan') {
+            return redirect()->route('karyawan.menu')
+                ->with('success', 'Menu Berhasil Ditambah');
+       } else {
+            abort(403, 'Unauthorized action.');
+        }
     }
     public function update(Request $request, $id)
 {
@@ -47,7 +57,16 @@ class MenuController extends Controller
     $menu = Menu::find($id);
     $menu->update($validated);
 
-    return redirect()->route('Menu')->with('success', 'Data Menu Berhasil Diperbarui');
+        $user = auth()->user();
+    if ($user->role == 'superuser') {
+        return redirect()->route('superuser.menu')
+                ->with('success', 'Menu Berhasil Diperbarui');
+        } elseif ($user->role == 'karyawan') {
+            return redirect()->route('karyawan.menu')
+                ->with('success', 'Menu Berhasil Diperbarui');
+       } else {
+            abort(403, 'Unauthorized action.');
+        }
 }
 
 
@@ -56,6 +75,15 @@ class MenuController extends Controller
 
       $menu -> delete();
 
-      return redirect()->route('Menu', ['menu'=>$menu])->with('success', 'Data Menu Berhasil Dihapus');
+        $user = auth()->user();
+    if ($user->role == 'superuser') {
+        return redirect()->route('superuser.menu')
+                ->with('success', 'Menu Berhasil Dihapus');
+        } elseif ($user->role == 'karyawan') {
+            return redirect()->route('karyawan.menu')
+                ->with('success', 'Menu Berhasil Dihapus');
+       } else {
+            abort(403, 'Unauthorized action.');
+        }
     }
 }

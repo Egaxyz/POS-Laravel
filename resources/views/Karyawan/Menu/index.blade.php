@@ -1,4 +1,4 @@
-@extends('templates.header')
+@extends('Karyawan.templates_karyawan.header')
 @push('style')
     <link rel="stylesheet" href="{{ asset('assets') }}/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
     <link rel="stylesheet" href="{{ asset('assets') }}/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
@@ -116,7 +116,7 @@
             </div>
         </div>
     </div>
-    @include('Menu/modals')
+    @include('Karyawan/Menu/modals')
 @endsection
 
 @push('script')
@@ -142,7 +142,7 @@
                 modal.find('#kategori').val(kategori)
                 modal.find('#deskripsi').val(deskripsi)
                 modal.find('#gambar').val(gambar)
-                modal.find('.modal-body form').attr('action', '{{ url('/menu') }}/' +
+                modal.find('.modal-body form').attr('action', '{{ url('/karyawan/menu') }}/' +
                     id);
                 modal.find('#method').html('@method('PATCH')');
             } else {
@@ -155,7 +155,7 @@
                 modal.find('#gambar').val('');
                 modal.find('#method').html('');
                 modal.find('.modal-body form').attr('action',
-                    '{{ url('/menu') }}');
+                    '{{ url('/karyawan/menu') }}');
 
                 modal.find('#passwordField').show();
                 modal.find('#password').attr('required', true);
@@ -164,7 +164,7 @@
 
         $(document).on('click', '[data-toggle="modal"][data-target="#deleteModal"]', function() {
             var userId = $(this).data('id');
-            $('#deleteForm').attr('action', '/menu/' + userId);
+            $('#deleteForm').attr('action', '/karyawan/menu/' + userId);
         });
     </script>
 @endpush

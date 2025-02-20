@@ -12,7 +12,7 @@ class BahanBakuController extends Controller
 {
     $supplier = Supplier::all();
     $bahan = BahanBaku::all();
-    return view('Bahan_Baku.index', compact('supplier', 'bahan'));
+    return view('Karyawan.Bahan_Baku.index', compact('supplier', 'bahan'));
 }
 
     public function store(Request $request){
@@ -25,10 +25,19 @@ class BahanBakuController extends Controller
             'harga_satuan' =>'required',
 
         ]);
-        $supplier = Supplier::all();
         $bahan = BahanBaku::create($validated);
+
+        $user = auth()->user();
         
-        return redirect()->route('Bahan-Baku', ['bahan'=>$bahan, 'supplier'=>$supplier])->with('success', 'Data Bahan Baku Berhasil Ditambahkan');
+        if ($user->role == 'superuser') {
+        return redirect()->route('superuser.bahan-baku')
+                ->with('success', 'Bahan Baku Berhasil Ditambah');
+        } elseif ($user->role == 'karyawan') {
+            return redirect()->route('karyawan.bahan-baku')
+                ->with('success', 'Bahan Baku Berhasil Ditambah');
+       } else {
+            abort(403, 'Unauthorized action.');
+        }
     }
     public function update(Request $request, $id)
 {
@@ -43,7 +52,16 @@ class BahanBakuController extends Controller
     $bahan = BahanBaku::find($id);
     $bahan->update($request->all());
 
-    return redirect()->route('Bahan-Baku')->with('success', 'Data Bahan Baku Berhasil Diperbarui');
+        $user = auth()->user();
+    if ($user->role == 'superuser') {
+        return redirect()->route('superuser.bahan-baku')
+                ->with('success', 'Bahan Baku Berhasil Diperbarui');
+        } elseif ($user->role == 'karyawan') {
+            return redirect()->route('karyawan.bahan-baku')
+                ->with('success', 'Bahan Baku Berhasil Diperbarui');
+       } else {
+            abort(403, 'Unauthorized action.');
+        }
 }
 
 
@@ -52,6 +70,15 @@ class BahanBakuController extends Controller
 
       $bahan -> delete();
 
-      return redirect()->route('Bahan-Baku', ['bahan'=>$bahan])->with('success', 'Data Bahan Baku Berhasil Dihapus');
+        $user = auth()->user();
+if ($user->role == 'superuser') {
+        return redirect()->route('superuser.bahan-baku')
+                ->with('success', 'Bahan Baku Berhasil Dihapus');
+        } elseif ($user->role == 'karyawan') {
+            return redirect()->route('karyawan.bahan-baku')
+                ->with('success', 'Bahan Baku Berhasil Dihapus');
+       } else {
+            abort(403, 'Unauthorized action.');
+        }
     }
 }

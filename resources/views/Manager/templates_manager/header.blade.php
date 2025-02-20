@@ -41,23 +41,12 @@
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
                         data-accordion="false">
-                        <li class="nav-item">
-                            <a href="menu" class="nav-link">
-                                <i class="nav-icon fas fa-book"></i>
-                                <p>Menu</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="bahan-baku" class="nav-link">
-                                <i class="nav-icon fas fa-box"></i>
-                                <p>Bahan Baku</p>
-                            </a>
-                        </li>
+
                         <li class="nav-item">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-exchange-alt"></i>
                                 <p>
-                                    Transaksi
+                                    Laporan Transaksi
                                     <i class="right fas fa-angle-left"></i>
                                 </p>
                             </a>
@@ -75,7 +64,6 @@
                                     </a>
                                 </li>
                             </ul>
-                        </li>
                         <li class="nav-item">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-list"></i>
@@ -98,6 +86,12 @@
                                     </a>
                                 </li>
                             </ul>
+                        <li class="nav-item">
+                            <a href="{{ route('logout') }}" class="nav-link">
+                                <i class="nav-icon far fa-circle text-danger"></i>
+                                <p>Logout</p>
+                            </a>
+                        </li>
                         </li>
                     </ul>
                 </nav>
@@ -107,4 +101,4 @@
         <section class="content">
             @yield('content')
         </section>
-        @include('templates.footer')
+        @include('Manager.templates_manager.footer')

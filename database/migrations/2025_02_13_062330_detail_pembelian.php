@@ -14,9 +14,11 @@ return new class extends Migration
         Schema::create('detail_pembelian', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('pembelian_id');
+            $table->unsignedBigInteger('bahan_baku_id');
             $table->integer('jumlah');
-            $table->integer('total_harga');
+            $table->integer('harga_satuan');
 
+            $table->foreign('bahan_baku_id')->references('id')->on('bahan_baku');
             $table->foreign('pembelian_id')->references('id')->on('pembelian');
         });
     }

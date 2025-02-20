@@ -10,7 +10,7 @@ class UserController extends Controller
     public function index(Request $request){
         $user = User::all();
 
-        return view('User/index', ['user'=>$user]);
+        return view('Manager/User/index', ['user'=>$user]);
     }
     public function store(Request $request){
         $validated = $request->validate([
@@ -21,30 +21,55 @@ class UserController extends Controller
 
         ]);
         $validated['password'] = bcrypt($validated['password']);
-        $user = User::create($validated);
-        return redirect()->route('User', ['user' => $user])
-                ->with('success', 'User Berhasil Ditambahkan');
+        $data = User::create($validated);
+        
+        $user = auth()->user();
+        if ($user->role == 'superuser') {
+        return redirect()->route('superuser.user')
+                ->with('success', 'User Berhasil Ditambah');
+        } elseif ($user->role == 'manager') {
+            return redirect()->route('manager.user')
+                ->with('success', 'User Berhasil Ditambah');
+       } else {
+            abort(403, 'Unauthorized action.');
+        }
     }
     public function update(Request $request, $id){
-        $user = User::find($id);
+        $data = User::find($id);
 
-      $user -> nama = $request->nama;
-      $user -> password = bcrypt($request->password);
-      $user -> no_hp = $request->no_hp;
-      $user -> role = $request->role;
-      $user -> status = $request->status;
-      $user->save();
+      $data -> nama = $request->nama;
+      $data -> password = bcrypt($request->password);
+      $data -> no_hp = $request->no_hp;
+      $data -> role = $request->role;
+      $data -> status = $request->status;
+      $data->save();
 
-        return redirect()->route('User', ['user' => $user])
-                ->with('success', 'User Berhasil Diperbarui');
+        $user = auth()->user();
+        if ($user->role == 'superuser') {
+            return redirect()->route('superuser.user')
+            ->with('success', 'User Berhasil Diperbarui');
+        } elseif ($user->role == 'manager') {
+            return redirect()->route('manager.user')
+            ->with('success', 'User Berhasil Diperbarui');
+        } else {
+            abort(403, 'Unauthorized action.');
+        }
     }
-
+    
     public function destroy(Request $request, $id){
-        $user = User::find($id);
+        $data = User::find($id);
+        $user = auth()->user();
 
-      $user -> delete();
+      $data -> delete();
 
-        return redirect()->route('User', ['user' => $user])
+       if ($user->role == 'superuser') {
+        return redirect()->route('superuser.user')
                 ->with('success', 'User Berhasil Dihapus');
+        } elseif ($user->role == 'manager') {
+            return redirect()->route('manager.user')
+                ->with('success', 'User Berhasil Dihapus');
+       } else {
+            abort(403, 'Unauthorized action.');
+        }
     }
 }

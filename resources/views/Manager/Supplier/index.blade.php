@@ -1,4 +1,4 @@
-@extends('templates.header')
+@extends('Manager.templates_manager.header')
 @push('style')
     <link rel="stylesheet" href="{{ asset('assets') }}/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
     <link rel="stylesheet" href="{{ asset('assets') }}/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
@@ -113,7 +113,7 @@
             </div>
         </div>
     </div>
-    @include('Supplier/modals')
+    @include('Manager/Supplier/modals')
 @endsection
 
 @push('script')
@@ -137,7 +137,7 @@
                 modal.find('#alamat').val(alamat)
                 modal.find('#email').val(email)
                 modal.find('#status').val(status)
-                modal.find('.modal-body form').attr('action', '{{ url('/supplier') }}/' +
+                modal.find('.modal-body form').attr('action', '{{ url('/manager/supplier') }}/' +
                     id);
                 modal.find('#method').html('@method('PATCH')');
             } else {
@@ -149,14 +149,14 @@
                 modal.find('#status').val('');
                 modal.find('#method').html('');
                 modal.find('.modal-body form').attr('action',
-                    '{{ url('/supplier') }}');
+                    '{{ url('/manager/supplier') }}');
 
             }
         });
 
         $(document).on('click', '[data-toggle="modal"][data-target="#deleteModal"]', function() {
             var userId = $(this).data('id');
-            $('#deleteForm').attr('action', '/supplier/' + userId);
+            $('#deleteForm').attr('action', '/manager/supplier/' + userId);
         });
     </script>
 @endpush
