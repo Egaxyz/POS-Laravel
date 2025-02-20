@@ -18,7 +18,6 @@ return new class extends Migration
             $table->date('tanggal_pembelian');
             $table->integer('total_harga');
             $table->enum('status_pembelian', ['Selesai', 'Pending', 'Gagal']);
-            $table->string('gambar');
             
             $table->foreign('user_id')->references('id')->on('user');
             $table->foreign('supplier_id')->references('id')->on('supplier');

@@ -73,7 +73,8 @@
                                 <td>{{ $data->stok }}</td>
                                 <td>{{ $data->kategori }}</td>
                                 <td>{{ $data->deskripsi }}</td>
-                                <td>{{ $data->gambar }}</td>
+                                <td><img src="{{ asset('storage/menu-image/' . $data->gambar) }}"
+                                        alt="{{ $data->gambar }}" height="150"></td>
                                 <td>
                                     <button class="btn btn-success" type="button" data-toggle="modal"
                                         data-target="#formModal" data-mode="edit" data-id="{{ $data->id }}"
@@ -123,7 +124,6 @@
     <script>
         $('#formModal').on('show.bs.modal', function(e) {
             const btn = $(e.relatedTarget);
-            console.log(btn.data());
             const mode = btn.data('mode');
             const id = btn.data('id');
             const nama_makanan = btn.data('nama');
@@ -138,12 +138,14 @@
                 modal.find('.modal-title').text('Edit Data Menu');
                 modal.find('#nama_makanan').val(nama_makanan);
                 modal.find('#harga').val(harga);
-                modal.find('#stok').val(stok)
-                modal.find('#kategori').val(kategori)
-                modal.find('#deskripsi').val(deskripsi)
-                modal.find('#gambar').val(gambar)
-                modal.find('.modal-body form').attr('action', '{{ url('/karyawan/menu') }}/' +
-                    id);
+                modal.find('#stok').val(stok);
+                modal.find('#kategori').val(kategori);
+                modal.find('#deskripsi').val(deskripsi);
+                modal.find('#old_image').val(gambar); // Set the old image name
+                const imageUrl = '{{ asset('storage/menu-image') }}/' + gambar;
+                modal.find('.img-preview').attr('src', imageUrl).show(); // Show the current image
+                modal.find('#gambar').val(''); // Reset the file input value
+                modal.find('.modal-body form').attr('action', '{{ url('/karyawan/menu') }}/' + id);
                 modal.find('#method').html('@method('PATCH')');
             } else {
                 modal.find('.modal-title').text('Input Data Menu');
@@ -153,12 +155,10 @@
                 modal.find('#harga').val('');
                 modal.find('#deskripsi').val('');
                 modal.find('#gambar').val('');
+                modal.find('#old_image').val(''); // Clear the old image name for new entries
+                modal.find('.img-preview').attr('src', '').hide(); // Hide the image preview
                 modal.find('#method').html('');
-                modal.find('.modal-body form').attr('action',
-                    '{{ url('/karyawan/menu') }}');
-
-                modal.find('#passwordField').show();
-                modal.find('#password').attr('required', true);
+                modal.find('.modal-body form').attr('action', '{{ url('/karyawan/menu') }}');
             }
         });
 
