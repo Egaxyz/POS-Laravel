@@ -16,7 +16,7 @@ class PembelianController extends Controller
     {
         $bahanBaku = BahanBaku::all();
         $supplier = Supplier::all();
-        $pembelian = Pembelian::with('supplier', 'details.bahanBaku' )->get();
+        $pembelian = Pembelian::paginate(5);
         $user = auth()->user();
 
         if ($user->role == 'superuser') {
@@ -86,6 +86,7 @@ public function store(Request $request)
             ], 500);
         }  
     }
+    
     public function selesai($id)
 {
     $pembelian = Pembelian::findOrFail($id);
