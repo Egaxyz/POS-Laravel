@@ -12,7 +12,15 @@ class BahanBakuController extends Controller
 {
     $supplier = Supplier::all();
     $bahan = BahanBaku::all();
-    return view('Karyawan.Bahan_Baku.index', compact('supplier', 'bahan'));
+    $user = auth()->user();
+        
+        if ($user->role == 'superuser') {
+            return view('superuser/Bahan_Baku/index', compact('supplier', 'bahan'));
+        } elseif($user->role == 'karyawan') {
+            return view('karyawan/Bahan_Baku/index', compact('supplier', 'bahan'));
+        }else {
+            abort(403, 'Unauthorized action.');
+        }
 }
 
     public function store(Request $request){

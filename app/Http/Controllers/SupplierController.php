@@ -8,9 +8,17 @@ use Illuminate\Http\Request;
 class SupplierController extends Controller
 {
     public function index(Request $request){
-        $supplier = Supplier::all();
 
-         return view('Manager/Supplier/index', ['supplier'=>$supplier]);
+        $supplier = Supplier::all();
+        $user = auth()->user();
+        
+        if ($user->role == 'superuser') {
+            return view('superuser/Supplier/index', compact('supplier'));
+        } elseif($user->role == 'manager') {
+            return view('Manager/Supplier/index', compact('supplier'));
+        }else {
+            abort(403, 'Unauthorized action.');
+        }
     }
     public function store(Request $request){
         $validated = $request->validate([

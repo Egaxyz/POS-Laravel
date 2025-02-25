@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BahanBakuController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MenuController;
+use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -58,6 +59,13 @@ Route::middleware(['role:karyawan'])->group(function () {
     Route::post('/karyawan/menu', [MenuController::class, 'store']);
     Route::patch('/karyawan/menu/{id}', [MenuController::class, 'update']);
     Route::delete('/karyawan/menu/{id}', [MenuController::class, 'destroy']);
+    
+    Route::get('/karyawan/pembelian', [PembelianController::class, 'index'])->name('karyawan.pembelian');
+    Route::post('/karyawan/pembelian', [PembelianController::class, 'store'])->name('pembelian.store');
+    Route::patch('/karyawan/pembelian/{id}', [PembelianController::class, 'update']);
+    Route::delete('/karyawan/pembelian/{id}', [PembelianController::class, 'destroy']);
+    Route::patch('/karyawan/pembelian/selesai/{id}', [PembelianController::class, 'selesai']);
+    Route::patch('/karyawan/pembelian/batalkan/{id}', [PembelianController::class, 'batal']);
 
 
     Route::get('/karyawan/bahan-baku', [BahanBakuController::class, 'index'])->name('karyawan.bahan-baku');

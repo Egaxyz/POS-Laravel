@@ -12,9 +12,16 @@ class MenuController extends Controller
 {
     public function index()
 {
-    $user = User::all();
     $menu = Menu::all();
-    return view('Karyawan.Menu.index', compact('user', 'menu'));
+    $user = auth()->user();
+        
+        if ($user->role == 'superuser') {
+            return view('superuser/Menu/index', compact('user', 'menu'));
+        } elseif($user->role == 'karyawan') {
+            return view('karyawan/Menu/index', compact('user', 'menu'));
+        }else {
+            abort(403, 'Unauthorized action.');
+        }
 }
 
     public function store(MenuRequest $request)
@@ -27,10 +34,8 @@ class MenuController extends Controller
     } else {
         return back()->with('error', 'Gagal mengupload gambar. Pastikan file dipilih.');
     }
-    // Pastikan user_id selalu 1 jika tidak ada user yang login
     $userId = auth()->id() ?? 1;
 
-    // Simpan data menu dalam array sebelum disimpan ke database
     $menu = [
         'nama_makanan' => $request->nama_makanan,
         'user_id' => $userId, // Gunakan user_id yang sudah ditentukan
@@ -41,13 +46,10 @@ class MenuController extends Controller
         'deskripsi' => $request->deskripsi,
     ];
     
-    // Simpan ke database
     $menu = Menu::create($menu);
 
-    // Cek apakah ada user yang login
     $user = auth()->user();
 
-    // Redirect berdasarkan peran user (jika tidak ada login, langsung redirect saja)
     if ($user && $user->role == 'superuser') {
         return redirect()->route('superuser.menu')->with('success', 'Menu Berhasil Ditambah');
     } elseif ($user && $user->role == 'karyawan') {
@@ -61,15 +63,13 @@ class MenuController extends Controller
     public function update(MenuRequest $request, $id)
 {
     $menu = Menu::findOrFail($id);
-    $filename = $menu->gambar; // Ambil nama gambar lama terlebih dahulu
+    $filename = $menu->gambar; 
 
     if ($request->hasFile('gambar')) {
-        // Hapus gambar lama jika ada
         if ($menu->gambar) {
             Storage::disk('public')->delete('menu-image/' . $menu->gambar);
         }
         
-        // Simpan gambar baru
         $image = $request->file('gambar');
         $filename = date('Y-m-d') . $image->getClientOriginalName();
         $path = 'menu-image/' . $filename;
@@ -90,7 +90,6 @@ class MenuController extends Controller
 
     $user = auth()->user();
 
-    // Redirect berdasarkan role
     if ($user && $user->role == 'superuser') {
         return redirect()->route('superuser.menu')->with('success', 'Menu Berhasil Diperbarui');
     } elseif ($user && $user->role == 'karyawan') {

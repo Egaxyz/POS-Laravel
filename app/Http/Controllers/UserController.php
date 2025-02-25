@@ -10,7 +10,15 @@ class UserController extends Controller
     public function index(Request $request){
         $user = User::all();
 
-        return view('Manager/User/index', ['user'=>$user]);
+    $akun = auth()->user();
+        
+        if ($akun->role == 'superuser') {
+            return view('superuser/User/index', compact('user' ));
+        } elseif($akun->role == 'manager') {
+            return view('Manager/User/index', compact('user'));
+        }else {
+            abort(403, 'Unauthorized action.');
+        }
     }
     public function store(Request $request){
         $validated = $request->validate([
