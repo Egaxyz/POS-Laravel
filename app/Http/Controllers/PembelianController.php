@@ -39,7 +39,6 @@ class PembelianController extends Controller
             'items.*.jumlah' => 'required|integer|min:1',
             'items.*.harga_satuan' => 'required|numeric|min:1',
         ]);
-
         DB::beginTransaction();
         try {
             // Simpan data pembelian
@@ -59,9 +58,7 @@ class PembelianController extends Controller
                 $pembelianDetail->jumlah = $item['jumlah'];
                 $pembelianDetail->harga_satuan = $item['harga_satuan'];
                 $pembelianDetail->save();
-                
-                
-
+            
             }
             DB::commit(); // Commit transaction
             
@@ -96,6 +93,7 @@ class PembelianController extends Controller
                 $bahanBaku = BahanBaku::find($detail->bahan_baku_id);
                 if ($bahanBaku) {
                     $bahanBaku->stok += $detail->jumlah;
+                    $bahanBaku->harga_satuan = $detail['harga_satuan'];
                     $bahanBaku->save();
                 }
             }

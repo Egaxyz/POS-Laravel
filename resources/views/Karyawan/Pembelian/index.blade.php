@@ -119,19 +119,43 @@
 @endsection
 
 @push('script')
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- DataTables CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+
     <script>
         $(document).ready(function() {
-            $('#example1').DataTable({
+            let table = $('#example1').DataTable({
                 "paging": true,
                 "lengthChange": false,
                 "searching": false,
                 "ordering": true,
-                "info": true,
+                "info": false, // Menghilangkan "Showing entries"
                 "autoWidth": false,
                 "responsive": true,
-                "pageLength": 5
+                "pageLength": 5,
+                "language": {
+                    "paginate": {
+                        "previous": "",
+                        "next": ""
+                        "number": ""
+                    }
+                }
             });
+
+            // Hapus nomor halaman setelah pagination dirender
+            function removePageNumbers() {
+                $('.dataTables_paginate .pagination').find('li:not(.previous):not(.next)').remove();
+            }
+
+            removePageNumbers(); // Jalankan setelah inisialisasi
+            table.on('draw', removePageNumbers); // Jalankan setiap kali tabel berubah
         });
+
+
 
         $('#formModal').on('show.bs.modal', function(e) {
             const btn = $(e.relatedTarget);
