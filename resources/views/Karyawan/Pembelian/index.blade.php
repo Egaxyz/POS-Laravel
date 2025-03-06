@@ -1,4 +1,5 @@
 @extends('Karyawan.templates_karyawan.header')
+
 @push('style')
     <style>
         .pagination .page-link {
@@ -23,14 +24,25 @@
     <link rel="stylesheet" href="{{ asset('assets') }}/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
 @endpush
 
+
 @section('content')
     <div class="content-wrapper">
         <section class="content-header">
             <div class="container-fluid">
                 <div class="row mb-2">
-                    <div class="col-sm-6">
-                        <h1>Daftar Pembelian</h1>
-                    </div>
+                    <nav class="navbar navbar-expand-lg navbar-light bg-light w-100">
+                        <div class="container-fluid">
+                            <h1 class="navbar-brand mb-0">Daftar Pembelian</h1>
+                            <ul class="navbar-nav ms-auto">
+                                <li class="nav-item">
+                                    <a href="{{ route('logout') }}" class="nav-link d-flex align-items-center">
+                                        <i class="nav-icon far fa-circle text-danger me-1"></i>
+                                        <span class="text-dark">Logout</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
                 </div>
             </div>
         </section>
@@ -66,6 +78,7 @@
                             <th>Supplier</th>
                             <th>Tanggal</th>
                             <th>Total Harga</th>
+                            <th>Detail</th>
                             <th>Status Pembelian</th>
                             <th>Menu</th>
                         </tr>
@@ -75,7 +88,13 @@
                             <tr>
                                 <td>{{ $data->supplier->nama_perusahaan }}</td>
                                 <td>{{ $data->tanggal_pembelian }}</td>
-                                <td>{{ $data->total_harga }}</td>
+                                <td>Rp. {{ number_format($data->total_harga, 0, ',', '.') }}</td>
+                                <td>
+                                    <button class="btn btn-info btn-sm" data-toggle="modal"
+                                        data-target="#detailModal-{{ $data->id }}">
+                                        Lihat Detail
+                                    </button>
+                                </td>
                                 <td>
                                     @if ($data->status_pembelian == 'Pending')
                                         <span class="badge badge-warning py-2 px-3 fs-9 rounded-pill">Pending</span>
@@ -102,9 +121,49 @@
                                     @endif
                                 </td>
                             </tr>
+
+                            <!-- Modal for Detail Pembelian -->
+                            <div class="modal fade" id="detailModal-{{ $data->id }}" tabindex="-1" role="dialog"
+                                aria-labelledby="detailModalLabel-{{ $data->id }}" aria-hidden="true">
+                                <div class="modal-dialog modal-lg" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="detailModalLabel-{{ $data->id }}">Detail
+                                                Pembelian</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <ul class="list-unstyled">
+                                                <li><strong>Nama Bahan:</strong>
+                                                    {{ implode(', ', $data->details->map(fn($detail) => $detail->bahanBaku->nama ?? 'Data tidak tersedia')->toArray()) }}
+                                                </li>
+                                                <li><strong>Jumlah:</strong>
+                                                    {{ implode(', ', $data->details->map(fn($detail) => $detail->jumlah ?? 'Data tidak tersedia')->toArray()) }}
+                                                </li>
+                                                <li><strong>Harga Satuan:</strong>
+                                                    {{ implode(', ', $data->details->map(fn($detail) => is_numeric($detail->harga_satuan) ? number_format($detail->harga_satuan, 0, ',', '.') : 'Data tidak tersedia')->toArray()) }}
+                                                </li>
+                                                <li><strong>Total Harga:</strong>
+                                                    {{ implode(', ', $data->details->map(fn($detail) => is_numeric($detail->harga_satuan) && is_numeric($detail->jumlah) ? number_format($detail->harga_satuan * $detail->jumlah, 0, ',', '.') : 'Data tidak tersedia')->toArray()) }}
+                                                </li>
+                                                <li><strong>Total Keseluruhan:</strong> Rp
+                                                    {{ is_numeric($data->total_harga ?? null) ? number_format((float) $data->total_harga, 0, ',', '.') : 'Data tidak tersedia' }}
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                data-dismiss="modal">Close</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         @endforeach
                     </tbody>
                 </table>
+
                 <div class="d-flex justify-content-center mt-3">
                     <nav>
                         <ul class="pagination pagination-sm">
@@ -133,7 +192,7 @@
                 "lengthChange": false,
                 "searching": false,
                 "ordering": true,
-                "info": false, // Menghilangkan "Showing entries"
+                "info": false,
                 "autoWidth": false,
                 "responsive": true,
                 "pageLength": 5,
@@ -145,17 +204,7 @@
                     }
                 }
             });
-
-            // Hapus nomor halaman setelah pagination dirender
-            function removePageNumbers() {
-                $('.dataTables_paginate .pagination').find('li:not(.previous):not(.next)').remove();
-            }
-
-            removePageNumbers(); // Jalankan setelah inisialisasi
-            table.on('draw', removePageNumbers); // Jalankan setiap kali tabel berubah
         });
-
-
 
         $('#formModal').on('show.bs.modal', function(e) {
             const btn = $(e.relatedTarget);

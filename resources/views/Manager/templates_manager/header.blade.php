@@ -86,12 +86,6 @@
                                     </a>
                                 </li>
                             </ul>
-                        <li class="nav-item">
-                            <a href="{{ route('logout') }}" class="nav-link">
-                                <i class="nav-icon far fa-circle text-danger"></i>
-                                <p>Logout</p>
-                            </a>
-                        </li>
                         </li>
                     </ul>
                 </nav>

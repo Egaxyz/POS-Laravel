@@ -15,16 +15,19 @@ class PembelianController extends Controller
     public function index()
     {
         $bahanBaku = BahanBaku::all();
+        $detail = DetailPembelian::all();
         $supplier = Supplier::all();
-        $pembelian = Pembelian::orderByRaw("CASE WHEN status_pembelian = 'Pending' THEN 0 ELSE 1 END")
-        ->orderBy('tanggal_pembelian', 'desc') 
-        ->paginate(5);
+        $pembelian = Pembelian::with(['details.bahanBaku', 'supplier'])
+    ->orderByRaw("CASE WHEN status_pembelian = 'Pending' THEN 0 ELSE 1 END")
+    ->orderBy('tanggal_pembelian', 'desc') 
+    ->paginate(5);
+
         $user = auth()->user();
 
         if ($user->role == 'superuser') {
-            return view('superuser/Pembelian/index', compact('pembelian', 'supplier', 'bahanBaku'));
+            return view('superuser/Pembelian/index', compact('pembelian', 'supplier', 'bahanBaku', 'detail'));
         } elseif ($user->role == 'karyawan') {
-            return view('karyawan/Pembelian/index', compact('pembelian', 'supplier', 'bahanBaku'));
+            return view('karyawan/Pembelian/index', compact('pembelian', 'supplier', 'bahanBaku', 'detail'));
         } else {
             abort(403, 'Unauthorized action.');
         }

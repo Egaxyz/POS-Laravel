@@ -1,31 +1,32 @@
 @extends('Karyawan.templates_karyawan.header')
+
 @section('content')
     <div class="content-wrapper">
         <section class="content-header">
             <div class="container-fluid">
                 <div class="row mb-2">
-                    <div class="col-sm-6">
-                        <h1>DASHBOARD</h1>
-                    </div>
-                    <div class="col-sm-6">
-                    </div>
+                    <nav class="navbar navbar-expand-lg navbar-light bg-light w-100">
+                        <div class="container-fluid">
+                            <h1 class="navbar-brand mb-0">DASHBOARD</h1>
+                            <ul class="navbar-nav ms-auto">
+                                <li class="nav-item">
+                                    <a href="{{ route('logout') }}" class="nav-link d-flex align-items-center">
+                                        <i class="nav-icon far fa-circle text-danger me-1"></i>
+                                        <span class="text-dark">Logout</span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
                 </div>
             </div>
         </section>
-        <section class="content">
 
+        <section class="content">
             <div class="card">
                 <div class="card-header">
                     <h3 class="card-title">Dashboard Karyawan</h3>
 
-                    <div class="card-tools">
-                        <button type="button" class="btn btn-tool" data-card-widget="collapse" title="collapse">
-                            <i class="fa fa-minus"></i>
-                        </button>
-                        <button type="button" class="btn btn-tool" data-card-widget="remove" title="remove">
-                            <i class="fa fa-times"></i>
-                        </button>
-                    </div>
                 </div>
                 <div class="card-body">
                     Start creating your amazing application!
