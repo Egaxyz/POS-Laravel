@@ -1,5 +1,10 @@
 @extends('Karyawan.templates_karyawan.header')
+
 @push('style')
+    <link rel="stylesheet" href="{{ asset('assets') }}/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+    <link rel="stylesheet" href="{{ asset('assets') }}/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
+    <link rel="stylesheet" href="{{ asset('assets') }}/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
+    <link rel="stylesheet" href="{{ asset('assets') }}/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
     <style>
         .pagination .page-link {
             padding: 6px 10px;
@@ -17,10 +22,6 @@
             color: white;
         }
     </style>
-    <link rel="stylesheet" href="{{ asset('assets') }}/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
-    <link rel="stylesheet" href="{{ asset('assets') }}/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
-    <link rel="stylesheet" href="{{ asset('assets') }}/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
-    <link rel="stylesheet" href="{{ asset('assets') }}/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
 @endpush
 
 @section('content')
@@ -47,22 +48,22 @@
 
         <div class="card">
             <div class="card-header">
-                <button class="btn bg-primary" type="button" data-toggle="modal" data-target="#formModal"><i
-                        class="fas fa-plus-square"></i> Tambah Data Penjualan</button>
+                <button class="btn bg-primary" type="button" data-toggle="modal" data-target="#formModal">
+                    <i class="fas fa-plus-square"></i> Tambah Data Penjualan
+                </button>
             </div>
             <div class="card-body">
                 @if (session('success'))
                     <div class="alert alert-success alert-dismissible">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
-                            &times;</button>
-                        <h5><i class="icon fas fa-check"></i>Sukses!</h5>
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+                        <h5><i class="icon fas fa-check"></i> Sukses!</h5>
                         {{ session('success') }}
                     </div>
                 @endif
                 @if ($errors->any())
                     <div class="alert alert-danger alert-dismissible">
                         <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                        <h5><i class="icon fas fa-ban"></i>Data Gagal Disimpan!</h5>
+                        <h5><i class="icon fas fa-ban"></i> Data Gagal Disimpan!</h5>
                         <ul>
                             @foreach ($errors->all() as $error)
                                 <li>{{ $error }}</li>
@@ -73,11 +74,10 @@
                 <table id="example1" class="table table-bordered table-striped">
                     <thead>
                         <tr>
-                            <th>Menu</th>
-                            <th>Jumlah</th>
-                            <th>Total Harga</th>
+                            <th>Kode Seri</th>
+                            <th>Total Harga </th>
                             <th>Tanggal</th>
-                            <th>Metode Pembayaran</th>
+                            <th>Detail</th>
                             <th>Status Penjualan</th>
                             <th>Menu</th>
                         </tr>
@@ -85,33 +85,102 @@
                     <tbody>
                         @foreach ($penjualan as $data)
                             <tr>
-                                <td>{{ $data->detail->jumlah }}</td>
-                                <td>{{ $data->total_harga }}</td>
+                                <td>{{ $data->no_faktur }}</td>
+                                <td>Rp. {{ number_format($data->total_harga, 0, ',', '.') }}</td>
                                 <td>{{ $data->tanggal }}</td>
                                 <td>
+                                    <button class="btn btn-info btn-sm" data-toggle="modal"
+                                        data-target="#detailModal-{{ $data->id }}">
+                                        Lihat Detail
+                                    </button>
+                                </td>
+                                <td>
                                     @if ($data->status_penjualan == 'Proses')
-                                        <span class="badge badge-warning py-2 px-3 fs-9 rounded-pill">Proses</span>
+                                        <span class="badge badge-warning py-2 px-3 fs-9 rounded-pill">Pending</span>
                                     @elseif($data->status_penjualan == 'Selesai')
                                         <span class="badge badge-success py-2 px-3 fs-9 rounded-pill">Selesai</span>
                                     @else
                                         <span class="badge badge-danger py-2 px-3 fs-9 rounded-pill">Gagal</span>
                                     @endif
                                 </td>
-                                <td>{{ $data->metode_pembayaran }}</td>
-                                <td>{{ $data->Aksi }}</td>
+                                <td>
+                                    @if ($data->status_penjualan == 'Proses')
+                                        <form action="{{ url('/karyawan/penjualan/selesai', $data->id) }}" method="POST"
+                                            style="display:inline;">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="btn btn-primary">Selesai</button>
+                                        </form>
+                                        <form action="{{ url('/karyawan/penjualan/batalkan', $data->id) }}" method="POST"
+                                            style="display:inline;">
+                                            @csrf
+                                            @method('PATCH')
+                                            <button type="submit" class="btn btn-danger ">Batalkan</button>
+                                        </form>
+                                    @endif
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
-                <div class="d-flex justify-content-center mt-3">
-                    <nav>
-                        <ul class="pagination pagination-sm">
-                            {{-- {{ $penjualan->links('pagination::bootstrap-4') }} --}}
-                        </ul>
-                    </nav>
-                </div>
             </div>
         </div>
+
+        @foreach ($penjualan as $data)
+            <div class="modal fade" id="detailModal-{{ $data->id }}" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header bg-primary text-white">
+                            <h5 class="modal-title">Detail Penjualan</h5>
+                            <button type="button" class="close text-white" data-dismiss="modal">
+                                &times;
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Nama Makanan</th>
+                                            <th>Jumlah</th>
+                                            <th>Harga Satuan</th>
+                                            <th>Total</th>
+                                            <th>Metode Pembayaran</th>
+                                            <th>Total Keseluruhan</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($data->details as $detail)
+                                            <tr>
+                                                <td>{{ $detail->menu->nama_makanan ?? 'Data tidak tersedia' }}</td>
+                                                <td>{{ $detail->jumlah }}</td>
+                                                <td>Rp. {{ number_format($detail->harga_satuan, 0, ',', '.') }}</td>
+                                                <td>Rp.
+                                                    {{ number_format($data->total_harga, 0, ',', '.') }}</p>
+                                                </td>
+                                                <td>
+                                                    {{ $data->metode_pembayaran ?? 'Data tidak tersedia' }}
+                                                </td>
+                                                <td>Rp.
+                                                    {{ number_format($detail->jumlah * $detail->harga_satuan, 0, ',', '.') }}
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endforeach
+    </div>
+    <div class="d-flex justify-content-center mt-3">
+        <nav>
+            <ul class="pagination pagination-sm">
+                {{ $penjualan->links('pagination::bootstrap-4') }}
+            </ul>
+        </nav>
     </div>
     @include('Karyawan/Penjualan/modals')
 @endsection
@@ -131,7 +200,7 @@
                 "lengthChange": false,
                 "searching": false,
                 "ordering": true,
-                "info": false, // Menghilangkan "Showing entries"
+                "info": false,
                 "autoWidth": false,
                 "responsive": true,
                 "pageLength": 5,

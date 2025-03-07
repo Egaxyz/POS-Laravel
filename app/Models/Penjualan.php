@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Penjualan extends Model
 {
-    public $table = 'pembelian';
+    public $table = 'penjualan';
     public $timestamps = false;
     protected $fillable = [
         'user_id',
@@ -22,8 +22,14 @@ class Penjualan extends Model
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
-    public function detail()
-    {
-        return $this->hasManyThrough(Menu::class, DetailPenjualan::class, 'penjualan_id', 'id', 'id', 'menu_id');
-    }
+    public function details()
+{
+    return $this->hasMany(DetailPenjualan::class, 'penjualan_id', 'id');
+}
+public function menu()
+{
+    return $this->hasOneThrough(Menu::class, DetailPenjualan::class, 'penjualan_id', 'id', 'id', 'menu_id');
+}
+
+    
 }

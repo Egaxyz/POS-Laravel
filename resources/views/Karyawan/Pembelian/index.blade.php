@@ -116,63 +116,64 @@
                                             style="display:inline;">
                                             @csrf
                                             @method('PATCH')
-                                            <button type="submit" class="btn btn-warning">Batalkan</button>
+                                            <button type="submit" class="btn btn-danger">Batalkan</button>
                                         </form>
                                     @endif
                                 </td>
                             </tr>
-
-                            <!-- Modal for Detail Pembelian -->
-                            <div class="modal fade" id="detailModal-{{ $data->id }}" tabindex="-1" role="dialog"
-                                aria-labelledby="detailModalLabel-{{ $data->id }}" aria-hidden="true">
-                                <div class="modal-dialog modal-lg" role="document">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title" id="detailModalLabel-{{ $data->id }}">Detail
-                                                Pembelian</h5>
-                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <ul class="list-unstyled">
-                                                <li><strong>Nama Bahan:</strong>
-                                                    {{ implode(', ', $data->details->map(fn($detail) => $detail->bahanBaku->nama ?? 'Data tidak tersedia')->toArray()) }}
-                                                </li>
-                                                <li><strong>Jumlah:</strong>
-                                                    {{ implode(', ', $data->details->map(fn($detail) => $detail->jumlah ?? 'Data tidak tersedia')->toArray()) }}
-                                                </li>
-                                                <li><strong>Harga Satuan:</strong>
-                                                    {{ implode(', ', $data->details->map(fn($detail) => is_numeric($detail->harga_satuan) ? number_format($detail->harga_satuan, 0, ',', '.') : 'Data tidak tersedia')->toArray()) }}
-                                                </li>
-                                                <li><strong>Total Harga:</strong>
-                                                    {{ implode(', ', $data->details->map(fn($detail) => is_numeric($detail->harga_satuan) && is_numeric($detail->jumlah) ? number_format($detail->harga_satuan * $detail->jumlah, 0, ',', '.') : 'Data tidak tersedia')->toArray()) }}
-                                                </li>
-                                                <li><strong>Total Keseluruhan:</strong> Rp
-                                                    {{ is_numeric($data->total_harga ?? null) ? number_format((float) $data->total_harga, 0, ',', '.') : 'Data tidak tersedia' }}
-                                                </li>
-                                            </ul>
-                                        </div>
-                                        <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary"
-                                                data-dismiss="modal">Close</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         @endforeach
                     </tbody>
                 </table>
-
-                <div class="d-flex justify-content-center mt-3">
-                    <nav>
-                        <ul class="pagination pagination-sm">
-                            {{ $pembelian->links('pagination::bootstrap-4') }}
-                        </ul>
-                    </nav>
-                </div>
             </div>
         </div>
+        <!-- Modal for Detail Pembelian -->
+        @foreach ($pembelian as $data)
+            <div class="modal fade" id="detailModal-{{ $data->id }}" tabindex="-1" role="dialog">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header bg-primary text-white">
+                            <h5 class="modal-title">Detail Pembelian</h5>
+                            <button type="button" class="close text-white" data-dismiss="modal">
+                                &times;
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered">
+                                    <thead class="thead-light">
+                                        <tr>
+                                            <th>Nama Bahan</th>
+                                            <th>Jumlah</th>
+                                            <th>Harga Satuan</th>
+                                            <th>Total</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($data->details as $detail)
+                                            <tr>
+                                                <td>{{ $detail->bahanBaku->nama ?? 'Data tidak tersedia' }}</td>
+                                                <td>{{ $detail->jumlah }}</td>
+                                                <td>Rp. {{ number_format($detail->harga_satuan, 0, ',', '.') }}</td>
+                                                <td>Rp.
+                                                    {{ number_format($detail->jumlah * $detail->harga_satuan, 0, ',', '.') }}
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endforeach
+    </div>
+    <div class="d-flex justify-content-center mt-3">
+        <nav>
+            <ul class="pagination pagination-sm">
+                {{ $pembelian->links('pagination::bootstrap-4') }}
+            </ul>
+        </nav>
     </div>
     @include('Karyawan/Pembelian/modals')
 @endsection
