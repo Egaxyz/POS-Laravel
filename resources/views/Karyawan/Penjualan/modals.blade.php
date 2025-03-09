@@ -9,7 +9,6 @@
                 </button>
             </div>
             <div class="modal-body">
-
                 <form method="POST" action="{{ route('penjualan.store') }}">
                     @csrf
                     <input type="hidden" name="menus" id="menus">

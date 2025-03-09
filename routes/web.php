@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BahanBakuController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\MenuBahanBakuController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\PenjualanController;
@@ -74,6 +75,8 @@ Route::middleware(['role:karyawan'])->group(function () {
     Route::delete('/karyawan/penjualan/{id}', [PenjualanController::class, 'destroy']);
     Route::patch('/karyawan/penjualan/selesai/{id}', [PenjualanController::class, 'selesai']);
     Route::patch('/karyawan/penjualan/batalkan/{id}', [PenjualanController::class, 'batal']);
+    
+    Route::post('/karyawan/menu-bahan-baku', [MenuBahanBakuController::class, 'store'])->name('menu.bahan-baku.store');
 
     Route::get('/karyawan/bahan-baku', [BahanBakuController::class, 'index'])->name('karyawan.bahan-baku');
     Route::post('/karyawan/bahan-baku', [BahanBakuController::class, 'store']);

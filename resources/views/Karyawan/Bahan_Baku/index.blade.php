@@ -29,10 +29,15 @@
         </section>
 
         <div class="card">
-            <div class="card-header">
-                <button class="btn bg-primary" type="button" data-toggle="modal" data-target="#formModal"><i
-                        class="fas fa-plus-square"></i> Tambah Data Bahan Baku</button>
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <button class="btn bg-primary" type="button" data-toggle="modal" data-target="#formModal">
+                    <i class="fas fa-plus-square"></i> Tambah Data Bahan Baku
+                </button>
+                <button class="btn bg-secondary" type="button" data-toggle="modal" data-target="#formModalBahan">
+                    <i class="fas fa-plus-square"></i> Pilih Bahan untuk Menu
+                </button>
             </div>
+
             <div class="card-body">
                 @if (session('success'))
                     <div class="alert alert-success alert-dismissible">
@@ -114,10 +119,13 @@
             </div>
         </div>
     </div>
+
     @include('Karyawan/Bahan_Baku/modals')
+    @include('Karyawan/Bahan_Baku/modalBahan')
 @endsection
 
 @push('script')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script>
         $('#formModal').on('show.bs.modal', function(e) {
             const btn = $(e.relatedTarget);

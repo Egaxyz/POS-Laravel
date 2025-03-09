@@ -20,4 +20,8 @@ class BahanBaku extends Model
     {
         return $this->belongsTo(Supplier::class, 'supplier_id', 'id');
     }
+    public function menu()
+    {
+        return $this->belongsTo(Menu::class, 'menu_id', 'id');
+    }
 }

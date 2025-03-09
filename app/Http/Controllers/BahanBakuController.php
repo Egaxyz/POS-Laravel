@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\BahanBaku;
+use App\Models\Menu;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
 
@@ -11,13 +12,14 @@ class BahanBakuController extends Controller
     public function index()
 {
     $supplier = Supplier::all();
-    $bahan = BahanBaku::all();
+    $menu = Menu::all();
+    $bahan = BahanBaku::with('menu')->get();
     $user = auth()->user();
         
         if ($user->role == 'superuser') {
-            return view('superuser/Bahan_Baku/index', compact('supplier', 'bahan'));
+            return view('superuser/Bahan_Baku/index', compact('supplier', 'bahan', 'menu'));
         } elseif($user->role == 'karyawan') {
-            return view('karyawan/Bahan_Baku/index', compact('supplier', 'bahan'));
+            return view('karyawan/Bahan_Baku/index', compact('supplier', 'bahan', 'menu'));
         }else {
             abort(403, 'Unauthorized action.');
         }
