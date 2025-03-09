@@ -19,6 +19,6 @@ class MenuBahanBaku extends Model
     }
     public function bahanBaku()
     {
-        return $this->belongsTo(Menu::class, 'bahan_baku_id', 'id');
+        return $this->belongsTo(BahanBaku::class, 'bahan_baku_id', 'id');
     }
 }

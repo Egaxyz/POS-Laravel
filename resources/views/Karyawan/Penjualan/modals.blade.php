@@ -62,15 +62,20 @@
                     placeholder="Cari Nama Menu atau Kategori" onkeyup="filterMenu()">
                 <div id="menuList" class="list-group">
                     @foreach ($menu as $item)
-                        <button type="button" class="list-group-item list-group-item-action"
+                        <button type="button"
+                            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
                             onclick="selectMenu('{{ $item->nama_makanan }}', '{{ $item->kategori }}', '{{ $item->harga }}', '{{ $item->stok }}')"
-                            {{ $item->stok == 0 ? 'disabled' : '' }}>
-                            <strong>{{ $item->nama_makanan }}</strong> - {{ $item->kategori }}
-                            <span
-                                class="badge badge-{{ $item->stok > 0 ? 'success' : 'danger' }}">{{ $item->stok > 0 ? 'Tersedia' : 'Habis' }}</span>
+                            {{ $item->stok < 1 ? 'disabled' : '' }}>
+                            <span>
+                                <strong>{{ $item->nama_makanan }}</strong> - {{ $item->kategori }}
+                            </span>
+                            <span class="badge {{ $item->stok > 0 ? 'badge-success' : 'badge-danger' }}">
+                                {{ $item->stok > 0 ? 'Tersedia' : 'Habis' }}
+                            </span>
                         </button>
                     @endforeach
                 </div>
+
             </div>
         </div>
     </div>
@@ -89,10 +94,11 @@
     }
 
     function selectMenu(nama_makanan, kategori, harga, stok) {
-        if (stok <= 0) {
-            alert("Stok habis! Silakan pilih menu lain.");
+        if (stok < 1) {
+            alert("Menu ini sudah habis!");
             return;
         }
+
         let existingMenu = selectedMenus.find(menu => menu.nama_makanan === nama_makanan);
         if (existingMenu) {
             if (existingMenu.jumlah < stok) {

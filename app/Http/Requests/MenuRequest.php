@@ -23,7 +23,7 @@ class MenuRequest extends FormRequest
     {
         return [
             'nama_makanan'=> 'required',
-            'harga'=> 'required',
+            'harga'=> 'nullable',
             'stok'=> 'required',
             'kategori'=> 'required',
         ];

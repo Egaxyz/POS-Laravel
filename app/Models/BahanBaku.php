@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Http\Controllers\MenuController;
 use Illuminate\Database\Eloquent\Model;
 
 class BahanBaku extends Model
@@ -15,6 +16,20 @@ class BahanBaku extends Model
         'satuan',
         'harga_satuan'
     ];
+protected static function boot()
+{
+    parent::boot();
+
+    static::updated(function ($bahan) {
+        $menuIds = \DB::table('menu_bahan_baku')
+            ->where('bahan_baku_id', $bahan->id)
+            ->pluck('menu_id');
+
+        foreach ($menuIds as $menuId) {
+            (new MenuController)->updateMenuPrice($menuId);
+        }
+    });
+}
 
     public function supplier()
     {

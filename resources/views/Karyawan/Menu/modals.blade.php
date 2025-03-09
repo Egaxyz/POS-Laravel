@@ -18,11 +18,6 @@
                             name="nama_makanan" required>
                     </div>
                     <div class="form-group">
-                        <label for="harga">Harga</label>
-                        <input type="number" class="form-control" autocomplete="off" id="harga" name="harga"
-                            required>
-                    </div>
-                    <div class="form-group">
                         <label for="stok">Stok</label>
                         <input type="number" class="form-control" autocomplete="off" id="stok" name="stok"
                             required>
