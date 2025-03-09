@@ -22,4 +22,8 @@ class Menu extends Model
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
+     public function bahanBaku() {
+    return $this->belongsToMany(BahanBaku::class, 'menu_bahan_baku', 'menu_id', 'bahan_baku_id')
+                ->withPivot('jumlah');
+}
 }

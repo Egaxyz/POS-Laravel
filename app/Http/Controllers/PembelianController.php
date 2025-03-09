@@ -56,7 +56,7 @@ class PembelianController extends Controller
             // Simpan detail pembelian dan update stok bahan baku
             foreach ($request->items as $item) {
                 $pembelianDetail = new DetailPembelian();
-                $pembelianDetail->pembelian_id = $pembelian->id; // Ambil ID dari pembelian yang baru dibuat
+                $pembelianDetail->pembelian_id = $pembelian->id; 
                 $pembelianDetail->bahan_baku_id = $item['bahan_baku_id'];
                 $pembelianDetail->jumlah = $item['jumlah'];
                 $pembelianDetail->harga_satuan = $item['harga_satuan'];
@@ -78,7 +78,7 @@ class PembelianController extends Controller
                 Log::error($e->getMessage()); // Log the error for debugging
                 return response()->json([
                     'success' => false,
-                    'message' => 'Terjadi kesalahan saat menyimpan peminjaman',
+                    'message' => 'Terjadi kesalahan saat menyimpan pembelian',
                     'error' => $e->getMessage(),
                 ], 500);
             }  

@@ -8,8 +8,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form class="form-horizontal" method="POST" action="{{ url('/supplier') }}"
-                    enctype="multipart/form-data">
+                <form class="form-horizontal" method="POST" action="{{ url('/menu') }}" enctype="multipart/form-data">
                     @csrf
                     <div id="method"></div>
                     <input type="hidden" name="old_image" id="old_image">

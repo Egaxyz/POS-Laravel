@@ -9,8 +9,10 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form method="POST" action="{{ url('penjualan/') }}">
+
+                <form method="POST" action="{{ route('penjualan.store') }}">
                     @csrf
+                    <input type="hidden" name="menus" id="menus">
                     <div class="form-group">
                         <label for="menu">Pilih Menu</label>
                         <div class="input-group">
@@ -62,8 +64,11 @@
                 <div id="menuList" class="list-group">
                     @foreach ($menu as $item)
                         <button type="button" class="list-group-item list-group-item-action"
-                            onclick="selectMenu('{{ $item->nama_makanan }}','{{ $item->kategori }}', '{{ $item->harga }}')">
+                            onclick="selectMenu('{{ $item->nama_makanan }}', '{{ $item->kategori }}', '{{ $item->harga }}', '{{ $item->stok }}')"
+                            {{ $item->stok == 0 ? 'disabled' : '' }}>
                             <strong>{{ $item->nama_makanan }}</strong> - {{ $item->kategori }}
+                            <span
+                                class="badge badge-{{ $item->stok > 0 ? 'success' : 'danger' }}">{{ $item->stok > 0 ? 'Tersedia' : 'Habis' }}</span>
                         </button>
                     @endforeach
                 </div>
@@ -84,20 +89,28 @@
         });
     }
 
-    function selectMenu(nama_makanan, kategori, harga) {
+    function selectMenu(nama_makanan, kategori, harga, stok) {
+        if (stok <= 0) {
+            alert("Stok habis! Silakan pilih menu lain.");
+            return;
+        }
         let existingMenu = selectedMenus.find(menu => menu.nama_makanan === nama_makanan);
         if (existingMenu) {
-            existingMenu.jumlah += 1;
+            if (existingMenu.jumlah < stok) {
+                existingMenu.jumlah += 1;
+            } else {
+                alert("Jumlah pesanan melebihi stok tersedia!");
+            }
         } else {
             selectedMenus.push({
                 nama_makanan,
                 kategori,
                 harga,
-                jumlah: 1
+                jumlah: 1,
+                stok
             });
         }
         renderSelectedMenus();
-        $("#menuModal").modal("hide");
     }
 
     function ubahJumlah(index, value) {
@@ -123,25 +136,36 @@
             totalHarga += total;
 
             let menuItem = `
-                <div class="card mb-2 p-2 shadow-sm">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <strong>${menu.nama_makanan}</strong>
-                            <p class="mb-0">Rp ${menu.harga.toLocaleString()} x ${menu.jumlah} = <strong>Rp ${total.toLocaleString()}</strong></p>
-                        </div>
-                        <div>
-                            <button class="btn btn-sm btn-outline-secondary" onclick="ubahJumlah(${index}, -1)">-</button>
-                            <span class="mx-2">${menu.jumlah}</span>
-                            <button class="btn btn-sm btn-outline-secondary" onclick="ubahJumlah(${index}, 1)">+</button>
-                            <button class="btn btn-sm btn-danger ml-2" onclick="hapusMenu(${index})">×</button>
-                        </div>
+            <div class="card mb-2 p-2 shadow-sm">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>${menu.nama_makanan}</strong>
+                        <p class="mb-0">Rp ${menu.harga.toLocaleString()} x ${menu.jumlah} = <strong>Rp ${total.toLocaleString()}</strong></p>
+                    </div>
+                    <div>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="ubahJumlah(${index}, -1)">-</button>
+                        <span class="mx-2">${menu.jumlah}</span>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="ubahJumlah(${index}, 1)">+</button>
+                        <button class="btn btn-sm btn-danger ml-2" onclick="hapusMenu(${index})">×</button>
                     </div>
                 </div>
-            `;
+            </div>
+        `;
             container.innerHTML += menuItem;
         });
 
         document.getElementById("total_harga").value = totalHarga;
+
+        // Ensure the menus field is set before form submission
+        document.getElementById("menus").value = JSON.stringify(selectedMenus);
+
+        document.querySelector("form").addEventListener("submit", function(e) {
+            if (selectedMenus.length === 0) {
+                alert("Harap pilih minimal satu menu sebelum menyimpan.");
+                e.preventDefault(); // Mencegah form dikirim
+                return;
+            }
+        });
     }
 </script>
 

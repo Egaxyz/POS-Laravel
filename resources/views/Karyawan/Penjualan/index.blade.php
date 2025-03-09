@@ -147,7 +147,6 @@
                                             <th>Harga Satuan</th>
                                             <th>Total</th>
                                             <th>Metode Pembayaran</th>
-                                            <th>Total Keseluruhan</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -157,13 +156,10 @@
                                                 <td>{{ $detail->jumlah }}</td>
                                                 <td>Rp. {{ number_format($detail->harga_satuan, 0, ',', '.') }}</td>
                                                 <td>Rp.
-                                                    {{ number_format($data->total_harga, 0, ',', '.') }}</p>
+                                                    {{ number_format($detail->jumlah * $detail->harga_satuan, 0, ',', '.') }}
                                                 </td>
                                                 <td>
                                                     {{ $data->metode_pembayaran ?? 'Data tidak tersedia' }}
-                                                </td>
-                                                <td>Rp.
-                                                    {{ number_format($detail->jumlah * $detail->harga_satuan, 0, ',', '.') }}
                                                 </td>
                                             </tr>
                                         @endforeach

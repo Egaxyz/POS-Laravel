@@ -12,8 +12,7 @@ class DetailPenjualan extends Model
         'menu_id',
         'penjualan_id',
         'jumlah',
-        'harga',
-        'satuan'
+        'harga_satuan',
     ];
     public function penjualan()
     {
