@@ -52,13 +52,13 @@
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="pembelian" class="nav-link">
+                                    <a href="laporan-pembelian" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Pembelian</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="penjualan" class="nav-link">
+                                    <a href="laporan-penjualan" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Penjualan</p>
                                     </a>

@@ -6,6 +6,7 @@ use App\Models\BahanBaku;
 use App\Models\DetailPembelian;
 use App\Models\Pembelian;
 use App\Models\Supplier;
+use Carbon\Carbon;
 use DB;
 use Illuminate\Http\Request;
 use Log;
@@ -132,4 +133,25 @@ class PembelianController extends Controller
             abort(403, 'Unauthorized action.');
         }
     }
+    public function laporan(Request $request)
+{
+    // Tahun default adalah tahun sekarang
+    $tahun = $request->input('tahun', Carbon::now()->format('Y'));
+
+    // Ambil data berdasarkan tahun dari kolom tanggal_pembelian
+    $dataByYear = Pembelian::whereYear('tanggal_pembelian', $tahun)
+        ->orderBy('tanggal_pembelian', 'desc')
+        ->paginate(5);
+
+    $user = auth()->user();
+
+    if ($user->role == 'superuser') {
+        return view('superuser.Laporan_Pembelian.index', ['pembelian' => $dataByYear, 'tahun' => $tahun]);
+    } elseif ($user->role == 'manager') {
+        return view('manager.Laporan_Pembelian.index', ['pembelian' => $dataByYear, 'tahun' => $tahun]);
+    } else {
+        abort(403, 'Anda tidak memiliki akses.');
+    }
+}
+
 }

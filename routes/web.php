@@ -9,8 +9,9 @@ use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
+use App\Models\Pembelian;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 
 
@@ -41,9 +42,16 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 
 
 Route::middleware(['role:manager'])->group(function () {
-        Route::get('/manager/dashboard', [homeController::class, 'managerDashboard'])->name('manager.dashboard');
-        
-        Route::get('/manager/user', [UserController::class, 'index'])->name('manager.user');
+    Route::get('/manager/dashboard', [homeController::class, 'managerDashboard'])->name('manager.dashboard');
+    
+    Route::get('/manager/user', [UserController::class, 'index'])->name('manager.user');
+    
+    Route::get('/manager/laporan-pembelian', [PembelianController::class, 'laporan'])->name('manager.laporan-pembelian');
+    Route::get('/manager/laporan-pembelian/pdf', function () {
+            $pembelian = Pembelian::all(); 
+            $pdf = Pdf::loadView('manager.Laporan_Pembelian.pdf', compact('pembelian'));
+            return $pdf->download('laporan-pembelian.pdf');
+    });
         Route::post('/manager/user', [UserController::class, 'store']);
         Route::patch('/manager/user/{id}', [UserController::class, 'update']);
         Route::delete('/manager/user/{id}', [UserController::class, 'destroy']);
@@ -61,6 +69,7 @@ Route::middleware(['role:karyawan'])->group(function () {
     Route::post('/karyawan/menu', [MenuController::class, 'store']);
     Route::patch('/karyawan/menu/{id}', [MenuController::class, 'update']);
     Route::delete('/karyawan/menu/{id}', [MenuController::class, 'destroy']);
+
     
     Route::get('/karyawan/pembelian', [PembelianController::class, 'index'])->name('karyawan.pembelian');
     Route::post('/karyawan/pembelian', [PembelianController::class, 'store'])->name('pembelian.store');

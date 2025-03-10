@@ -20,6 +20,8 @@ class MenuController extends Controller
         foreach ($menu as $item) {
             $stokMenu = $this->hitungStokMenu($item->id);
             $item->stok = $stokMenu;
+
+            $this->perbaruiStokMenu($item->id);
         }
 
         if ($user->role == 'superuser') {

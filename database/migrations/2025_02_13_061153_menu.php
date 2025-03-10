@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('stok', 100);
             $table->enum('kategori', ['makanan', 'minuman', 'snack']);
             $table->string('deskripsi', 200)->nullable();
-            $table->string('gambar');
+            $table->string('gambar')->nullable();
 
             
             $table->foreign('user_id')->references('id')->on('user');

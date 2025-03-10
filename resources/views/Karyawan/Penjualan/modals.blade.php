@@ -67,7 +67,7 @@
                             onclick="selectMenu('{{ $item->nama_makanan }}', '{{ $item->kategori }}', '{{ $item->harga }}', '{{ $item->stok }}')"
                             {{ $item->stok < 1 ? 'disabled' : '' }}>
                             <span>
-                                <strong>{{ $item->nama_makanan }}</strong> - {{ $item->kategori }}
+                                <strong>{{ $item->nama_makanan }}</strong> - {{ $item->kategori }} {{ $item->stok }}
                             </span>
                             <span class="badge {{ $item->stok > 0 ? 'badge-success' : 'badge-danger' }}">
                                 {{ $item->stok > 0 ? 'Tersedia' : 'Habis' }}

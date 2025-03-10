@@ -111,14 +111,14 @@
             <div class="card mb-2 p-2 shadow-sm">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <strong>${bahan.nama}</strong> - ${bahan.stok} ${bahan.satuan}
-                    </div>
-                    <button class="text-danger btn btn-sm" onclick="hapusBahan(${index})">×</button>
-                </div>
-                <div class="form-group mt-2">
-                    <label>Jumlah (${bahan.satuan})</label>
-                    <input type="number" class="form-control" min="1" value="${bahan.jumlah}" 
-                        oninput="updateJumlah(${index}, this.value)">
+                        <strong>${bahan.nama}</strong> 
+                        </div>
+                        <div class="form-group mt-2">
+                            <label>Jumlah (${bahan.satuan})</label>
+                            <input type="number" class="form-control" min="1" value="${bahan.jumlah}" 
+                            oninput="updateJumlah(${index}, this.value)">
+                            </div>
+                            <button class="text-danger btn btn-sm" onclick="hapusBahan(${index})"><h4>×</h</button>
                 </div>
             </div>
         `;
