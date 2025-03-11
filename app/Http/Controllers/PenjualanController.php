@@ -14,21 +14,21 @@ use Log;
 class PenjualanController extends Controller
 {
     public function index() {
-        $menu = Menu::all();
-        $penjualan = Penjualan::orderByRaw("CASE WHEN status_penjualan = 'Proses' THEN 0 ELSE 1 END")
-            ->orderBy('tanggal', 'desc')
-            ->paginate(5);
+    $menu = Menu::all();
+    $penjualan = Penjualan::orderByRaw("CASE WHEN status_penjualan = 'Proses' THEN 0 ELSE 1 END")
+        ->orderBy('tanggal', 'desc')
+        ->paginate(5);
 
-        $user = auth()->user();
+    $user = auth()->user();
 
-        if ($user->role == 'superuser') {
-            return view('superuser/Penjualan/index', compact('penjualan', 'menu'));
-        } elseif ($user->role == 'karyawan') {
-            return view('karyawan/Penjualan/index', compact('penjualan', 'menu'));
-        } else {
-            abort(403, 'Unauthorized action.');
-        }
+    if ($user->role == 'superuser') {
+        return view('superuser/Penjualan/index', compact('penjualan', 'menu'));
+    } elseif ($user->role == 'karyawan') {
+        return view('karyawan/Penjualan/index', compact('penjualan', 'menu'));
+    } else {
+        abort(403, 'Unauthorized action.');
     }
+}
 
     public function store(Request $request)
 {
@@ -45,19 +45,23 @@ class PenjualanController extends Controller
     }
 
     $tahun = Carbon::now()->format('Y');
-    $lastItem = Penjualan::whereYear('tanggal', $tahun)
-        ->orderBy('no_faktur', 'desc')
-        ->first();
+// Ambil nomor faktur terakhir yang memiliki format yang benar
+    $lastItem = Penjualan::where('no_faktur', 'LIKE', "PSN$tahun%")
+    ->orderBy('no_faktur', 'desc')
+    ->first();
 
+    // Ambil angka terakhir dan tambah 1
     $lastNoUrut = $lastItem ? intval(substr($lastItem->no_faktur, -3)) : 0;
     $newNoUrut = str_pad($lastNoUrut + 1, 3, '0', STR_PAD_LEFT);
+
+    // Buat nomor faktur baru
     $noFaktur = "PSN" . $tahun . $newNoUrut;
 
     $penjualan = new Penjualan();
     $penjualan->user_id = auth()->id();
     $penjualan->no_faktur = $noFaktur;
     $penjualan->tanggal = now();
-        $penjualan->status_penjualan = 'Proses';
+    $penjualan->status_penjualan = 'Proses';
     $penjualan->metode_pembayaran = $request->metode_pembayaran;
     $penjualan->total_harga = $request->total_harga;
     $penjualan->save();
@@ -174,5 +178,25 @@ public function selesai($id)
     return redirect()->back()->with('success', 'Pembelian Telah Digagalkan.');
 }
 
+public function laporan(Request $request)
+{
+    // Tahun default adalah tahun sekarang
+    $tahun = $request->input('tahun', Carbon::now()->format('Y'));
+
+    // Ambil data berdasarkan tahun dari kolom tanggal_pembelian
+    $dataByYear = Penjualan::whereYear('tanggal', $tahun)
+        ->orderBy('tanggal', 'desc')
+        ->paginate(5);
+
+    $user = auth()->user();
+
+    if ($user->role == 'superuser') {
+        return view('superuser.Laporan_Penjualan.index', ['penjualan' => $dataByYear, 'tahun' => $tahun]);
+    } elseif ($user->role == 'manager') {
+        return view('manager.Laporan_Penjualan.index', ['penjualan' => $dataByYear, 'tahun' => $tahun]);
+    } else {
+        abort(403, 'Anda tidak memiliki akses.');
+    }
+}
 
 }

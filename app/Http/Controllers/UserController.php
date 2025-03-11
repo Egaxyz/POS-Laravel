@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 class UserController extends Controller
 {
     public function index(Request $request){
-        $user = User::all();
+        $user = User::orderBy('nama')->paginate(5);
 
     $akun = auth()->user();
         

@@ -9,7 +9,7 @@ class SupplierController extends Controller
 {
     public function index(Request $request){
 
-        $supplier = Supplier::all();
+        $supplier = Supplier::orderBy('nama_perusahaan')->paginate(5);
         $user = auth()->user();
         
         if ($user->role == 'superuser') {

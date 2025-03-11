@@ -70,7 +70,7 @@
                         @foreach ($menu as $data)
                             <tr>
                                 <td>{{ $data->nama_makanan }}</td>
-                                <td>{{ $data->harga }}</td>
+                                <td>Rp. {{ number_format($data->harga, 0, ',', '.') }}</td>
                                 <td>{{ $data->stok }}</td>
                                 <td>{{ $data->kategori }}</td>
                                 <td>{{ $data->deskripsi }}</td>
@@ -117,6 +117,9 @@
                 </div>
             </div>
         </div>
+    </div>
+    <div class="d-flex justify-content-center mt-3">
+        {{ $menu->links('vendor/pagination/custom') }}
     </div>
     @include('Karyawan/Menu/modals')
 @endsection

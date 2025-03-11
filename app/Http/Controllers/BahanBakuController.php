@@ -13,7 +13,7 @@ class BahanBakuController extends Controller
 {
     $supplier = Supplier::all();
     $menu = Menu::all();
-    $bahan = BahanBaku::with('menu')->get();
+    $bahan = BahanBaku::with('menu')->orderBy('nama', 'asc')->paginate(4);
     $user = auth()->user();
         
         if ($user->role == 'superuser') {

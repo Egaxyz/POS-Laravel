@@ -119,7 +119,9 @@
             </div>
         </div>
     </div>
-
+    <div class="d-flex justify-content-center mt-3">
+        {{ $bahan->links('vendor/pagination/custom') }}
+    </div>
     @include('Karyawan/Bahan_Baku/modals')
     @include('Karyawan/Bahan_Baku/modalBahan')
 @endsection

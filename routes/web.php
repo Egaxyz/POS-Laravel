@@ -10,6 +10,7 @@ use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
 use App\Models\Pembelian;
+use App\Models\Penjualan;
 use Illuminate\Support\Facades\Route;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -51,6 +52,12 @@ Route::middleware(['role:manager'])->group(function () {
             $pembelian = Pembelian::all(); 
             $pdf = Pdf::loadView('manager.Laporan_Pembelian.pdf', compact('pembelian'));
             return $pdf->download('laporan-pembelian.pdf');
+    });
+    Route::get('/manager/laporan-penjualan', [PenjualanController::class, 'laporan'])->name('manager.laporan-penjualan');
+    Route::get('/manager/laporan-penjualan/pdf', function () {
+            $penjualan = Penjualan::all(); 
+            $pdf = Pdf::loadView('manager.Laporan_Penjualan.pdf', compact('penjualan'));
+            return $pdf->download('laporan-penjualan.pdf');
     });
         Route::post('/manager/user', [UserController::class, 'store']);
         Route::patch('/manager/user/{id}', [UserController::class, 'update']);

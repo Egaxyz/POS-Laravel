@@ -22,6 +22,10 @@
             background-color: #0056b3;
             color: white;
         }
+
+        .pagination .page-item:nth-child(n+4):not(:last-child) {
+            display: none;
+        }
     </style>
 @endpush
 
@@ -173,11 +177,7 @@
         @endforeach
     </div>
     <div class="d-flex justify-content-center mt-3">
-        <nav>
-            <ul class="pagination pagination-sm">
-                {{ $penjualan->links('pagination::bootstrap-4') }}
-            </ul>
-        </nav>
+        {{ $penjualan->links('vendor/pagination/custom') }}
     </div>
     @include('Karyawan/Penjualan/modals')
 @endsection
@@ -188,26 +188,6 @@
     <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 
     <script>
-        $(document).ready(function() {
-            let table = $('#example1').DataTable({
-                "paging": true,
-                "lengthChange": false,
-                "searching": false,
-                "ordering": true,
-                "info": false,
-                "autoWidth": false,
-                "responsive": true,
-                "pageLength": 5,
-                "language": {
-                    "paginate": {
-                        "previous": "",
-                        "next": ""
-                        "number": ""
-                    }
-                }
-            });
-        });
-
         $('#formModal').on('show.bs.modal', function(e) {
             const btn = $(e.relatedTarget);
             const mode = btn.data('mode');

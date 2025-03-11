@@ -1,23 +1,5 @@
 @extends('Karyawan.templates_karyawan.header')
-
 @push('style')
-    <style>
-        .pagination .page-link {
-            padding: 6px 10px;
-            font-size: 14px;
-        }
-
-        .pagination .page-item.active .page-link {
-            background-color: #007bff;
-            border-color: #007bff;
-            color: white;
-        }
-
-        .pagination .page-item .page-link:hover {
-            background-color: #0056b3;
-            color: white;
-        }
-    </style>
     <link rel="stylesheet" href="{{ asset('assets') }}/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
     <link rel="stylesheet" href="{{ asset('assets') }}/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
     <link rel="stylesheet" href="{{ asset('assets') }}/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
@@ -169,11 +151,7 @@
         @endforeach
     </div>
     <div class="d-flex justify-content-center mt-3">
-        <nav>
-            <ul class="pagination pagination-sm">
-                {{ $pembelian->links('pagination::bootstrap-4') }}
-            </ul>
-        </nav>
+        {{ $pembelian->links('vendor/pagination/custom') }}
     </div>
     @include('Karyawan/Pembelian/modals')
 @endsection
@@ -181,32 +159,8 @@
 @push('script')
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <!-- DataTables CSS -->
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.5/css/jquery.dataTables.min.css">
-    <!-- DataTables JS -->
-    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 
     <script>
-        $(document).ready(function() {
-            let table = $('#example1').DataTable({
-                "paging": true,
-                "lengthChange": false,
-                "searching": false,
-                "ordering": true,
-                "info": false,
-                "autoWidth": false,
-                "responsive": true,
-                "pageLength": 5,
-                "language": {
-                    "paginate": {
-                        "previous": "",
-                        "next": ""
-                        "number": ""
-                    }
-                }
-            });
-        });
-
         $('#formModal').on('show.bs.modal', function(e) {
             const btn = $(e.relatedTarget);
             const mode = btn.data('mode');

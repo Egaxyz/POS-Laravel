@@ -31,7 +31,7 @@
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
-                        <h1>Laporan Pembelian</h1>
+                        <h1>Laporan Penjualan</h1>
                     </div>
                 </div>
             </div>
@@ -39,23 +39,23 @@
         <div class="card">
             <div class="card-header">
                 <button id="printButton" class="btn btn-primary" onclick="window.print()">Print</button>
-                <a id="exportButton" href="{{ url('/manager/laporan-pembelian/pdf') }}" class="btn btn-danger">Export
+                <a id="exportButton" href="{{ url('/manager/laporan-penjualan/pdf') }}" class="btn btn-danger">Export
                     PDF</a>
             </div>
             <div class="card-body">
-                <h2 id="printTitle" style="text-align: center; display: none;">Data Pembelian</h2>
+                <h2 id="printTitle" style="text-align: center; display: none;">Data Penjualan</h2>
 
                 <table id="example1" class="table table-bordered table-striped">
                     <thead>
                         <tr>
                             <th>Total Harga</th>
-                            <th id="btn-info">Detail Pembelian</th>
-                            <th>Status Pembelian</th>
-                            <th>Tanggal Pembelian</th>
+                            <th id="btn-info">Detail Penjualan</th>
+                            <th>Status Penjualan</th>
+                            <th>Tanggal Penjualan</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($pembelian as $data)
+                        @foreach ($penjualan as $data)
                             <tr>
                                 <td>Rp. {{ number_format($data->total_harga, 0, ',', '.') }}</td>
                                 <td>
@@ -66,13 +66,13 @@
                                 </td>
                                 <td>
                                     <span
-                                        class=" p-2 rounded rounded-pill {{ $data->status_pembelian == 'Selesai' ? 'bg-success' : 'bg-warning' }}">
-                                        {{ $data->status_pembelian == 'Selesai' ? 'Selesai' : 'Proses' }}
+                                        class=" p-2 rounded rounded-pill {{ $data->status_penjualan == 'Selesai' ? 'bg-success' : 'bg-warning' }}">
+                                        {{ $data->status_penjualan == 'Selesai' ? 'Selesai' : 'Proses' }}
                                     </span>
                                 </td>
 
                                 <td>
-                                    {{ $data->tanggal_pembelian }}
+                                    {{ $data->tanggal }}
                                 </td>
                             </tr>
                         @endforeach
@@ -81,12 +81,12 @@
             </div>
         </div>
     </div>
-    @foreach ($pembelian as $data)
+    @foreach ($penjualan as $data)
         <div class="modal fade" id="detailModal-{{ $data->id }}" tabindex="-1" role="dialog">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header bg-primary text-white">
-                        <h5 class="modal-title">Detail Pembelian</h5>
+                        <h5 class="modal-title">Detail Penjualan</h5>
                         <button type="button" class="close text-white" data-dismiss="modal">
                             &times;
                         </button>
@@ -96,20 +96,24 @@
                             <table class="table table-bordered">
                                 <thead class="thead-light">
                                     <tr>
-                                        <th>Nama Bahan</th>
+                                        <th>Nama Makanan</th>
                                         <th>Jumlah</th>
                                         <th>Harga Satuan</th>
                                         <th>Total</th>
+                                        <th>Metode Pembayaran</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach ($data->details as $detail)
                                         <tr>
-                                            <td>{{ $detail->bahanBaku->nama ?? 'Data tidak tersedia' }}</td>
+                                            <td>{{ $detail->menu->nama_makanan ?? 'Data tidak tersedia' }}</td>
                                             <td>{{ $detail->jumlah }}</td>
                                             <td>Rp. {{ number_format($detail->harga_satuan, 0, ',', '.') }}</td>
                                             <td>Rp.
                                                 {{ number_format($detail->jumlah * $detail->harga_satuan, 0, ',', '.') }}
+                                            </td>
+                                            <td>
+                                                {{ $data->metode_pembayaran ?? 'Data tidak tersedia' }}
                                             </td>
                                         </tr>
                                     @endforeach
@@ -122,7 +126,7 @@
         </div>
     @endforeach
     <div class="d-flex justify-content-center mt-3">
-        {{ $pembelian->links('vendor/pagination/custom') }}
+        {{ $penjualan->links('vendor/pagination/custom') }}
     </div>
 @endsection
 @push('script')

@@ -115,6 +115,9 @@
             </div>
         </div>
     </div>
+    <div class="d-flex justify-content-center mt-3">
+        {{ $supplier->links('vendor/pagination/custom') }}
+    </div>
     @include('Manager/Supplier/modals')
 @endsection
 

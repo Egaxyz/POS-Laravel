@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Pembelian</title>
+    <title>Laporan Penjualan</title>
     <style>
         /* Center the h2 element */
         h2.center {
@@ -40,29 +40,29 @@
 </head>
 
 <body>
-    <h2 class="center">Laporan Pembelian</h2>
+    <h2 class="center">Laporan Penjualan</h2>
     <table>
         <thead>
             <tr>
                 <th>Total Harga</th>
-                <th>Status Pembelian</th>
-                <th>Tanggal Pembelian</th>
+                <th>Status Penjualan</th>
+                <th>Tanggal Penjualan</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($pembelian as $data)
+            @foreach ($penjualan as $data)
                 <tr>
                     <td>Rp. {{ number_format($data->total_harga, 0, ',', '.') }}</td>
 
                     <td>
                         <span
-                            class="badge {{ $data->status_pembelian == 'Selesai' ? 'badge-success' : 'badge-warning' }}">
-                            {{ $data->status_pembelian == 'Selesai' ? 'Selesai' : 'Proses' }}
+                            class="badge {{ $data->status_penjualan == 'Selesai' ? 'badge-success' : 'badge-warning' }}">
+                            {{ $data->status_penjualan == 'Selesai' ? 'Selesai' : 'Proses' }}
                         </span>
                     </td>
 
                     <td>
-                        {{ $data->tanggal_pembelian }}
+                        {{ $data->tanggal }}
                     </td>
                 </tr>
             @endforeach
