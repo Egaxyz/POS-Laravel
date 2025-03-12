@@ -3,7 +3,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="formModalLabel">Tambah Data Peminjaman</h5>
+                <h5 class="modal-title" id="formModalLabel">Tambah Data Penjualan</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -36,11 +36,23 @@
                         <label for="total_harga">Total Harga</label>
                         <input type="number" class="form-control" id="total_harga" name="total_harga" readonly>
                     </div>
+                    <div class="form-group" id="uang_diberikan_group" style="display: none;">
+                        <label for="uang_diberikan">Uang Diberikan</label>
+                        <input type="text" class="form-control" id="uang_diberikan"
+                            placeholder="Masukkan jumlah uang">
+                    </div>
+
+                    <div class="form-group" id="kembalian_group" style="display: none;">
+                        <label for="kembalian">Kembalian</label>
+                        <input type="text" class="form-control" id="kembalian" readonly>
+                    </div>
 
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
                         <button type="submit" class="btn btn-primary">Simpan</button>
-                    </div>
+                        <button type="button" class="btn btn-warning" onclick="cetakStruk()">
+                            <i class="fas fa-receipt"></i> Cetak Struk
+                        </button>
                 </form>
             </div>
         </div>
@@ -117,6 +129,54 @@
         }
         renderSelectedMenus();
     }
+
+    document.getElementById("metode_pembayaran").addEventListener("change", function() {
+        let pembayaran = this.value;
+        let uangDiberikanGroup = document.getElementById("uang_diberikan_group");
+        let kembalianGroup = document.getElementById("kembalian_group");
+
+        if (pembayaran === "Cash") {
+            uangDiberikanGroup.style.display = "block";
+            kembalianGroup.style.display = "block";
+        } else {
+            uangDiberikanGroup.style.display = "none";
+            kembalianGroup.style.display = "none";
+            document.getElementById("uang_diberikan").value = "";
+            document.getElementById("kembalian").value = "";
+        }
+    });
+
+    document.getElementById("uang_diberikan").addEventListener("input", function() {
+        let value = this.value.replace(/\D/g, ""); // Hanya angka
+        let formattedValue = new Intl.NumberFormat("id-ID").format(value);
+        this.value = value ? `Rp ${formattedValue}` : "";
+
+        hitungKembalian();
+    });
+
+    function hitungKembalian() {
+        let totalHarga = parseInt(document.getElementById("total_harga").value) || 0;
+        let uangDiberikan = parseInt(document.getElementById("uang_diberikan").value.replace(/\D/g, "")) || 0;
+
+        let kembalian = uangDiberikan - totalHarga;
+        document.getElementById("kembalian").value = kembalian >= 0 ? `Rp ${kembalian.toLocaleString("id-ID")}` :
+            "Uang kurang!";
+    }
+
+    function cetakStruk() {
+        let totalHarga = parseInt(document.getElementById("total_harga").value) || 0;
+        let uangDiberikan = parseInt(document.getElementById("uang_diberikan").value.replace(/\D/g, "")) || 0;
+        let kembalian = uangDiberikan - totalHarga;
+        let metodePembayaran = document.getElementById("metode_pembayaran").value;
+
+        // Kirim data menu yang dipilih sebagai query parameter
+        let selectedMenusEncoded = encodeURIComponent(JSON.stringify(selectedMenus));
+
+        // Redirect to the struk page with query parameters
+        window.location.href =
+            `/karyawan/penjualan/struk?total_harga=${totalHarga}&uang_diberikan=${uangDiberikan}&kembalian=${kembalian}&metode_pembayaran=${metodePembayaran}&menus=${selectedMenusEncoded}`;
+    }
+
 
     function ubahJumlah(index, value) {
         selectedMenus[index].jumlah += value;

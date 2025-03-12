@@ -62,7 +62,6 @@
                             <th>Total Harga</th>
                             <th>Detail</th>
                             <th>Status Pembelian</th>
-                            <th>Menu</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -85,23 +84,26 @@
                                     @else
                                         <span class="badge badge-danger py-2 px-3 fs-9 rounded-pill">Gagal</span>
                                     @endif
-                                </td>
-                                <td>
                                     @if ($data->status_pembelian == 'Pending')
                                         <form action="{{ url('/karyawan/pembelian/selesai', $data->id) }}" method="POST"
                                             style="display:inline;">
                                             @csrf
                                             @method('PATCH')
-                                            <button type="submit" class="btn btn-primary">Selesai</button>
+                                            <button type="submit" class="btn btn-primary btn-sm">
+                                                <i class="fas fa-check"></i>
+                                            </button>
                                         </form>
                                         <form action="{{ url('/karyawan/pembelian/batalkan', $data->id) }}" method="POST"
                                             style="display:inline;">
                                             @csrf
                                             @method('PATCH')
-                                            <button type="submit" class="btn btn-danger">Batalkan</button>
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                <i class="fas fa-times"></i>
+                                            </button>
                                         </form>
                                     @endif
                                 </td>
+
                             </tr>
                         @endforeach
                     </tbody>

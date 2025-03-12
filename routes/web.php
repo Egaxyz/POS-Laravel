@@ -9,6 +9,7 @@ use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
+use App\Models\BahanBaku;
 use App\Models\Pembelian;
 use App\Models\Penjualan;
 use Illuminate\Support\Facades\Route;
@@ -45,7 +46,13 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::middleware(['role:manager'])->group(function () {
     Route::get('/manager/dashboard', [homeController::class, 'managerDashboard'])->name('manager.dashboard');
     
-    Route::get('/manager/user', [UserController::class, 'index'])->name('manager.user');
+    
+    Route::get('/manager/laporan-bahan', [BahanBakuController::class, 'laporan'])->name('manager.laporan-bahan');
+    Route::get('/manager/laporan-bahan/pdf', function () {
+            $bahan = BahanBaku::all(); 
+            $pdf = Pdf::loadView('manager.Laporan_Bahan_Baku.pdf', compact('bahan'));
+            return $pdf->download('laporan-bahan.pdf');
+    });
     
     Route::get('/manager/laporan-pembelian', [PembelianController::class, 'laporan'])->name('manager.laporan-pembelian');
     Route::get('/manager/laporan-pembelian/pdf', function () {
@@ -55,12 +62,14 @@ Route::middleware(['role:manager'])->group(function () {
     });
     Route::get('/manager/laporan-penjualan', [PenjualanController::class, 'laporan'])->name('manager.laporan-penjualan');
     Route::get('/manager/laporan-penjualan/pdf', function () {
-            $penjualan = Penjualan::all(); 
-            $pdf = Pdf::loadView('manager.Laporan_Penjualan.pdf', compact('penjualan'));
-            return $pdf->download('laporan-penjualan.pdf');
+        $penjualan = Penjualan::all(); 
+        $pdf = Pdf::loadView('manager.Laporan_Penjualan.pdf', compact('penjualan'));
+        return $pdf->download('laporan-penjualan.pdf');
     });
-        Route::post('/manager/user', [UserController::class, 'store']);
-        Route::patch('/manager/user/{id}', [UserController::class, 'update']);
+    
+    Route::get('/manager/user',  [UserController::class, 'index'])->name('manager.user');
+    Route::post('/manager/user', [UserController::class, 'store']);
+    Route::patch('/manager/user/{id}', [UserController::class, 'update']);
         Route::delete('/manager/user/{id}', [UserController::class, 'destroy']);
         
         Route::get('/manager/supplier', [SupplierController::class, 'index'])->name('manager.supplier');
@@ -91,6 +100,8 @@ Route::middleware(['role:karyawan'])->group(function () {
     Route::delete('/karyawan/penjualan/{id}', [PenjualanController::class, 'destroy']);
     Route::patch('/karyawan/penjualan/selesai/{id}', [PenjualanController::class, 'selesai']);
     Route::patch('/karyawan/penjualan/batalkan/{id}', [PenjualanController::class, 'batal']);
+    Route::get('/karyawan/penjualan/struk', [PenjualanController::class, 'cetakStruk'])->name('penjualan.struk');
+
     
     Route::post('/karyawan/menu-bahan-baku', [MenuBahanBakuController::class, 'store'])->name('menu.bahan-baku.store');
 

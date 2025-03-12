@@ -65,6 +65,12 @@
                                 </li>
                             </ul>
                         <li class="nav-item">
+                            <a href="laporan-bahan" class="nav-link">
+                                <i class="fas fa-book nav-icon"></i>
+                                <p>Bahan Baku</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-list"></i>
                                 <p>

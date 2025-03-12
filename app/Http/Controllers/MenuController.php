@@ -13,7 +13,7 @@ class MenuController extends Controller
 {
     public function index()
     {
-        $menu = Menu::orderBy('nama_makanan', 'asc')->paginate(5);
+        $menu = Menu::orderBy('nama_makanan', 'asc')->paginate(3);
         $user = auth()->user();
 
         // Perbarui stok menu sebelum ditampilkan

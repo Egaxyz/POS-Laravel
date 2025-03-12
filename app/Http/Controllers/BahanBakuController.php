@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\BahanBaku;
 use App\Models\Menu;
 use App\Models\Supplier;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class BahanBakuController extends Controller
@@ -91,4 +92,21 @@ if ($user->role == 'superuser') {
             abort(403, 'Unauthorized action.');
         }
     }
+    public function laporan(Request $request)
+{
+
+    // Ambil data berdasarkan tahun dari kolom tanggal_pembelian
+    $bahan = BahanBaku::orderBy('nama', 'desc')
+        ->paginate(5);
+
+    $user = auth()->user();
+
+    if ($user->role == 'superuser') {
+        return view('superuser.Laporan_Bahan_Baku.index', compact('bahan'));
+    } elseif ($user->role == 'manager') {
+        return view('manager.Laporan_Bahan_Baku.index', compact('bahan'));
+    } else {
+        abort(403, 'Anda tidak memiliki akses.');
+    }
+}
 }

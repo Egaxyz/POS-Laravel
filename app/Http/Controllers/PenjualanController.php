@@ -159,7 +159,7 @@ public function selesai($id)
         $penjualan->save();
 
         DB::commit();
-        return redirect()->back()->with('success', 'Penjualan Telah Diselesaikan dan Stok Berkurang.');
+        return redirect()->back()->with('success', 'Penjualan Telah Diselesaikan.');
     } catch (\Exception $e) {
         DB::rollBack();
         \Log::error($e->getMessage());
@@ -196,6 +196,74 @@ public function laporan(Request $request)
         return view('manager.Laporan_Penjualan.index', ['penjualan' => $dataByYear, 'tahun' => $tahun]);
     } else {
         abort(403, 'Anda tidak memiliki akses.');
+    }
+}
+public function cetakStruk(Request $request)
+{
+    // Ambil query parameters
+    $totalHarga = $request->query('total_harga');
+    $uangDiberikan = $request->query('uang_diberikan');
+    $kembalian = $request->query('kembalian');
+    $metodePembayaran = $request->query('metode_pembayaran'); // Get the payment method
+    $selectedMenus = json_decode(urldecode($request->query('menus')), true);
+
+    // Get the current year
+    $currentYear = date('Y');
+
+    // Get the last invoice number for the current year from the penjualan table
+    $lastInvoice = DB::table('penjualan')
+        ->where('no_faktur', 'like', 'psn' . $currentYear . '%')
+        ->orderBy('no_faktur', 'desc')
+        ->first();
+
+    // Determine the new sequential number
+    if ($lastInvoice) {
+        // Extract the last number from the no_faktur
+        $lastNoFaktur = $lastInvoice->no_faktur;
+        $lastSequentialNumber = (int)substr($lastNoFaktur, -3); // Get the last three digits
+        $newSequentialNumber = str_pad($lastSequentialNumber + 1, 3, '0', STR_PAD_LEFT); // Increment and pad with zeros
+    } else {
+        // If no previous invoice exists for the current year, start from 001
+        $newSequentialNumber = '001';
+    }
+
+    // Create the new invoice number
+    $newInvoiceNumber = 'PSN' . $currentYear . $newSequentialNumber;
+
+    // Buat data penjualan sementara untuk struk
+    $penjualan = (object) [
+        'no_faktur' => $newInvoiceNumber, // Use the new invoice number
+        'total_harga' => $totalHarga,
+        'diskon' => 0, // Diskon bisa disesuaikan
+        'metode_pembayaran' => $metodePembayaran, // Use the payment method from query
+        'tanggal' => now(),
+        'details' => array_map(function ($menu) {
+            return (object) [
+                'menu' => (object) [
+                    'nama_makanan' => $menu['nama_makanan'],
+                    'harga_satuan' => $menu['harga'],
+                ],
+                'jumlah' => $menu['jumlah'],
+                'harga_satuan' => $menu['harga'],
+            ];
+        }, $selectedMenus),
+    ];
+
+    // Format tanggal
+    $penjualan->tanggal_formatted = Carbon::parse($penjualan->tanggal)
+        ->locale('id')
+        ->translatedFormat('l Y/m/d H:i');
+
+    $lokasi = env('RESTAURANT_LOCATION');
+
+    // Tampilkan view struk
+    $user = auth()->user();
+    if ($user->role == 'superuser') {
+        return view('superuser.Penjualan.struk', compact('penjualan', 'lokasi', 'totalHarga', 'uangDiberikan', 'kembalian'));
+    } elseif ($user->role == 'karyawan') {
+        return view('karyawan.Penjualan.struk', compact('penjualan', 'lokasi', 'totalHarga', 'uangDiberikan', 'kembalian'));
+    } else {
+        abort(403, 'Unauthorized action.');
     }
 }
 
