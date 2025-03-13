@@ -13,7 +13,7 @@
                     @csrf
                     <input type="hidden" name="menus" id="menus">
                     <div class="form-group">
-                        <label for="menu">Pilih Menu</label>
+                        <label for="menu_display">Pilih Menu</label>
                         <div class="input-group">
                             <input type="text" id="menu_display" class="form-control"
                                 placeholder="Klik untuk memilih menu" readonly data-toggle="modal"
@@ -31,15 +31,15 @@
                             <option value="Bank">Bank</option>
                         </select>
                     </div>
-
                     <div class="form-group">
                         <label for="total_harga">Total Harga</label>
-                        <input type="number" class="form-control" id="total_harga" name="total_harga" readonly>
+                        <input type="text" class="form-control" id="total_harga_display" readonly>
+                        <input type="hidden" class="form-control" id="total_harga" name="total_harga" readonly>
                     </div>
                     <div class="form-group" id="uang_diberikan_group" style="display: none;">
                         <label for="uang_diberikan">Uang Diberikan</label>
                         <input type="text" class="form-control" id="uang_diberikan"
-                            placeholder="Masukkan jumlah uang">
+                            placeholder="Masukkan jumlah uang" autocomplete="off">
                     </div>
 
                     <div class="form-group" id="kembalian_group" style="display: none;">
@@ -53,6 +53,7 @@
                         <button type="button" class="btn btn-warning" onclick="cetakStruk()">
                             <i class="fas fa-receipt"></i> Cetak Struk
                         </button>
+                    </div>
                 </form>
             </div>
         </div>
@@ -74,20 +75,17 @@
                     placeholder="Cari Nama Menu atau Kategori" onkeyup="filterMenu()">
                 <div id="menuList" class="list-group">
                     @foreach ($menu as $item)
-                        <button type="button"
-                            class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                        <button type="button" class="list-group-item list-group-item-action mb-2"
                             onclick="selectMenu('{{ $item->nama_makanan }}', '{{ $item->kategori }}', '{{ $item->harga }}', '{{ $item->stok }}')"
                             {{ $item->stok < 1 ? 'disabled' : '' }}>
-                            <span>
-                                <strong>{{ $item->nama_makanan }}</strong> - {{ $item->kategori }} {{ $item->stok }}
-                            </span>
-                            <span class="badge {{ $item->stok > 0 ? 'badge-success' : 'badge-danger' }}">
-                                {{ $item->stok > 0 ? 'Tersedia' : 'Habis' }}
+                            <strong>{{ $item->nama_makanan }}</strong> - {{ $item->kategori }} Stok:
+                            {{ $item->stok }}
+                            <span class="float-right badge {{ $item->stok < 1 ? 'badge-danger' : 'badge-success' }}">
+                                {{ $item->stok < 1 ? 'Habis' : 'Tersedia' }}
                             </span>
                         </button>
                     @endforeach
                 </div>
-
             </div>
         </div>
     </div>
@@ -163,6 +161,24 @@
             "Uang kurang!";
     }
 
+    function hitungKembalian() {
+        let totalHarga = parseInt(document.getElementById("total_harga").value) || 0;
+        let uangDiberikan = parseInt(document.getElementById("uang_diberikan").value.replace(/\D/g, "")) || 0;
+
+        let kembalian = uangDiberikan - totalHarga;
+        document.getElementById("kembalian").value = kembalian >= 0 ? `Rp ${kembalian.toLocaleString("id-ID")}` :
+            "Uang kurang!";
+    }
+
+    function formatRupiah(angka) {
+        return new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+            minimumFractionDigits: 0, // Menghilangkan desimal
+            maximumFractionDigits: 0 // Menghilangkan desimal
+        }).format(angka);
+    }
+
     function cetakStruk() {
         let totalHarga = parseInt(document.getElementById("total_harga").value) || 0;
         let uangDiberikan = parseInt(document.getElementById("uang_diberikan").value.replace(/\D/g, "")) || 0;
@@ -201,25 +217,27 @@
             totalHarga += total;
 
             let menuItem = `
-            <div class="card mb-2 p-2 shadow-sm">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <strong>${menu.nama_makanan}</strong>
-                        <p class="mb-0">Rp ${menu.harga.toLocaleString()} x ${menu.jumlah} = <strong>Rp ${total.toLocaleString()}</strong></p>
-                    </div>
-                    <div>
-                        <button class="btn btn-sm btn-outline-secondary" onclick="ubahJumlah(${index}, -1)">-</button>
-                        <span class="mx-2">${menu.jumlah}</span>
-                        <button class="btn btn-sm btn-outline-secondary" onclick="ubahJumlah(${index}, 1)">+</button>
-                        <button class="btn btn-sm btn-danger ml-2" onclick="hapusMenu(${index})">×</button>
-                    </div>
+        <div class="card mb-2 p-2 shadow-sm">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <strong>${menu.nama_makanan}</strong>
+                    <p class="mb-0">${formatRupiah(menu.harga)} x ${menu.jumlah} = <strong>${formatRupiah(total)}</strong></p>
+                </div>
+                <div>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="ubahJumlah(${index}, -1)">-</button>
+                    <span class="mx-2">${menu.jumlah}</span>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="ubahJumlah(${index}, 1)">+</button>
+                    <button class="btn btn-sm btn-danger ml-2" onclick="hapusMenu(${index})">×</button>
                 </div>
             </div>
+        </div>
         `;
             container.innerHTML += menuItem;
         });
 
+        // Format totalHarga ke dalam Rupiah
         document.getElementById("total_harga").value = totalHarga;
+        document.getElementById("total_harga_display").value = formatRupiah(totalHarga);
 
         // Ensure the menus field is set before form submission
         document.getElementById("menus").value = JSON.stringify(selectedMenus);
@@ -252,13 +270,15 @@
         border-radius: 5px;
     }
 
+    .list-group-item {
+        margin-bottom: 10px;
+        /* Jarak antar item menu */
+    }
+
     .card {
         border-radius: 8px;
         border: 1px solid #ddd;
-    }
-
-    .btn-sm {
-        padding: 3px 8px;
+        padding: 10px;
     }
 
     .list-group-item-action:hover {

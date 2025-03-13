@@ -7,7 +7,7 @@
                 <div class="row mb-2">
                     <nav class="navbar navbar-expand-lg navbar-light bg-light w-100">
                         <div class="container-fluid">
-                            <h1 class="navbar-brand mb-0">DASHBOARD</h1>
+                            <h1 class="navbar-brand mb-0">Dashboard Manager</h1>
                             <ul class="navbar-nav ms-auto">
                                 <li class="nav-item">
                                     <a href="{{ route('logout') }}" class="nav-link d-flex align-items-center">
@@ -25,16 +25,79 @@
         <section class="content">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Dashboard Manager</h3>
-
+                    <h3 class="card-title">Grafik Penjualan</h3>
                 </div>
                 <div class="card-body">
-                    Start creating your amazing application!
+                    <canvas id="salesChart"></canvas>
                 </div>
-                <div class="card-footer">
-                    Footer
+            </div>
+            <hr>
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Grafik Pembelian</h3>
+                </div>
+                <div class="card-body">
+                    <canvas id="purchasingChart"></canvas>
                 </div>
             </div>
         </section>
     </div>
 @endsection
+@push('script')
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // --- Grafik Penjualan ---
+            var ctxSales = document.getElementById('salesChart').getContext('2d');
+            var salesData = @json($penjualan);
+
+            var labelsSales = salesData.map(data => data.bulan);
+            var totalPendapatanSales = salesData.map(data => data.total);
+
+            var salesChart = new Chart(ctxSales, {
+                type: 'bar',
+                data: {
+                    labels: labelsSales,
+                    datasets: [{
+                        label: 'Pendapatan per Bulan',
+                        data: totalPendapatanSales,
+                        backgroundColor: 'rgba(54, 162, 235, 0.8)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1,
+                        borderRadius: 5,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+
+            // --- Grafik Pembelian ---
+            var ctxPurchasing = document.getElementById('purchasingChart').getContext('2d');
+            var purchasingData = @json($pembelian);
+
+            var labelsPurchasing = purchasingData.map(data => data.bulan);
+            var totalPendapatanPurchasing = purchasingData.map(data => data.total);
+
+            var purchasingChart = new Chart(ctxPurchasing, {
+                type: 'bar',
+                data: {
+                    labels: labelsPurchasing,
+                    datasets: [{
+                        label: 'Pengeluaran per Bulan',
+                        data: totalPendapatanPurchasing,
+                        backgroundColor: 'rgba(255, 99, 132, 0.8)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1,
+                        borderRadius: 5,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false
+                }
+            });
+        });
+    </script>
+@endpush

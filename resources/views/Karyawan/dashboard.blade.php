@@ -23,16 +23,77 @@
         </section>
 
         <section class="content">
-            <div class="card">
-                <div class="card-header">
-                    <h3 class="card-title">Dashboard Karyawan</h3>
+            <div class="container ">
+                <div class="card mb-4">
+                    <div class="card-header bg-warning text-white">
+                        <h5 class="mb-0">Transaksi Menunggu Persetujuan</h5>
+                    </div>
+                    <div class="card-body">
+                        @if ($transaksi->isEmpty())
+                            <p class="text-muted">Tidak ada transaksi yang menunggu persetujuan.</p>
+                        @else
+                            <table class="table table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>No. </th>
+                                        <th>No Faktur</th>
+                                        <th>Total Harga</th>
+                                        <th>Metode Pembayaran</th>
+                                        <th>Tanggal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($transaksi as $key => $t)
+                                        <tr>
+                                            <td>{{ $transaksi->firstItem() + $key }}</td>
+                                            <td>{{ $t->no_faktur }}</td>
+                                            <td>Rp {{ number_format($t->total_harga, 0, ',', '.') }}</td>
+                                            <td>{{ $t->metode_pembayaran }}</td>
+                                            <td>{{ $t->tanggal }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @endif
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center mt-3">
+                    {{ $transaksi->appends(['bahan_page' => request('bahan_page')])->links('vendor/pagination/custom') }}
+                </div>
 
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="mb-0">Stok Bahan Baku</h5>
+                    </div>
+                    <div class="card-body">
+                        @if ($bahanBaku->isEmpty())
+                            <p class="text-muted">Tidak ada data stok bahan baku.</p>
+                        @else
+                            <table class="table table-bordered">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>No. </th>
+                                        <th>Nama Bahan</th>
+                                        <th>Stok</th>
+                                        <th>Satuan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($bahanBaku as $key => $b)
+                                        <tr>
+                                            <td>{{ $bahanBaku->firstItem() + $key }}</td>
+                                            <td>{{ $b->nama }}</td>
+                                            <td>{{ $b->stok }}</td>
+                                            <td>{{ $b->satuan }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @endif
+                    </div>
                 </div>
-                <div class="card-body">
-                    Start creating your amazing application!
-                </div>
-                <div class="card-footer">
-                    Footer
+                <div class="d-flex justify-content-center mt-3">
+                    {{ $bahanBaku->appends(['transaksi_page' => request('transaksi_page')])->links('vendor/pagination/custom') }}
                 </div>
             </div>
         </section>
