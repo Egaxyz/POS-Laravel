@@ -60,12 +60,15 @@ Route::middleware(['role:manager'])->group(function () {
             $pdf = Pdf::loadView('manager.Laporan_Pembelian.pdf', compact('pembelian'));
             return $pdf->download('laporan-pembelian.pdf');
     });
+    Route::get('/manager/laporan-pembelian/excel', [PembelianController ::class, 'exportExcel'])->name('manager.pembelian-excel');
+
     Route::get('/manager/laporan-penjualan', [PenjualanController::class, 'laporan'])->name('manager.laporan-penjualan');
     Route::get('/manager/laporan-penjualan/pdf', function () {
         $penjualan = Penjualan::all(); 
         $pdf = Pdf::loadView('manager.Laporan_Penjualan.pdf', compact('penjualan'));
         return $pdf->download('laporan-penjualan.pdf');
     });
+    Route::get('/manager/laporan-penjualan/excel', [PenjualanController::class, 'exportExcel'])->name('manager.penjualan-excel');
     
     Route::get('/manager/user',  [UserController::class, 'index'])->name('manager.user');
     Route::post('/manager/user', [UserController::class, 'store']);

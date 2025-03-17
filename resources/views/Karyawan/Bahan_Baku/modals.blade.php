@@ -30,7 +30,7 @@
                     </div>
                     <div class="form-group row">
                         <label for="stok">Stok</label>
-                        <input type="text" class="form-control" autocomplete="off" id="stok" name="stok"
+                        <input type="number" class="form-control" autocomplete="off" id="stok" name="stok"
                             required>
                     </div>
                     <div class="form-group row">
@@ -44,7 +44,7 @@
                     </div>
                     <div class="form-group row">
                         <label for="harga_satuan">Harga Satuan</label>
-                        <input type="text" class="form-control" autocomplete="off" id="harga_satuan"
+                        <input type="number" class="form-control" autocomplete="off" id="harga_satuan"
                             name="harga_satuan" required>
                     </div>
                     <div class="modal-footer">

@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\PembelianExport;
 use App\Models\BahanBaku;
 use App\Models\DetailPembelian;
 use App\Models\Pembelian;
 use App\Models\Supplier;
 use Carbon\Carbon;
 use DB;
-use Illuminate\Http\Request;
 use Log;
+use Illuminate\Http\Request;
+use Maatwebsite\Excel\Excel;
 
 class PembelianController extends Controller
 {
@@ -143,6 +145,7 @@ class PembelianController extends Controller
         ->orderBy('tanggal_pembelian', 'desc')
         ->paginate(5);
 
+        
     $user = auth()->user();
 
     if ($user->role == 'superuser') {
@@ -153,5 +156,7 @@ class PembelianController extends Controller
         abort(403, 'Anda tidak memiliki akses.');
     }
 }
-
+    public function exportExcel(Excel $excel){
+        return $excel->download(new PembelianExport, 'Laporan_Pembelian.xlsx');
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\PenjualanExport;
 use App\Models\DetailPenjualan;
 use App\Models\Menu;
 use App\Models\Penjualan;
@@ -10,6 +11,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Log;
+use Maatwebsite\Excel\Excel;
 
 class PenjualanController extends Controller
 {
@@ -266,5 +268,7 @@ public function cetakStruk(Request $request)
         abort(403, 'Unauthorized action.');
     }
 }
-
+public function exportExcel(Excel $excel){
+        return $excel->download(new PenjualanExport, 'Laporan_Penjualan.xlsx');
+    }
 }

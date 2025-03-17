@@ -41,7 +41,7 @@
 
                             <div class="form-group">
                                 <label for="harga_satuan">Harga Satuan</label>
-                                <input type="number" class="form-control harga-satuan" name="items[0][harga_satuan]"
+                                <input type="text" class="form-control harga-satuan" name="items[0][harga_satuan]"
                                     required min="0">
                             </div>
 
@@ -55,7 +55,7 @@
 
                     <div class="form-group mt-3">
                         <label for="total_harga">Total Harga</label>
-                        <input type="number" class="form-control" id="total_harga" name="total_harga" readonly>
+                        <input type="text" class="form-control" id="total_harga" name="total_harga" readonly>
                     </div>
             </div>
 
@@ -72,6 +72,16 @@
     document.addEventListener("DOMContentLoaded", function() {
         let bahanBakuIndex = 1;
 
+        // Fungsi untuk memformat angka ke format mata uang
+        function formatCurrency(value) {
+            return "Rp. " + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+
+        // Fungsi untuk menghapus format mata uang dan mengembalikan angka murni
+        function unformatCurrency(value) {
+            return parseFloat(value.replace(/[^0-9]/g, ""));
+        }
+
         // Event listener untuk update supplier ketika bahan baku dipilih
         document.getElementById("bahanBakuContainer").addEventListener("change", function(event) {
             if (event.target.classList.contains("bahan-baku")) {
@@ -83,16 +93,8 @@
                 let supplierInput = itemContainer.querySelector(".supplier");
                 let supplierIdInput = itemContainer.querySelector(".supplier-id");
 
-                console.log("Bahan Baku Terpilih:", selectedOption.text);
-                console.log("Supplier ID:", supplierId);
-
                 supplierInput.value = supplierName;
                 supplierIdInput.value = supplierId;
-
-                // Update input hidden utama untuk supplier_id (ambil dari item pertama)
-                if (document.querySelectorAll(".bahan-baku-item").length === 1) {
-                    document.getElementById("supplier_id").value = supplierId;
-                }
             }
         });
 
@@ -128,19 +130,24 @@
             }
         });
 
-        // Event untuk menghitung total harga
-        document.addEventListener("input", function() {
+        // Event untuk memformat input harga satuan
+        document.getElementById("bahanBakuContainer").addEventListener("input", function(event) {
+            if (event.target.classList.contains("harga-satuan")) {
+                let value = event.target.value.replace(/[^0-9]/g, ""); // Hapus semua karakter non-angka
+                event.target.value = formatCurrency(value); // Format sebagai mata uang
+            }
             calculateTotalHarga();
         });
 
+        // Event untuk menghitung total harga
         function calculateTotalHarga() {
             let total = 0;
             document.querySelectorAll(".bahan-baku-item").forEach(item => {
                 let jumlah = parseFloat(item.querySelector(".jumlah").value) || 0;
-                let hargaSatuan = parseFloat(item.querySelector(".harga-satuan").value) || 0;
+                let hargaSatuan = unformatCurrency(item.querySelector(".harga-satuan").value) || 0;
                 total += jumlah * hargaSatuan;
             });
-            document.getElementById("total_harga").value = total;
+            document.getElementById("total_harga").value = formatCurrency(total);
         }
 
         // Validasi sebelum submit
@@ -157,8 +164,14 @@
                     supplierId
                 });
 
-
+                // Hapus format mata uang sebelum submit
+                let hargaSatuanInput = item.querySelector(".harga-satuan");
+                hargaSatuanInput.value = unformatCurrency(hargaSatuanInput.value);
             });
+
+            // Hapus format mata uang dari total harga sebelum submit
+            let totalHargaInput = document.getElementById("total_harga");
+            totalHargaInput.value = unformatCurrency(totalHargaInput.value);
 
             console.log("Debug Data Sebelum Submit:", debugData);
 
@@ -166,6 +179,5 @@
                 event.preventDefault();
             }
         });
-
     });
 </script>

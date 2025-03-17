@@ -51,6 +51,8 @@
                 <button id="printButton" class="btn btn-primary" onclick="window.print()">Print</button>
                 <a id="exportButton" href="{{ url('/manager/laporan-penjualan/pdf') }}" class="btn btn-danger">Export
                     PDF</a>
+                <a id="exportExcelButton" href="{{ route('manager.penjualan-excel') }}" class="btn btn-success">Export
+                    Excel</a>
             </div>
             <div class="card-body">
                 <h2 id="printTitle" style="text-align: center; display: none;">Data Penjualan</h2>

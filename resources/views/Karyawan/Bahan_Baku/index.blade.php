@@ -77,7 +77,7 @@
                                 <td>{{ $data->nama }}</td>
                                 <td>{{ $data->stok }}</td>
                                 <td>{{ $data->satuan }}</td>
-                                <td>{{ $data->harga_satuan }}</td>
+                                <td>Rp. {{ number_format($data->harga_satuan, 0, ',', '.') }}</td>
                                 <td>
                                     <button class="btn btn-success" type="button" data-toggle="modal"
                                         data-target="#formModal" data-mode="edit" data-id="{{ $data->id }}"

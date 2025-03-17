@@ -51,6 +51,8 @@
                 <button id="printButton" class="btn btn-primary" onclick="window.print()">Print</button>
                 <a id="exportButton" href="{{ url('/manager/laporan-pembelian/pdf') }}" class="btn btn-danger">Export
                     PDF</a>
+                <a id="exportExcelButton" href="{{ route('manager.pembelian-excel') }}" class="btn btn-success">Export
+                    Excel</a>
             </div>
             <div class="card-body">
                 <h2 id="printTitle" style="text-align: center; display: none;">Data Pembelian</h2>
@@ -137,26 +139,6 @@
 @endsection
 @push('script')
     <script>
-        $(document).ready(function() {
-            let table = $('#example1').DataTable({
-                "paging": true,
-                "lengthChange": false,
-                "searching": false,
-                "ordering": true,
-                "info": false,
-                "autoWidth": false,
-                "responsive": true,
-                "pageLength": 5,
-                "language": {
-                    "paginate": {
-                        "previous": "",
-                        "next": "",
-                        "number": ""
-                    }
-                }
-            });
-        });
-
         window.onbeforeprint = function() {
             document.getElementById("printButton").style.display = "none";
             document.getElementById("exportButton").style.display = "none";
