@@ -17,26 +17,29 @@ class PembelianController extends Controller
 {
     public function index()
     {
+
         $bahanBaku = BahanBaku::all();
         $detail = DetailPembelian::all();
         $supplier = Supplier::all();
         $pembelian = Pembelian::with(['details.bahanBaku', 'supplier'])
-    ->orderByRaw("CASE WHEN status_pembelian = 'Pending' THEN 0 ELSE 1 END")
-    ->orderBy('tanggal_pembelian', 'desc') 
-    ->paginate(5);
+            ->orderByRaw("CASE WHEN status_pembelian = 'Pending' THEN 0 ELSE 1 END")
+            ->orderBy('tanggal_pembelian', 'desc')
+            ->paginate(5);
 
         $user = auth()->user();
 
-        if ($user->role == 'superuser') {
-            return view('superuser/Pembelian/index', compact('pembelian', 'supplier', 'bahanBaku', 'detail'));
+        if ($user->role == 'admin') {
+            return view('admin/Pembelian/index', compact('pembelian', 'supplier', 'bahanBaku', 'detail'));
         } elseif ($user->role == 'karyawan') {
             return view('karyawan/Pembelian/index', compact('pembelian', 'supplier', 'bahanBaku', 'detail'));
         } else {
             abort(403, 'Unauthorized action.');
         }
     }
+
     public function store(Request $request)
     {
+
         $request->validate([
             'supplier_id' => 'required',
             'total_harga' => 'required',
@@ -45,9 +48,9 @@ class PembelianController extends Controller
             'items.*.jumlah' => 'required|integer|min:1',
             'items.*.harga_satuan' => 'required|numeric|min:1',
         ]);
+
         DB::beginTransaction();
         try {
-            // Simpan data pembelian
             $pembelian = new Pembelian();
             $pembelian->user_id = auth()->id();
             $pembelian->supplier_id = $request->supplier_id;
@@ -56,39 +59,42 @@ class PembelianController extends Controller
             $pembelian->total_harga = $request->total_harga;
             $pembelian->save();
 
-            // Simpan detail pembelian dan update stok bahan baku
             foreach ($request->items as $item) {
                 $pembelianDetail = new DetailPembelian();
-                $pembelianDetail->pembelian_id = $pembelian->id; 
+                $pembelianDetail->pembelian_id = $pembelian->id;
                 $pembelianDetail->bahan_baku_id = $item['bahan_baku_id'];
                 $pembelianDetail->jumlah = $item['jumlah'];
                 $pembelianDetail->harga_satuan = $item['harga_satuan'];
                 $pembelianDetail->save();
-            
             }
-            DB::commit(); // Commit transaction
-            
-                    $user = auth()->user();
-                    if ($user->role == 'superuser') {
-                        return redirect()->route('superuser.pembelian')->with('success', 'Pembelian Berhasil Ditambahkan.');
-                    } elseif ($user->role == 'karyawan') {
-                        return redirect()->route('karyawan.pembelian')->with('success', 'Pembelian Berhasil Ditambahkan.');
-                    } else {
-                        abort(403, 'Unauthorized action.');
-                    }
-            } catch (\Exception $e) {
-                DB::rollBack(); // Rollback transaction on error
-                Log::error($e->getMessage()); // Log the error for debugging
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Terjadi kesalahan saat menyimpan pembelian',
-                    'error' => $e->getMessage(),
-                ], 500);
-            }  
+
+            DB::commit();
+
+            Log::info('Pembelian berhasil disimpan', ['pembelian_id' => $pembelian->id]);
+
+            $user = auth()->user();
+            if ($user->role == 'admin') {
+                return redirect()->route('admin.pembelian')->with('success', 'Pembelian Berhasil Ditambahkan.');
+            } elseif ($user->role == 'karyawan') {
+                return redirect()->route('karyawan.pembelian')->with('success', 'Pembelian Berhasil Ditambahkan.');
+            } else {
+                abort(403, 'Unauthorized action.');
+            }
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Gagal menyimpan pembelian', ['error' => $e->getMessage()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat menyimpan pembelian',
+                'error' => $e->getMessage(),
+            ], 500);
         }
-        
+    }
+
     public function selesai($id)
     {
+        Log::info('Menyelesaikan pembelian', ['pembelian_id' => $id]);
+
         DB::beginTransaction();
         try {
             $pembelian = Pembelian::findOrFail($id);
@@ -105,58 +111,66 @@ class PembelianController extends Controller
             }
 
             DB::commit();
+
+            Log::info('Pembelian selesai', ['pembelian_id' => $id]);
             return redirect()->back()->with('success', 'Pembelian Telah Diselesaikan dan Stok Bertambah.');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error($e->getMessage());
+            Log::error('Gagal menyelesaikan pembelian', ['error' => $e->getMessage()]);
             return redirect()->back()->with('error', 'Terjadi kesalahan saat menyelesaikan pembelian.');
         }
     }
 
     public function batal($id)
-{
-    $pembelian = Pembelian::findOrFail($id);
-    $pembelian->status_pembelian = 'Gagal';
-    $pembelian->save();
+    {
+        Log::info('Membatalkan pembelian', ['pembelian_id' => $id]);
 
-    return redirect()->back()->with('success', 'Pembelian Telah Digagalkan.');
-}
+        $pembelian = Pembelian::findOrFail($id);
+        $pembelian->status_pembelian = 'Gagal';
+        $pembelian->save();
+
+        return redirect()->back()->with('success', 'Pembelian Telah Digagalkan.');
+    }
 
     public function show($id)
     {
+
         $pembelian = Pembelian::with('details.bahanBaku')->findOrFail($id);
         $user = auth()->user();
 
-        if ($user->role == 'superuser') {
-            return view('superuser/Pembelian/show', compact('pembelian'));
+        if ($user->role == 'admin') {
+            return view('admin/Pembelian/show', compact('pembelian'));
         } elseif ($user->role == 'karyawan') {
             return view('karyawan/Pembelian/show', compact('pembelian'));
         } else {
             abort(403, 'Unauthorized action.');
         }
     }
+
     public function laporan(Request $request)
-{
-    // Tahun default adalah tahun sekarang
-    $tahun = $request->input('tahun', Carbon::now()->format('Y'));
+    {
+        $tahun = $request->input('tahun', Carbon::now()->format('Y'));
 
-    // Ambil data berdasarkan tahun dari kolom tanggal_pembelian
-    $dataByYear = Pembelian::whereYear('tanggal_pembelian', $tahun)
-        ->orderBy('tanggal_pembelian', 'desc')
-        ->paginate(5);
 
-        
-    $user = auth()->user();
+        $dataByYear = Pembelian::whereYear('tanggal_pembelian', $tahun)
+            ->orderBy('tanggal_pembelian', 'desc')
+            ->paginate(5);
 
-    if ($user->role == 'superuser') {
-        return view('superuser.Laporan_Pembelian.index', ['pembelian' => $dataByYear, 'tahun' => $tahun]);
-    } elseif ($user->role == 'manager') {
-        return view('manager.Laporan_Pembelian.index', ['pembelian' => $dataByYear, 'tahun' => $tahun]);
-    } else {
-        abort(403, 'Anda tidak memiliki akses.');
+        $user = auth()->user();
+
+        if ($user->role == 'admin') {
+            return view('admin.Laporan_Pembelian.index', ['pembelian' => $dataByYear, 'tahun' => $tahun]);
+        } elseif ($user->role == 'manager') {
+            return view('manager.Laporan_Pembelian.index', ['pembelian' => $dataByYear, 'tahun' => $tahun]);
+        } else {
+            abort(403, 'Anda tidak memiliki akses.');
+        }
     }
-}
-    public function exportExcel(Excel $excel){
+
+    public function exportExcel(Excel $excel)
+    {
+        Log::info('Mengunduh laporan pembelian dalam format Excel');
+
         return $excel->download(new PembelianExport, 'Laporan_Pembelian.xlsx');
     }
 }

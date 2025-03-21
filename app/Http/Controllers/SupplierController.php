@@ -12,8 +12,8 @@ class SupplierController extends Controller
         $supplier = Supplier::orderBy('nama_perusahaan')->paginate(5);
         $user = auth()->user();
         
-        if ($user->role == 'superuser') {
-            return view('superuser/Supplier/index', compact('supplier'));
+        if ($user->role == 'admin') {
+            return view('admin/Supplier/index', compact('supplier'));
         } elseif($user->role == 'manager') {
             return view('Manager/Supplier/index', compact('supplier'));
         }else {
@@ -31,8 +31,8 @@ class SupplierController extends Controller
         ]);
         $supplier = Supplier::create($validated);
         $user = auth()->user();
-        if ($user->role == 'superuser') {
-        return redirect()->route('superuser.supplier')
+        if ($user->role == 'admin') {
+        return redirect()->route('admin.supplier')
                 ->with('success', 'Supplier Berhasil Ditambah');
         } elseif ($user->role == 'manager') {
             return redirect()->route('manager.supplier')
@@ -52,8 +52,8 @@ class SupplierController extends Controller
       $supplier->save();
 
       $user = auth()->user();
-        if ($user->role == 'superuser') {
-        return redirect()->route('superuser.supplier')
+        if ($user->role == 'admin') {
+        return redirect()->route('admin.supplier')
                 ->with('success', 'Supplier Berhasil Diperbarui');
         } elseif ($user->role == 'manager') {
             return redirect()->route('manager.supplier')
@@ -68,8 +68,8 @@ class SupplierController extends Controller
 
       $supplier -> delete();
 $user = auth()->user();
-        if ($user->role == 'superuser') {
-        return redirect()->route('superuser.supplier')
+        if ($user->role == 'admin') {
+        return redirect()->route('admin.supplier')
                 ->with('success', 'Supplier Berhasil Dihapus');
         } elseif ($user->role == 'manager') {
             return redirect()->route('manager.supplier')

@@ -23,8 +23,8 @@ class PenjualanController extends Controller
 
     $user = auth()->user();
 
-    if ($user->role == 'superuser') {
-        return view('superuser/Penjualan/index', compact('penjualan', 'menu'));
+    if ($user->role == 'admin') {
+        return view('admin/Penjualan/index', compact('penjualan', 'menu'));
     } elseif ($user->role == 'karyawan') {
         return view('karyawan/Penjualan/index', compact('penjualan', 'menu'));
     } else {
@@ -68,6 +68,7 @@ class PenjualanController extends Controller
     $penjualan->total_harga = $request->total_harga;
     $penjualan->save();
 
+    \Log::info("Membuat transaksi baru dengan No Faktur: {$noFaktur}");
     foreach ($menus as $item) {
         // Cari menu berdasarkan nama makanan
         $menu = Menu::where('nama_makanan', $item['nama_makanan'])->first();
@@ -86,8 +87,8 @@ class PenjualanController extends Controller
     }
 
     $user = auth()->user();
-    if ($user->role == 'superuser') {
-        return redirect()->route('superuser.penjualann')->with('success', 'Pembelian Berhasil Ditambahkan.');
+    if ($user->role == 'admin') {
+        return redirect()->route('admin.penjualann')->with('success', 'Pembelian Berhasil Ditambahkan.');
     } elseif ($user->role == 'karyawan') {
         return redirect()->route('karyawan.penjualan')->with('success', 'Pembelian Berhasil Ditambahkan.');
     } else {
@@ -137,8 +138,7 @@ public function selesai($id)
             $menu->decrement('stok', $detail->jumlah);
 
             // Log the menu and its ingredients
-            \Log::info("Processing menu: {$menu->nama_makanan}");
-            \Log::info("Ingredients for menu:", $menu->bahanBaku->toArray());
+
 
             // Kurangi stok bahan baku sesuai menu
             foreach ($menu->bahanBaku as $bahan) {
@@ -149,7 +149,6 @@ public function selesai($id)
                 }
 
                 // Log the ingredient and its stock reduction
-                \Log::info("Reducing stock for ingredient: {$bahan->nama_bahan} by {$stok_terpakai}");
 
                 // Kurangi stok bahan baku
                 $bahan->decrement('stok', $stok_terpakai);
@@ -159,6 +158,7 @@ public function selesai($id)
         // Update status penjualan menjadi selesai
         $penjualan->status_penjualan = 'Selesai';
         $penjualan->save();
+        \Log::info("Menandai transaksi {$penjualan->no_faktur} sebagai selesai");
 
         DB::commit();
         return redirect()->back()->with('success', 'Penjualan Telah Diselesaikan.');
@@ -175,6 +175,8 @@ public function selesai($id)
 {
     $penjualan = Penjualan::findOrFail($id);
     $penjualan->status_penjualan = 'Gagal';
+    \Log::info("Transaksi {$penjualan->no_faktur} dibatalkan oleh user ID: " . auth()->id());
+
     $penjualan->save();
 
     return redirect()->back()->with('success', 'Pembelian Telah Digagalkan.');
@@ -192,8 +194,8 @@ public function laporan(Request $request)
 
     $user = auth()->user();
 
-    if ($user->role == 'superuser') {
-        return view('superuser.Laporan_Penjualan.index', ['penjualan' => $dataByYear, 'tahun' => $tahun]);
+    if ($user->role == 'admin') {
+        return view('admin.Laporan_Penjualan.index', ['penjualan' => $dataByYear, 'tahun' => $tahun]);
     } elseif ($user->role == 'manager') {
         return view('manager.Laporan_Penjualan.index', ['penjualan' => $dataByYear, 'tahun' => $tahun]);
     } else {
@@ -250,6 +252,7 @@ public function cetakStruk(Request $request)
             ];
         }, $selectedMenus),
     ];
+\Log::info("Mencetak struk untuk No Faktur: {$newInvoiceNumber}");
 
     // Format tanggal
     $penjualan->tanggal_formatted = Carbon::parse($penjualan->tanggal)
@@ -260,8 +263,8 @@ public function cetakStruk(Request $request)
 
     // Tampilkan view struk
     $user = auth()->user();
-    if ($user->role == 'superuser') {
-        return view('superuser.Penjualan.struk', compact('penjualan', 'lokasi', 'totalHarga', 'uangDiberikan', 'kembalian'));
+    if ($user->role == 'admin') {
+        return view('admin.Penjualan.struk', compact('penjualan', 'lokasi', 'totalHarga', 'uangDiberikan', 'kembalian'));
     } elseif ($user->role == 'karyawan') {
         return view('karyawan.Penjualan.struk', compact('penjualan', 'lokasi', 'totalHarga', 'uangDiberikan', 'kembalian'));
     } else {

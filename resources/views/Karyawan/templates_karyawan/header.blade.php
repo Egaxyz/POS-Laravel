@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="utf-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>AdminLTE 3 | Blank Page</title>
 
@@ -47,17 +48,41 @@
                                 <p>Home</p>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="menu" class="nav-link">
-                                <i class="nav-icon fas fa-book"></i>
-                                <p>Menu</p>
-                            </a>
-                        </li>
+
                         <li class="nav-item">
                             <a href="bahan-baku" class="nav-link">
                                 <i class="nav-icon fas fa-box"></i>
                                 <p>Bahan Baku</p>
                             </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="member" class="nav-link">
+                                <i class="nav-icon fas fa-id-badge"></i>
+                                <p>Member</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-book"></i>
+                                <p>
+                                    Menu
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="menu" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Daftar Menu</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="pengajuan" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Pengajuan</p>
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                         <li class="nav-item">
                             <a href="#" class="nav-link">
@@ -81,8 +106,7 @@
                                     </a>
                                 </li>
                             </ul>
-                        </li>
-                        </li>
+
                     </ul>
                 </nav>
             </div>

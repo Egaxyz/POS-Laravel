@@ -12,8 +12,8 @@ class UserController extends Controller
 
     $akun = auth()->user();
         
-        if ($akun->role == 'superuser') {
-            return view('superuser/User/index', compact('user' ));
+        if ($akun->role == 'admin') {
+            return view('admin/User/index', compact('user' ));
         } elseif($akun->role == 'manager') {
             return view('Manager/User/index', compact('user'));
         }else {
@@ -32,8 +32,8 @@ class UserController extends Controller
         $data = User::create($validated);
         
         $user = auth()->user();
-        if ($user->role == 'superuser') {
-        return redirect()->route('superuser.user')
+        if ($user->role == 'admin') {
+        return redirect()->route('admin.user')
                 ->with('success', 'User Berhasil Ditambah');
         } elseif ($user->role == 'manager') {
             return redirect()->route('manager.user')
@@ -43,7 +43,7 @@ class UserController extends Controller
         }
     }
     public function update(Request $request, $id){
-        $data = User::find($id);
+      $data = User::find($id);
 
       $data -> nama = $request->nama;
       $data -> password = bcrypt($request->password);
@@ -53,8 +53,8 @@ class UserController extends Controller
       $data->save();
 
         $user = auth()->user();
-        if ($user->role == 'superuser') {
-            return redirect()->route('superuser.user')
+        if ($user->role == 'admin') {
+            return redirect()->route('admin.user')
             ->with('success', 'User Berhasil Diperbarui');
         } elseif ($user->role == 'manager') {
             return redirect()->route('manager.user')
@@ -70,8 +70,8 @@ class UserController extends Controller
 
       $data -> delete();
 
-       if ($user->role == 'superuser') {
-        return redirect()->route('superuser.user')
+       if ($user->role == 'admin') {
+        return redirect()->route('admin.user')
                 ->with('success', 'User Berhasil Dihapus');
         } elseif ($user->role == 'manager') {
             return redirect()->route('manager.user')

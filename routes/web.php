@@ -1,14 +1,18 @@
 <?php
 
+use App\Http\Controllers\AjukanMenuController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BahanBakuController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\LogController;
+use App\Http\Controllers\MemberController;
 use App\Http\Controllers\MenuBahanBakuController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\PenjualanController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
+use App\Models\AjukanMenu;
 use App\Models\BahanBaku;
 use App\Models\Pembelian;
 use App\Models\Penjualan;
@@ -22,8 +26,8 @@ Route::get('/', function () {
         $user = Auth::user();
 
         // Redirect berdasarkan role
-        if ($user->role === 'superuser') {
-            return redirect()->route('superuser.dashboard');
+        if ($user->role === 'admin') {
+            return redirect()->route('admin.dashboard');
         } elseif ($user->role === 'manager') {
             return redirect()->route('manager.dashboard');
         } elseif ($user->role === 'karyawan') {
@@ -83,6 +87,22 @@ Route::middleware(['role:manager'])->group(function () {
 
 Route::middleware(['role:karyawan'])->group(function () {
     Route::get('/karyawan/dashboard', [homeController::class, 'karyawanDashboard'])->name('karyawan.dashboard');
+Route::get('/get-logs', function () {
+    $logFile = storage_path('logs/laravel.log');
+    
+    if (!File::exists($logFile)) {
+        return response()->json(['logs' => []]);
+    }
+
+    $logs = File::get($logFile);
+    $logsArray = explode("\n", trim($logs)); // Pisahkan berdasarkan baris
+
+    // Ambil 10 log terbaru
+    $latestLogs = array_slice($logsArray, -10);
+
+    return response()->json(['logs' => $latestLogs]);
+});
+    Route::post('/log-update', [LogController::class, 'update'])->name('log-update');
 
     Route::get('/karyawan/menu', [MenuController::class, 'index'])->name('karyawan.menu');
     Route::post('/karyawan/menu', [MenuController::class, 'store']);
@@ -105,12 +125,37 @@ Route::middleware(['role:karyawan'])->group(function () {
     Route::patch('/karyawan/penjualan/batalkan/{id}', [PenjualanController::class, 'batal']);
     Route::get('/karyawan/penjualan/struk', [PenjualanController::class, 'cetakStruk'])->name('penjualan.struk');
 
-    
     Route::post('/karyawan/menu-bahan-baku', [MenuBahanBakuController::class, 'store'])->name('menu.bahan-baku.store');
+    
+    Route::get('/karyawan/pengajuan', [AjukanMenuController::class, 'index'])->name('karyawan.ajukan');
+    Route::post('/karyawan/pengajuan', [AjukanMenuController::class, 'store'])->name('karyawan.ajukan.store');
+    Route::patch('/karyawan/pengajuan/selesai/{id}', [AjukanMenuController::class, 'selesai'])->name('karyawan.ajukan.selesai');
+    Route::patch('/karyawan/pengajuan/batalkan/{id}', [AjukanMenuController::class, 'batal'])->name('karyawan.ajukan.batalkan');
+
+    Route::get('/karyawan/member', [MemberController::class, 'index'])->name('karyawan.member');
+    Route::post('/karyawan/member', [MemberController::class, 'store'])->name('karyawan.member.store');
+    Route::patch('/karyawan/member/{id}', [MemberController::class, 'update'])->name('karyawan.member.update');
+    Route::delete('/karyawan/member/{id}', [MemberController::class, 'destroy'])->name('karyawan.member.delete');
+
+    Route::get('karyawan/pengajuan/pdf', function () {
+        $pengajuan = AjukanMenu::all(); 
+        $pdf = Pdf::loadView('karyawan.pengajuan.pdf', compact('pengajuan'));
+        return $pdf->download('pengajuan.pdf');
+    });
+    Route::get('/karyawan/pengajuan/excel', [AjukanMenuController::class, 'exportExcel'])->name('karyawan.pengajuan-excel');
+    
 
     Route::get('/karyawan/bahan-baku', [BahanBakuController::class, 'index'])->name('karyawan.bahan-baku');
     Route::post('/karyawan/bahan-baku', [BahanBakuController::class, 'store']);
     Route::patch('/karyawan/bahan-baku/{id}', [BahanBakuController::class, 'update']);
     Route::delete('/karyawan/bahan-baku/{id}', [BahanBakuController::class, 'destroy'])
         ->withoutMiddleware([VerifyCsrfToken::class]);
+});
+Route::middleware(['role:member'])->group(function () {
+    Route::get('/member/dashboard', [homeController::class, 'memberDashboard'])->name('member.dashboard');
+    
+    Route::get('/member/pengajuan', [AjukanMenuController::class, 'index'])->name('member.ajukan');
+    Route::post('/member/pengajuan', [AjukanMenuController::class, 'store'])->name('member.ajukan.store');
+    Route::patch('/member/pengajuan/{id}', [AjukanMenuController::class, 'edit'])->name('member.ajukan.edit');
+    Route::delete('/member/pengajuan/{id}', [AjukanMenuController::class, 'destroy'])->name('member.ajukan.delete');
 });

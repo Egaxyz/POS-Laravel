@@ -16,8 +16,6 @@ return new class extends Migration
             $table->unsignedBigInteger('menu_id');
             $table->unsignedBigInteger('bahan_baku_id');
             $table->string('jumlah', 20);
-            $table->enum('satuan', ['kg', 'liter', 'gram', 'pcs']);
-
             
             $table->foreign('menu_id')->references('id')->on('menu');
             $table->foreign('bahan_baku_id')->references('id')->on('bahan_baku');

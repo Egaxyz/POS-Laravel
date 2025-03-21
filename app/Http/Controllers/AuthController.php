@@ -47,7 +47,8 @@ class AuthController extends Controller
         return match ($user->role) {
             'manager' => redirect()->route('manager.dashboard'),
             'karyawan' => redirect()->route('karyawan.dashboard'),
-            'superuser' => redirect()->route('superuser.dashboard'),
+            'admin' => redirect()->route('admin.dashboard'),
+            'member' => redirect()->route('member.dashboard'),
             default => redirect()->route('login')->with('error', 'Role tidak dikenali'),
         };
     }

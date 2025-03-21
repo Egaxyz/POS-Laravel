@@ -92,6 +92,11 @@
                         @endif
                     </div>
                 </div>
+                <div class="p-4 bg-white shadow-lg rounded-lg">
+                    <h2 class="text-lg font-semibold mb-2">Log Aktivitas</h2>
+                    <div id="log-container" class="h-60 overflow-auto border p-2 bg-gray-100 rounded-lg"></div>
+                </div>
+
                 <div class="d-flex justify-content-center mt-3">
                     {{ $bahanBaku->appends(['transaksi_page' => request('transaksi_page')])->links('vendor/pagination/custom') }}
                 </div>
@@ -99,3 +104,30 @@
         </section>
     </div>
 @endsection
+@push('script')
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            function fetchLogs() {
+                fetch('/get-logs')
+                    .then(response => response.json())
+                    .then(data => {
+                        let logContainer = document.getElementById("log-container");
+                        logContainer.innerHTML = ""; // Bersihkan log lama
+
+                        data.logs.forEach(log => {
+                            let logElement = document.createElement("p");
+                            logElement.textContent = log;
+                            logElement.classList.add("text-sm", "text-gray-700");
+                            logContainer.appendChild(logElement);
+                        });
+
+                        logContainer.scrollTop = logContainer.scrollHeight; // Auto-scroll ke bawah
+                    })
+                    .catch(error => console.error('Error fetching logs:', error));
+            }
+
+            fetchLogs(); // Panggil saat halaman pertama kali dimuat
+            setInterval(fetchLogs, 10000); // Perbarui setiap 10 detik
+        });
+    </script>
+@endpush

@@ -41,8 +41,10 @@
                 </div>
             </div>
         </section>
+
     </div>
 @endsection
+
 @push('script')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
@@ -55,16 +57,17 @@
             var totalPendapatanSales = salesData.map(data => data.total);
 
             var salesChart = new Chart(ctxSales, {
-                type: 'bar',
+                type: 'line',
                 data: {
                     labels: labelsSales,
                     datasets: [{
                         label: 'Pendapatan per Bulan',
                         data: totalPendapatanSales,
-                        backgroundColor: 'rgba(54, 162, 235, 0.8)',
                         borderColor: 'rgba(54, 162, 235, 1)',
-                        borderWidth: 1,
-                        borderRadius: 5,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.3
                     }]
                 },
                 options: {
@@ -81,16 +84,17 @@
             var totalPendapatanPurchasing = purchasingData.map(data => data.total);
 
             var purchasingChart = new Chart(ctxPurchasing, {
-                type: 'bar',
+                type: 'line',
                 data: {
                     labels: labelsPurchasing,
                     datasets: [{
                         label: 'Pengeluaran per Bulan',
                         data: totalPendapatanPurchasing,
-                        backgroundColor: 'rgba(255, 99, 132, 0.8)',
                         borderColor: 'rgba(255, 99, 132, 1)',
-                        borderWidth: 1,
-                        borderRadius: 5,
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.3
                     }]
                 },
                 options: {

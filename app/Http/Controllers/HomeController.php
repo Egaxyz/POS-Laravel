@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AjukanMenu;
 use App\Models\BahanBaku;
 use App\Models\Pembelian;
 use App\Models\Penjualan;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -15,9 +17,16 @@ class HomeController extends Controller
     } 
 
 
-    public function superuserDashboard() {
-    return view('SuperUser.dashboard');
+    public function adminDashboard() {
+    return view('Admin.dashboard');
 }
+    public function memberDashboard() {
+    $user = auth()->user(); // Ambil user yang sedang login sebagai objek User
+    $data = AjukanMenu::where('user_id', $user->id)->with('user')->orderBy('nama_makanan', 'asc')->paginate(5);
+
+    return view('Member.dashboard', compact('data', 'user'));
+}
+
 
 public function managerDashboard() {
   // Ambil data penjualan dan kelompokkan berdasarkan bulan
