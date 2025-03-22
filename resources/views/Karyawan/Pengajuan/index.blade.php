@@ -117,6 +117,8 @@
 @endsection
 
 @push('script')
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script src="{{ asset('assets') }}/plugins/jquery/jquery.min.js"></script>
     <script src="{{ asset('assets') }}/plugins/datatables/jquery.dataTables.min.js"></script>
     <script src="{{ asset('assets') }}/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
@@ -160,24 +162,13 @@
             event.preventDefault();
             Swal.fire({
                 title: "Apakah Anda yakin?",
-                text: "Anda harus mengunggah bukti gambar sebelum menyelesaikan pengajuan.",
+                text: "Menu akan bertambah sesuai dengan Pengajuan Member.",
                 icon: "warning",
-                html: `<input type="file" id="swal-input-gambar" class="swal2-input form-control" accept="image/*" required>
-                        <p class="text-danger d-none" id="swal-error">Anda harus mengunggah gambar sebelum menyelesaikan pengajuan.</p>`,
                 showCancelButton: true,
                 confirmButtonColor: "#28a745",
                 cancelButtonColor: "#d33",
                 confirmButtonText: "Ya, Selesaikan!",
-                cancelButtonText: "Batal",
-                preConfirm: () => {
-                    let fileInput = document.getElementById("swal-input-gambar");
-                    if (!fileInput.files.length) {
-                        document.getElementById("swal-error").classList.remove("d-none");
-                        return false;
-                    }
-                    document.getElementById("gambar-" + id).files = fileInput.files;
-                    return true;
-                }
+                cancelButtonText: "Batal"
             }).then((result) => {
                 if (result.isConfirmed) {
                     document.getElementById("form-selesai-" + id).submit();

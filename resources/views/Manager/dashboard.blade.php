@@ -41,6 +41,78 @@
                 </div>
             </div>
         </section>
+        <section class="content">
+            <div class="card">
+                <h4 class="mt-4">Hasil Testing Login</h4>
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Password</th>
+                            <th>Status</th>
+                            <th>Pesan Error</th>
+                            <th>Waktu</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($loginTest as $test)
+                            <tr>
+                                <td>{{ $test->nama }}</td>
+                                <td>{{ $test->password }}</td>
+                                <td>
+                                    @if ($test->status)
+                                        <span class="badge badge-success">Berhasil</span>
+                                    @else
+                                        <span class="badge badge-danger">Gagal</span>
+                                    @endif
+                                </td>
+                                <td>{{ $test->error_message ?? '-' }}</td>
+                                <td>{{ $test->created_at->format('d-m-Y H:i:s') }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </section>
+        <div class="d-flex justify-content-center mt-3">
+            {{ $loginTest->appends(['transaksi_page' => request('transaksi_page')])->links('vendor/pagination/custom') }}
+        </div>
+        <section>
+            <div class="card">
+                <h4>Data Instrumen Testing</h4>
+                @if (!empty($instrumenTesting) && is_iterable($instrumenTesting))
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Nama Perusahaan</th>
+                                <th>Kontak</th>
+                                <th>Alamat</th>
+                                <th>Email</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($instrumenTesting as $key => $test)
+                                <tr>
+                                    <td>{{ $key + 1 }}</td>
+                                    <td>{{ $test['nama_perusahaan'] ?? '-' }}</td>
+                                    <td>{{ $test['kontak'] ?? '-' }}</td>
+                                    <td>{{ $test['alamat'] ?? '-' }}</td>
+                                    <td>{{ $test['email'] ?? '-' }}</td>
+                                    <td>{{ $test['status'] ?? '-' }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @else
+                    <p>Tidak ada instrumen testing yang tersedia.</p>
+                @endif
+                <div class="d-flex justify-content-center mt-3">
+                    {{ $instrumenTesting->appends(['supplier_page' => request('supplier_page')])->links('vendor/pagination/custom') }}
+                </div>
+            </div>
+        </section>
 
     </div>
 @endsection

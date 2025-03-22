@@ -91,7 +91,7 @@ class AjukanMenuController extends Controller
         DB::beginTransaction();
         try {
             $request->validate([
-                'gambar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+                'gambar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
             ]);
 
             $ajukanMenu = AjukanMenu::findOrFail($id);
@@ -141,7 +141,6 @@ class AjukanMenuController extends Controller
     }
 
     public function exportExcel(Excel $excel){
-        Log::info("User ID: " . auth()->id() . " mengunduh laporan pengajuan dalam format Excel.");
 
         return $excel->download(new PengajuanExport, 'Laporan_Pengajuan.xlsx');
     }

@@ -133,11 +133,11 @@
         // Event untuk memformat input harga satuan
         document.getElementById("bahanBakuContainer").addEventListener("input", function(event) {
             if (event.target.classList.contains("harga-satuan")) {
-                let value = event.target.value.replace(/[^0-9]/g, ""); // Hapus semua karakter non-angka
-                event.target.value = formatCurrency(value); // Format sebagai mata uang
+                event.target.value = event.target.value.replace(/[^0-9]/g, ""); // Hanya angka
             }
             calculateTotalHarga();
         });
+
 
         // Event untuk menghitung total harga
         function calculateTotalHarga() {
@@ -147,7 +147,7 @@
                 let hargaSatuan = unformatCurrency(item.querySelector(".harga-satuan").value) || 0;
                 total += jumlah * hargaSatuan;
             });
-            document.getElementById("total_harga").value = formatCurrency(total);
+            document.getElementById("total_harga").value = (total);
         }
 
         // Validasi sebelum submit
@@ -166,12 +166,17 @@
 
                 // Hapus format mata uang sebelum submit
                 let hargaSatuanInput = item.querySelector(".harga-satuan");
-                hargaSatuanInput.value = unformatCurrency(hargaSatuanInput.value);
+                hargaSatuanInput.value = hargaSatuanInput.value.replace(/[^0-9]/g,
+                    ""); // Hapus semua karakter selain angka
+
+
             });
 
             // Hapus format mata uang dari total harga sebelum submit
             let totalHargaInput = document.getElementById("total_harga");
-            totalHargaInput.value = unformatCurrency(totalHargaInput.value);
+            totalHargaInput.value = totalHargaInput.value.replace(/[^0-9]/g,
+                ""); // Hapus semua karakter selain angka
+
 
             console.log("Debug Data Sebelum Submit:", debugData);
 

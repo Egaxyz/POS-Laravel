@@ -24,7 +24,7 @@ class MenuRequest extends FormRequest
         return [
             'nama_makanan'=> 'required',
             'harga'=> 'nullable',
-            'stok'=> 'required',
+            'stok'=> 'nullable',
             'kategori'=> 'required',
         ];
         if ($this->isMethod('post')) {

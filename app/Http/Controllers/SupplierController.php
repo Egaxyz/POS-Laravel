@@ -29,7 +29,20 @@ class SupplierController extends Controller
             'status'=>'required',
 
         ]);
+        
         $supplier = Supplier::create($validated);
+         $instrumenTesting = $request->session()->get('instrumen_testing', []);
+
+        $instrumenTesting[] = [
+            'id' => $supplier->id,
+            'nama_perusahaan' => $supplier->nama_perusahaan,
+            'kontak' => $supplier->kontak,
+            'alamat' => $supplier->alamat,
+            'email' => $supplier->email,
+            'status' => $supplier->status,
+        ];
+
+        $request->session()->put('instrumen_testing', $instrumenTesting);
         $user = auth()->user();
         if ($user->role == 'admin') {
         return redirect()->route('admin.supplier')
@@ -51,6 +64,19 @@ class SupplierController extends Controller
       $supplier -> status = $request->status;
       $supplier->save();
 
+      $instrumenTesting = $request->session()->get('instrumen_testing', []);
+
+        $instrumenTesting[] = [
+            'id' => $supplier->id,
+            'nama_perusahaan' => $supplier->nama_perusahaan,
+            'kontak' => $supplier->kontak,
+            'alamat' => $supplier->alamat,
+            'email' => $supplier->email,
+            'status' => $supplier->status,
+        ];
+
+        $request->session()->put('instrumen_testing', $instrumenTesting);
+        
       $user = auth()->user();
         if ($user->role == 'admin') {
         return redirect()->route('admin.supplier')
@@ -67,7 +93,7 @@ class SupplierController extends Controller
         $supplier = Supplier::find($id);
 
       $supplier -> delete();
-$user = auth()->user();
+    $user = auth()->user();
         if ($user->role == 'admin') {
         return redirect()->route('admin.supplier')
                 ->with('success', 'Supplier Berhasil Dihapus');

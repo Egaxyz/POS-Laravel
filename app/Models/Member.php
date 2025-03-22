@@ -6,12 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Member extends Model
 {
-    public $fillable = [
+    protected $fillable = [
         'user_id',
         'nama_member',
         'kontak',
         'email',
-        'tanggal_lahir',
         'alamat',
         'tanggal_bergabung',
         'status'

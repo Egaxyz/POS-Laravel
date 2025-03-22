@@ -96,9 +96,52 @@
                     <h2 class="text-lg font-semibold mb-2">Log Aktivitas</h2>
                     <div id="log-container" class="h-60 overflow-auto border p-2 bg-gray-100 rounded-lg"></div>
                 </div>
-
                 <div class="d-flex justify-content-center mt-3">
                     {{ $bahanBaku->appends(['transaksi_page' => request('transaksi_page')])->links('vendor/pagination/custom') }}
+                </div>
+            </div>
+        </section>
+        <section class="content">
+            <div class="card">
+                <h4>Data Instrumen Testing</h4>
+                @if (!empty($instrumenTesting) && is_iterable($instrumenTesting))
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>User</th>
+                                <th>Supplier</th>
+                                <th>Tanggal Pembelian</th>
+                                <th>Total Harga</th>
+                                <th>Status Pembelian</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($instrumenTesting as $key => $test)
+                                <tr>
+                                    <td>{{ $key + 1 }}</td>
+                                    <td>{{ $test['user_id'] ?? '-' }}</td>
+                                    <td>{{ $test['supplier_id'] ?? '-' }}</td>
+                                    <td>{{ $test['tanggal_pembelian'] ?? '-' }}</td>
+                                    <td>Rp. {{ number_format($test['total_harga'], 0, ',', '.') ?? '-' }}</td>
+                                    <td>
+                                        @if ($test['status_pembelian'] == 'pending')
+                                            <span class="badge badge-warning">Pending</span>
+                                        @elseif($test['status_pembelian'] == 'selesai')
+                                            <span class="badge badge-success">Selesai</span>
+                                        @else
+                                            <span class="badge badge-danger">Gagal</span>
+                                        @endif
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                @else
+                    <p>Tidak ada instrumen testing yang tersedia.</p>
+                @endif
+                <div class="d-flex justify-content-center mt-3">
+                    {{ $instrumenTesting->appends(['pembelian_page' => request('pembelian_page')])->links('vendor/pagination/custom') }}
                 </div>
             </div>
         </section>
@@ -114,6 +157,12 @@
                         let logContainer = document.getElementById("log-container");
                         logContainer.innerHTML = ""; // Bersihkan log lama
 
+                        // Tambahkan teks "Log diperbarui setiap 30 menit" di atas log
+                        let updateInfo = document.createElement("p");
+                        updateInfo.textContent = "Log diperbarui setiap 30 menit";
+                        updateInfo.classList.add("text-sm", "text-gray-500", "italic", "mb-2");
+                        logContainer.appendChild(updateInfo);
+
                         data.logs.forEach(log => {
                             let logElement = document.createElement("p");
                             logElement.textContent = log;
@@ -127,7 +176,7 @@
             }
 
             fetchLogs(); // Panggil saat halaman pertama kali dimuat
-            setInterval(fetchLogs, 10000); // Perbarui setiap 10 detik
+            setInterval(fetchLogs, 1800000); // Perbarui setiap 30 menit
         });
     </script>
 @endpush

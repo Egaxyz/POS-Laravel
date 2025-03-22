@@ -4,11 +4,15 @@ namespace App\Http\Controllers;
 
 use App\Models\AjukanMenu;
 use App\Models\BahanBaku;
+use App\Models\LoginTest;
 use App\Models\Pembelian;
 use App\Models\Penjualan;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Session;
 
 class HomeController extends Controller
 {
@@ -54,7 +58,23 @@ public function managerDashboard() {
             'total' => $item->total
         ];
     });
-    return view('manager.dashboard', compact('penjualan', 'pembelian'));
+
+    function paginateCollection($items, $perPage = 5, $pageName = 'supplier_page')
+{
+    $page = Paginator::resolveCurrentPage($pageName) ?: 1;
+    $items = $items instanceof Collection ? $items : collect($items);
+    $total = $items->count();
+    $currentPageItems = $items->slice(($page - 1) * $perPage, $perPage)->values();
+    
+    return new LengthAwarePaginator($currentPageItems, $total, $perPage, $page, [
+        'path' => Paginator::resolveCurrentPath(),
+        'pageName' => $pageName,
+    ]);
+}
+    $loginTest = LoginTest::latest()->paginate(5, ['*'], 'login_page');
+    $instrumenTesting = Session::get('instrumen_testing', []);
+$instrumenTesting = paginateCollection($instrumenTesting, 5, 'supplier_page');
+    return view('manager.dashboard', compact('penjualan', 'pembelian', 'loginTest', 'instrumenTesting'));
 
 }
 
@@ -66,8 +86,23 @@ public function karyawanDashboard() {
     // Ambil stok bahan baku yang tersedia
     $bahanBaku = BahanBaku::orderBy('stok', 'asc')
         ->paginate(5, ['*'], 'bahan_page'); 
+    function paginateCollection($items, $perPage = 5, $pageName = 'supplier_page')
+{
+    $page = Paginator::resolveCurrentPage($pageName) ?: 1;
+    $items = $items instanceof Collection ? $items : collect($items);
+    $total = $items->count();
+    $currentPageItems = $items->slice(($page - 1) * $perPage, $perPage)->values();
+    
+    return new LengthAwarePaginator($currentPageItems, $total, $perPage, $page, [
+        'path' => Paginator::resolveCurrentPath(),
+        'pageName' => $pageName,
+    ]);
+}
+    $loginTest = LoginTest::latest()->paginate(5, ['*'], 'login_page');
+    $instrumenTesting = Session::get('instrumen_testing', []);
+    $instrumenTesting = paginateCollection($instrumenTesting, 5, 'pembelian_page');
 
-    return view('Karyawan.dashboard', compact('transaksi', 'bahanBaku'));
+    return view('Karyawan.dashboard', compact('transaksi', 'bahanBaku', 'instrumenTesting'));
 }
 
 }

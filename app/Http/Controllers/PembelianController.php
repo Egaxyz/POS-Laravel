@@ -42,7 +42,7 @@ class PembelianController extends Controller
 
         $request->validate([
             'supplier_id' => 'required',
-            'total_harga' => 'required',
+            'total_harga' => 'required|numeric',
             'items' => 'required|array',
             'items.*.bahan_baku_id' => 'required|integer',
             'items.*.jumlah' => 'required|integer|min:1',
@@ -68,6 +68,19 @@ class PembelianController extends Controller
                 $pembelianDetail->save();
             }
 
+        $instrumenTesting = $request->session()->get('instrumen_testing', []);
+
+        $instrumenTesting[] = [
+            'id' => $pembelian->id,
+            'user_id' => $pembelian->user_id,
+            'supplier_id' => $pembelian->supplier_id,
+            'total_harga' => $pembelian->total_harga,
+            'status_pembelian' => $pembelian->status_pembelian,
+            'tanggal_pembelian' => $pembelian->tanggal_pembelian,
+        ];
+
+        $request->session()->put('instrumen_testing', $instrumenTesting);
+        
             DB::commit();
 
             Log::info('Pembelian berhasil disimpan', ['pembelian_id' => $pembelian->id]);

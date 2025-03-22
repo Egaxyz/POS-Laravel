@@ -34,8 +34,7 @@ class MemberController extends Controller
                 'status' => 'required|in:aktif,nonaktif',
             ]);
 
-            $user = User::firstOrCreate(
-                ['nama' => $request->nama],
+            $user = User::create(
                 [
                     'nama' => $request->nama_member,
                     'password' => bcrypt($request->password),

@@ -20,7 +20,8 @@ class User extends Authenticatable
         'nama',
         'password',
         'no_hp',
-        'status'
+        'status',
+        'role'
     ];
     public function setUserPassAttribute($value)
     {
