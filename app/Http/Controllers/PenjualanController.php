@@ -12,6 +12,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Log;
 use Maatwebsite\Excel\Excel;
+use Mike42\Escpos\Printer;
+use WindowsPrintConnectorTest;
 
 class PenjualanController extends Controller
 {
@@ -68,6 +70,7 @@ class PenjualanController extends Controller
     $penjualan->total_harga = $request->total_harga;
     $penjualan->save();
 
+
     \Log::info("Membuat transaksi baru dengan No Faktur: {$noFaktur}");
     foreach ($menus as $item) {
         // Cari menu berdasarkan nama makanan
@@ -88,9 +91,9 @@ class PenjualanController extends Controller
 
     $user = auth()->user();
     if ($user->role == 'admin') {
-        return redirect()->route('admin.penjualann')->with('success', 'Pembelian Berhasil Ditambahkan.');
+        return redirect()->route('penjualan.struk', ['no_faktur' => $penjualan->no_faktur]);
     } elseif ($user->role == 'karyawan') {
-        return redirect()->route('karyawan.penjualan')->with('success', 'Pembelian Berhasil Ditambahkan.');
+        return redirect()->route('penjualan.struk', ['no_faktur' => $penjualan->no_faktur]);
     } else {
         abort(403, 'Unauthorized action.');
     }
@@ -202,75 +205,66 @@ public function laporan(Request $request)
         abort(403, 'Anda tidak memiliki akses.');
     }
 }
-public function cetakStruk(Request $request)
+public function cetakStruk(Request $request, $no_faktur)
 {
-    // Ambil query parameters
-    $totalHarga = $request->query('total_harga');
-    $uangDiberikan = $request->query('uang_diberikan');
-    $kembalian = $request->query('kembalian');
-    $metodePembayaran = $request->query('metode_pembayaran'); // Get the payment method
-    $selectedMenus = json_decode(urldecode($request->query('menus')), true);
+    $penjualan = Penjualan::where('no_faktur', $no_faktur)
+        ->with(['detailPenjualan.menu'])
+        ->firstOrFail();
 
-    // Get the current year
-    $currentYear = date('Y');
+    // Lokasi dari .env
+    $lokasi = env('RESTAURANT_LOCATION', 'Lokasi belum diatur');
 
-    // Get the last invoice number for the current year from the penjualan table
-    $lastInvoice = DB::table('penjualan')
-        ->where('no_faktur', 'like', 'psn' . $currentYear . '%')
-        ->orderBy('no_faktur', 'desc')
-        ->first();
+    // Data tunai dan kembalian
+    $uangDiberikan = $request->input('uang_diberikan', 0);
+    $diskon = $penjualan->diskon ?? 0;
+    $pajak = ($penjualan->total_harga - $diskon) * 0.1;
+    $total = $penjualan->total_harga - $diskon + $pajak;
+    $kembalian = $uangDiberikan - $total;
 
-    // Determine the new sequential number
-    if ($lastInvoice) {
-        // Extract the last number from the no_faktur
-        $lastNoFaktur = $lastInvoice->no_faktur;
-        $lastSequentialNumber = (int)substr($lastNoFaktur, -3); // Get the last three digits
-        $newSequentialNumber = str_pad($lastSequentialNumber + 1, 3, '0', STR_PAD_LEFT); // Increment and pad with zeros
-    } else {
-        // If no previous invoice exists for the current year, start from 001
-        $newSequentialNumber = '001';
+    // === CETAK STRUK PRINTER ===
+    try {
+        $connector = new WindowsPrintConnectorTest("POS-58"); // Ganti sesuai printer kamu
+        $printer = new Printer($connector);
+
+        $printer->setJustification(Printer::JUSTIFY_CENTER);
+        $printer->text("🍽️ RestoPos 🍽️\n");
+        $printer->text($lokasi . "\n");
+        $printer->text("No Faktur: {$penjualan->no_faktur}\n");
+        $printer->text("--------------------------------\n");
+
+        $printer->setJustification(Printer::JUSTIFY_LEFT);
+        foreach ($penjualan->detailPenjualan as $detail) {
+            $nama = str_pad(substr($detail->menu->nama_makanan, 0, 15), 15);
+            $jumlahHarga = $detail->jumlah . " x " . number_format($detail->harga_satuan, 0, ',', '.');
+            $printer->text("{$nama} {$jumlahHarga}\n");
+        }
+
+        $printer->text("--------------------------------\n");
+        $printer->text("Subtotal:      Rp " . number_format($penjualan->total_harga, 0, ',', '.') . "\n");
+        $printer->text("Diskon:        Rp " . number_format($diskon, 0, ',', '.') . "\n");
+        $printer->text("Pajak (10%):   Rp " . number_format($pajak, 0, ',', '.') . "\n");
+        $printer->text("Metode:        {$penjualan->metode_pembayaran}\n");
+        $printer->text("TOTAL:         Rp " . number_format($total, 0, ',', '.') . "\n");
+
+        if ($penjualan->metode_pembayaran === 'Cash') {
+            $printer->text("Tunai:         Rp " . number_format($uangDiberikan, 0, ',', '.') . "\n");
+            $printer->text("Kembalian:     Rp " . number_format($kembalian, 0, ',', '.') . "\n");
+        }
+
+        $printer->text("--------------------------------\n");
+        $printer->text(now()->format('d M Y H:i') . "\n");
+        $printer->text("😊 Terima Kasih 😊\n");
+
+        $printer->cut();
+        $printer->close();
+    } catch (\Exception $e) {
+        return back()->with('error', 'Gagal mencetak struk: ' . $e->getMessage());
     }
 
-    // Create the new invoice number
-    $newInvoiceNumber = 'PSN' . $currentYear . $newSequentialNumber;
-
-    // Buat data penjualan sementara untuk struk
-    $penjualan = (object) [
-        'no_faktur' => $newInvoiceNumber, // Use the new invoice number
-        'total_harga' => $totalHarga,
-        'diskon' => 0, // Diskon bisa disesuaikan
-        'metode_pembayaran' => $metodePembayaran, // Use the payment method from query
-        'tanggal' => now(),
-        'details' => array_map(function ($menu) {
-            return (object) [
-                'menu' => (object) [
-                    'nama_makanan' => $menu['nama_makanan'],
-                    'harga_satuan' => $menu['harga'],
-                ],
-                'jumlah' => $menu['jumlah'],
-                'harga_satuan' => $menu['harga'],
-            ];
-        }, $selectedMenus),
-    ];
-\Log::info("Mencetak struk untuk No Faktur: {$newInvoiceNumber}");
-
-    // Format tanggal
-    $penjualan->tanggal_formatted = Carbon::parse($penjualan->tanggal)
-        ->locale('id')
-        ->translatedFormat('l Y/m/d H:i');
-
-    $lokasi = env('RESTAURANT_LOCATION');
-
-    // Tampilkan view struk
-    $user = auth()->user();
-    if ($user->role == 'admin') {
-        return view('admin.Penjualan.struk', compact('penjualan', 'lokasi', 'totalHarga', 'uangDiberikan', 'kembalian'));
-    } elseif ($user->role == 'karyawan') {
-        return view('karyawan.Penjualan.struk', compact('penjualan', 'lokasi', 'totalHarga', 'uangDiberikan', 'kembalian'));
-    } else {
-        abort(403, 'Unauthorized action.');
-    }
+    return view('karyawan.Penjualan.struk', compact('penjualan', 'lokasi', 'uangDiberikan', 'kembalian'));
 }
+
+
 public function exportExcel(Excel $excel){
         return $excel->download(new PenjualanExport, 'Laporan_Penjualan.xlsx');
     }

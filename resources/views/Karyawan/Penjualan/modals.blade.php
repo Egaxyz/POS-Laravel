@@ -189,8 +189,9 @@
         let selectedMenusEncoded = encodeURIComponent(JSON.stringify(selectedMenus));
 
         // Redirect to the struk page with query parameters
-        window.location.href =
+        let url =
             `/karyawan/penjualan/struk?total_harga=${totalHarga}&uang_diberikan=${uangDiberikan}&kembalian=${kembalian}&metode_pembayaran=${metodePembayaran}&menus=${selectedMenusEncoded}`;
+        window.open(url, '_blank');
     }
 
 

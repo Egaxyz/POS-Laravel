@@ -11,10 +11,12 @@
         "laravel/framework": "^11.31",
         "laravel/tinker": "^2.9",
         "maatwebsite/excel": "^3.1",
+        "mike42/escpos-php": "^2.2",
         "picqer/php-barcode-generator": "^3.2",
         "spatie/laravel-permission": "^6.15"
     },
     "require-dev": {
+        "barryvdh/laravel-debugbar": "^3.15",
         "fakerphp/faker": "^1.23",
         "laravel/pail": "^1.1",
         "laravel/pint": "^1.13",

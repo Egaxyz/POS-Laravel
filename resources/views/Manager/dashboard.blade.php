@@ -77,43 +77,6 @@
         <div class="d-flex justify-content-center mt-3">
             {{ $loginTest->appends(['transaksi_page' => request('transaksi_page')])->links('vendor/pagination/custom') }}
         </div>
-        <section>
-            <div class="card">
-                <h4>Data Instrumen Testing</h4>
-                @if (!empty($instrumenTesting) && is_iterable($instrumenTesting))
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>Nama Perusahaan</th>
-                                <th>Kontak</th>
-                                <th>Alamat</th>
-                                <th>Email</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($instrumenTesting as $key => $test)
-                                <tr>
-                                    <td>{{ $key + 1 }}</td>
-                                    <td>{{ $test['nama_perusahaan'] ?? '-' }}</td>
-                                    <td>{{ $test['kontak'] ?? '-' }}</td>
-                                    <td>{{ $test['alamat'] ?? '-' }}</td>
-                                    <td>{{ $test['email'] ?? '-' }}</td>
-                                    <td>{{ $test['status'] ?? '-' }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                @else
-                    <p>Tidak ada instrumen testing yang tersedia.</p>
-                @endif
-                <div class="d-flex justify-content-center mt-3">
-                    {{ $instrumenTesting->appends(['supplier_page' => request('supplier_page')])->links('vendor/pagination/custom') }}
-                </div>
-            </div>
-        </section>
-
     </div>
 @endsection
 

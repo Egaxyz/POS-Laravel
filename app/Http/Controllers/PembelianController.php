@@ -68,18 +68,6 @@ class PembelianController extends Controller
                 $pembelianDetail->save();
             }
 
-        $instrumenTesting = $request->session()->get('instrumen_testing', []);
-
-        $instrumenTesting[] = [
-            'id' => $pembelian->id,
-            'user_id' => $pembelian->user_id,
-            'supplier_id' => $pembelian->supplier_id,
-            'total_harga' => $pembelian->total_harga,
-            'status_pembelian' => $pembelian->status_pembelian,
-            'tanggal_pembelian' => $pembelian->tanggal_pembelian,
-        ];
-
-        $request->session()->put('instrumen_testing', $instrumenTesting);
         
             DB::commit();
 

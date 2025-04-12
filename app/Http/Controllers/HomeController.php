@@ -72,9 +72,8 @@ public function managerDashboard() {
     ]);
 }
     $loginTest = LoginTest::latest()->paginate(5, ['*'], 'login_page');
-    $instrumenTesting = Session::get('instrumen_testing', []);
-$instrumenTesting = paginateCollection($instrumenTesting, 5, 'supplier_page');
-    return view('manager.dashboard', compact('penjualan', 'pembelian', 'loginTest', 'instrumenTesting'));
+
+    return view('manager.dashboard', compact('penjualan', 'pembelian', 'loginTest'));
 
 }
 
@@ -99,10 +98,8 @@ public function karyawanDashboard() {
     ]);
 }
     $loginTest = LoginTest::latest()->paginate(5, ['*'], 'login_page');
-    $instrumenTesting = Session::get('instrumen_testing', []);
-    $instrumenTesting = paginateCollection($instrumenTesting, 5, 'pembelian_page');
 
-    return view('Karyawan.dashboard', compact('transaksi', 'bahanBaku', 'instrumenTesting'));
+    return view('Karyawan.dashboard', compact('transaksi', 'bahanBaku',));
 }
 
 }

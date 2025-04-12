@@ -101,50 +101,6 @@
                 </div>
             </div>
         </section>
-        <section class="content">
-            <div class="card">
-                <h4>Data Instrumen Testing</h4>
-                @if (!empty($instrumenTesting) && is_iterable($instrumenTesting))
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>No</th>
-                                <th>User</th>
-                                <th>Supplier</th>
-                                <th>Tanggal Pembelian</th>
-                                <th>Total Harga</th>
-                                <th>Status Pembelian</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($instrumenTesting as $key => $test)
-                                <tr>
-                                    <td>{{ $key + 1 }}</td>
-                                    <td>{{ $test['user_id'] ?? '-' }}</td>
-                                    <td>{{ $test['supplier_id'] ?? '-' }}</td>
-                                    <td>{{ $test['tanggal_pembelian'] ?? '-' }}</td>
-                                    <td>Rp. {{ number_format($test['total_harga'], 0, ',', '.') ?? '-' }}</td>
-                                    <td>
-                                        @if ($test['status_pembelian'] == 'pending')
-                                            <span class="badge badge-warning">Pending</span>
-                                        @elseif($test['status_pembelian'] == 'selesai')
-                                            <span class="badge badge-success">Selesai</span>
-                                        @else
-                                            <span class="badge badge-danger">Gagal</span>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                @else
-                    <p>Tidak ada instrumen testing yang tersedia.</p>
-                @endif
-                <div class="d-flex justify-content-center mt-3">
-                    {{ $instrumenTesting->appends(['pembelian_page' => request('pembelian_page')])->links('vendor/pagination/custom') }}
-                </div>
-            </div>
-        </section>
     </div>
 @endsection
 @push('script')

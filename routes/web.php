@@ -19,6 +19,7 @@ use App\Models\Penjualan;
 use Illuminate\Support\Facades\Route;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Tests\Feature\AuthControllerTest;
 
 
 Route::get('/', function () {
@@ -44,6 +45,7 @@ Route::get('/', function () {
 
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
+// Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
 
 
@@ -123,7 +125,7 @@ Route::get('/get-logs', function () {
     Route::delete('/karyawan/penjualan/{id}', [PenjualanController::class, 'destroy']);
     Route::patch('/karyawan/penjualan/selesai/{id}', [PenjualanController::class, 'selesai']);
     Route::patch('/karyawan/penjualan/batalkan/{id}', [PenjualanController::class, 'batal']);
-    Route::get('/karyawan/penjualan/struk', [PenjualanController::class, 'cetakStruk'])->name('penjualan.struk');
+    Route::get('/karyawan/penjualan/struk/{no_faktur}', [PenjualanController::class, 'cetakStruk'])->name('penjualan.struk');
 
     Route::post('/karyawan/menu-bahan-baku', [MenuBahanBakuController::class, 'store'])->name('menu.bahan-baku.store');
     
