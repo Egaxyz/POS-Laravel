@@ -8,6 +8,7 @@ class Penjualan extends Model
 {
     public $table = 'penjualan';
     public $timestamps = false;
+    protected $appends = ['uang_diberikan'];
     protected $fillable = [
         'user_id',
         'no_faktur',
@@ -21,6 +22,10 @@ class Penjualan extends Model
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
     }
+    public function getUangDiberikanAttribute()
+{
+    return session('uang_diberikan_'.$this->id, 0);
+}
 
     public function details()
 {

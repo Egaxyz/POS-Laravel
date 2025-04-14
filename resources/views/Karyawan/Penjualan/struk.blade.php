@@ -120,3 +120,12 @@
 </div>
 
 <button class="print-btn" onclick="window.print()">Cetak Struk</button>
+<script>
+    // Automatically close this window after printing
+    window.onload = function() {
+        window.print();
+        setTimeout(function() {
+            window.close();
+        }, 1000);
+    };
+</script>
