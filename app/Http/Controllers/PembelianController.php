@@ -108,6 +108,14 @@ class PembelianController extends Controller
                     $bahanBaku->stok += $detail->jumlah;
                     $bahanBaku->harga_satuan = $detail['harga_satuan'];
                     $bahanBaku->save();
+                      // Update stok menu yang menggunakan bahan baku ini
+                    $menuIds = DB::table('menu_bahan_baku')
+                        ->where('bahan_baku_id', $bahanBaku->id)
+                        ->pluck('menu_id');
+
+                    foreach ($menuIds as $menuId) {
+                        app(MenuController::class)->perbaruiStokMenu($menuId);
+                    }
                 }
             }
 

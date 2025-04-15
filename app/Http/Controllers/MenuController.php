@@ -61,7 +61,6 @@ class MenuController extends Controller
 
         Log::info('Menu baru berhasil ditambahkan: ' . $menu->nama_makanan . ' - ID: ' . $menu->id);
 
-        $this->updateMenuPrice($menu->id);
         $this->perbaruiStokMenu($menu->id);
 
         return redirect()->route(auth()->user()->role . '.menu')->with('success', 'Menu Berhasil Ditambah');

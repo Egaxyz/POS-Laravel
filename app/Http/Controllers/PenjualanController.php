@@ -71,6 +71,10 @@ class PenjualanController extends Controller
     $penjualan->metode_pembayaran = $request->metode_pembayaran;
     $penjualan->total_harga = $request->total_harga;
     $penjualan->save();
+    if ($request->metode_pembayaran === 'Cash') {
+           session(['uang_diberikan_' . $penjualan->id => $request->uang_diberikan]);
+       }
+    \Log::info('Session uang_diberikan_' . $penjualan->id . ': ' . session('uang_diberikan_' . $penjualan->id));
 
         // dd(($request->all()));
 
@@ -92,9 +96,6 @@ class PenjualanController extends Controller
         ]);
 
     }
- if ($request->metode_pembayaran === 'Cash') {
-        session(['uang_diberikan_' . $penjualan->id => $request->uang_diberikan]);
-    }
     $user = auth()->user();
     if ($user->role == 'admin') {
         return redirect()->route('admin.penjualan')->with('success', 'Transaksi Berhaisl Dibuat ');
@@ -104,19 +105,6 @@ class PenjualanController extends Controller
         abort(403, 'Unauthorized action.');
     }
 }
-
-public function cetakStruk($id)
-{
-    $penjualan = Penjualan::findOrFail($id);
-    $uangDiberikan = $penjualan->metode_pembayaran === 'Cash' 
-                   ? session('uang_diberikan_' . $penjualan->id, 0)
-                   : 0;
-
-    $this->printReceipt($penjualan, $uangDiberikan);
-
-    return view('penjualan.struk', compact('penjualan', 'uangDiberikan'));
-}
-
 
 public function selesai(Request $request, $id)
 {
@@ -148,7 +136,7 @@ public function selesai(Request $request, $id)
         }
         $penjualan->status_penjualan = 'Selesai';
         $penjualan->save();
-  $uangDiberikan = $penjualan->metode_pembayaran === 'Cash' 
+        $uangDiberikan = $penjualan->metode_pembayaran === 'Cash' 
             ? session('uang_diberikan_'.$penjualan->id, 0)
             : 0;
             
@@ -181,11 +169,6 @@ private function printReceipt($penjualan, $uangDiberikan = 0)
         $connector = new WindowsPrintConnector("POS-58");
         $printer = new Printer($connector);
 
-        if ($penjualan->metode_pembayaran === 'Cash') {
-            $printer->text("Tunai:         Rp " . number_format($uangDiberikan, 0, ',', '.') . "\n");
-            $kembalian = $uangDiberikan - ($penjualan->total_harga - ($penjualan->diskon ?? 0) * 1.1);
-            $printer->text("Kembalian:     Rp " . number_format($kembalian, 0, ',', '.') . "\n");
-        }
 
         $lokasi = env('RESTAURANT_LOCATION', 'Lokasi belum diatur');
         $diskon = $penjualan->diskon ?? 0;
@@ -200,7 +183,7 @@ private function printReceipt($penjualan, $uangDiberikan = 0)
         $printer->text("--------------------------------\n");
 
         $printer->setJustification(Printer::JUSTIFY_LEFT);
-        foreach ($penjualan->details as $detail) {
+         foreach ($penjualan->details as $detail) {
             $nama = str_pad(substr($detail->menu->nama_makanan, 0, 15), 15);
             $jumlahHarga = $detail->jumlah . " x " . number_format($detail->harga_satuan, 0, ',', '.');
             $printer->text("{$nama} {$jumlahHarga}\n");

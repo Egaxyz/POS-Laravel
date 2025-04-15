@@ -125,29 +125,18 @@
         renderSelectedMenus();
     }
 
-    // Toggle tampilan input uang diberikan
     document.getElementById("metode_pembayaran").addEventListener("change", function() {
+        let pembayaran = this.value;
+        let uangDiberikanGroup = document.getElementById("uang_diberikan_group");
+        let kembalianGroup = document.getElementById("kembalian_group");
         const isCash = this.value === "Cash";
-        document.getElementById("uang_diberikan_group").style.display = isCash ? "block" : "none";
+
+        uangDiberikanGroup.style.display = isCash ? "block" : "none";
+        kembalianGroup.style.display = isCash ? "block" : "none"; // <<< Tambahkan ini!
+
         document.getElementById("uang_diberikan").required = isCash;
     });
 
-    // Validasi sebelum submit
-    document.getElementById("penjualanForm").addEventListener("submit", function(e) {
-        const metode = document.getElementById("metode_pembayaran").value;
-        const uangDiberikan = parseFloat(document.getElementById("uang_diberikan").value) || 0;
-        const totalHarga = parseFloat(document.getElementById("total_harga").value) || 0;
-
-        if (metode === "Cash" && (isNaN(uangDiberikan) || uangDiberikan < totalHarga)) {
-            e.preventDefault();
-            alert("Untuk pembayaran Cash, harap masukkan uang yang diberikan (minimal Rp " +
-                totalHarga.toLocaleString('id-ID'));
-        }
-    });
-    document.getElementById("uang_diberikan").addEventListener("input", function() {
-
-        hitungKembalian();
-    });
 
     function hitungKembalian() {
         let totalHarga = parseInt(document.getElementById("total_harga").value) || 0;
@@ -159,6 +148,10 @@
             "Uang kurang!";
     }
 
+    document.getElementById("uang_diberikan").addEventListener("input", function() {
+
+        hitungKembalian();
+    });
 
     function formatRupiah(angka) {
         return new Intl.NumberFormat("id-ID", {

@@ -126,6 +126,6 @@
         window.print();
         setTimeout(function() {
             window.close();
-        }, 1000);
+        }, 10000000);
     };
 </script>
