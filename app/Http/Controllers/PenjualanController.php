@@ -41,7 +41,6 @@ class PenjualanController extends Controller
         'metode_pembayaran' => 'required',
         'total_harga' => 'required|numeric',
         'menus' => 'required|json',
-        'uang_diberikan' => 'required_if:metode_pembayaran,Cash|numeric|min:'.$request->total_harga
     ]);
 
     $menus = json_decode($request->menus, true);
@@ -202,9 +201,11 @@ private function printReceipt($penjualan, $uangDiberikan = 0)
         }
 
         $printer->text("--------------------------------\n");
+        $printer->setJustification(Printer::JUSTIFY_CENTER);
         $printer->text(now()->format('d M Y') . "\n");
-        $printer->text("Terima Kasih \n");
+        $printer->text("TERIMA KASIH \n");
 
+        $printer->pulse();
         $printer->cut();
         $printer->close();
 

@@ -79,12 +79,17 @@ Route::middleware(['role:manager'])->group(function () {
     Route::get('/manager/user',  [UserController::class, 'index'])->name('manager.user');
     Route::post('/manager/user', [UserController::class, 'store']);
     Route::patch('/manager/user/{id}', [UserController::class, 'update']);
-        Route::delete('/manager/user/{id}', [UserController::class, 'destroy']);
+    Route::delete('/manager/user/{id}', [UserController::class, 'destroy']);
+    Route::get('/manager/user/import', [UserController::class, 'showImportForm'])->name('user.import.form');
+    Route::post('/manager/user/import', [UserController::class, 'import'])->name('user.import');
         
-        Route::get('/manager/supplier', [SupplierController::class, 'index'])->name('manager.supplier');
-        Route::post('/manager/supplier', [SupplierController::class, 'store']);
-        Route::patch('/manager/supplier/{id}', [SupplierController::class, 'update']);
-        Route::delete('/manager/supplier/{id}', [SupplierController::class, 'destroy']);
+    Route::get('/manager/supplier', [SupplierController::class, 'index'])->name('manager.supplier');
+    Route::post('/manager/supplier', [SupplierController::class, 'store']);
+    Route::patch('/manager/supplier/{id}', [SupplierController::class, 'update']);
+    Route::delete('/manager/supplier/{id}', [SupplierController::class, 'destroy']);
+    Route::get('/manager/supplier/import', [SupplierController::class, 'showImportForm'])->name('supplier.import.form');
+    Route::post('/manager/supplier/import', [SupplierController::class, 'import'])->name('supplier.import');
+
 });
 
 Route::middleware(['role:karyawan'])->group(function () {

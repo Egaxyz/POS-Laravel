@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\PegawaiImport;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UserController extends Controller
 {
@@ -80,4 +82,19 @@ class UserController extends Controller
             abort(403, 'Unauthorized action.');
         }
     }
+    public function showImportForm()
+{
+    return view('user.import');
+}
+
+public function import(Request $request)
+{
+    $request->validate([
+        'file' => 'required|mimes:xlsx,xls,csv'
+    ]);
+
+    Excel::import(new PegawaiImport, $request->file('file'));
+
+    return back()->with('success', 'Data Pegawai berhasil diimpor!');
+}
 }

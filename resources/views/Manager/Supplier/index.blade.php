@@ -29,10 +29,22 @@
         </section>
 
         <div class="card">
-            <div class="card-header">
-                <button class="btn bg-primary" type="button" data-toggle="modal" data-target="#formModal"><i
-                        class="fas fa-plus-square"></i> Tambah Data Supplier</button>
+            <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+                <button class="btn btn-primary d-flex align-items-center gap-2" type="button" data-toggle="modal"
+                    data-target="#formModal">
+                    <i class="fas fa-plus-square"></i>
+                    <span>Tambah Data Supplier</span>
+                </button>
 
+                <form action="{{ route('supplier.import') }}" method="POST" enctype="multipart/form-data"
+                    class="d-flex align-items-center">
+                    @csrf
+                    <input type="file" name="file" class="form-control-file">
+                    <button type="submit" class="btn btn-info d-flex align-items-center gap-1">
+                        <i class="fas fa-file-import"></i>
+                        <span>Import</span>
+                    </button>
+                </form>
             </div>
             <div class="card-body">
                 @if (session('success'))

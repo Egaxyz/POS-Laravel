@@ -28,81 +28,85 @@
             </div>
         </section>
 
-        <div class="card">
-            <div class="card-header">
-                <button class="btn bg-primary" type="button" data-toggle="modal" data-target="#formModal"><i
-                        class="fas fa-plus-square"></i> Tambah Data Karyawan</button>
+        <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+            <button class="btn btn-primary d-flex align-items-center gap-2" type="button" data-toggle="modal"
+                data-target="#formModal">
+                <i class="fas fa-plus-square"></i>
+                <span>Tambah Data Karyawan</span>
+            </button>
 
-                <div class="card-tools">
-                    <button type="button" class="btn btn-tool" data-card-widget="collapse" title="collapse">
-                        <i class="fa fa-minus"></i>
-                    </button>
-                    <button type="button" class="btn btn-tool" data-card-widget="remove" title="remove">
-                        <i class="fa fa-times"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="card-body">
-                @if (session('success'))
-                    <div class="alert alert-success alert-dismissible">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
-                            &times;</button>
-                        <h5><i class="icon fas fa-check"></i>Sukses!</h5>
-                        {{ session('success') }}
-                    </div>
-                @endif
-                @if ($errors->any())
-                    <div class="alert alert-success alert-dismissible">
-                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
-                            x</button>
-                        <h5><i class="icon fas fa-ban"></i>Data Gagal Disimpan!</h5>
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-                <table id="example1" class="table table-bordered table-striped">
-                    <thead>
-                        <tr>
-                            <th>Nama</th>
-                            <th>Role</th>
-                            <th>Status</th>
-                            <th>No Hp</th>
-                            <th>Menu</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($user as $akun)
-                            <tr>
-                                <td>{{ $akun->nama }}</td>
-                                <td>
-                                    @if ($akun->role == 'manager')
-                                        <span class="">Manager</span>
-                                    @elseif ($akun->role == 'karyawan')
-                                        <span class="">Karyawan</span>
-                                    @else
-                                        {{ ucfirst($akun->role) }}
-                                    @endif
-                                </td>
-
-                                <td>{{ $akun->status }}</td>
-                                <td>{{ $akun->no_hp }}</td>
-                                <td>
-                                    <button class="btn btn-success" type="button" data-toggle="modal"
-                                        data-target="#formModal" data-mode="edit" data-id="{{ $akun->id }}"
-                                        data-nama="{{ $akun->nama }}" data-role="{{ $akun->role }}"
-                                        data-status="{{ $akun->status }}" data-hp="{{ $akun->no_hp }}">Edit</button>
-                                    <button class="btn btn-danger" type="button" data-toggle="modal"
-                                        data-target="#deleteModal" data-id="{{ $akun->id }}">Delete</button>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+            <form action="{{ route('user.import') }}" method="POST" enctype="multipart/form-data"
+                class="d-flex align-items-center">
+                @csrf
+                <input type="file" name="file" class="form-control-file">
+                <button type="submit" class="btn btn-info d-flex align-items-center gap-1">
+                    <i class="fas fa-file-import"></i>
+                    <span>Import</span>
+                </button>
+            </form>
         </div>
+
+        <div class="card-body">
+            @if (session('success'))
+                <div class="alert alert-success alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+                        &times;</button>
+                    <h5><i class="icon fas fa-check"></i>Sukses!</h5>
+                    {{ session('success') }}
+                </div>
+            @endif
+            @if ($errors->any())
+                <div class="alert alert-success alert-dismissible">
+                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">
+                        x</button>
+                    <h5><i class="icon fas fa-ban"></i>Data Gagal Disimpan!</h5>
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            <table id="example1" class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>Nama</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>No Hp</th>
+                        <th>Menu</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($user as $akun)
+                        <tr>
+                            <td>{{ $akun->nama }}</td>
+                            <td>
+                                @if ($akun->role == 'manager')
+                                    <span class="">Manager</span>
+                                @elseif ($akun->role == 'karyawan')
+                                    <span class="">Karyawan</span>
+                                @else
+                                    {{ ucfirst($akun->role) }}
+                                @endif
+                            </td>
+
+                            <td>{{ $akun->status }}</td>
+                            <td>{{ $akun->no_hp }}</td>
+                            <td>
+                                <button class="btn btn-success" type="button" data-toggle="modal" data-target="#formModal"
+                                    data-mode="edit" data-id="{{ $akun->id }}" data-nama="{{ $akun->nama }}"
+                                    data-role="{{ $akun->role }}" data-status="{{ $akun->status }}"
+                                    data-hp="{{ $akun->no_hp }}">Edit</button>
+                                <button class="btn btn-danger" type="button" data-toggle="modal" data-target="#deleteModal"
+                                    data-id="{{ $akun->id }}">Delete</button>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
     </div>
 
     <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"

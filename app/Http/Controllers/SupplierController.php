@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\SupplierImport;
 use App\Models\Supplier;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SupplierController extends Controller
 {
@@ -80,4 +82,19 @@ class SupplierController extends Controller
             abort(403, 'Unauthorized action.');
         }
     }
+    public function showImportForm()
+{
+    return view('supplier.import');
+}
+
+public function import(Request $request)
+{
+    $request->validate([
+        'file' => 'required|mimes:xlsx,xls,csv'
+    ]);
+
+    Excel::import(new SupplierImport, $request->file('file'));
+
+    return back()->with('success', 'Data Supplier berhasil diimpor!');
+}
 }
