@@ -32,16 +32,35 @@ class ShiftController extends Controller
         'user_id' => 'required|exists:user,id',
     ]);
 
-  Absen::create([
-    'user_id' => $request->user_id,
-    'tanggal' => Carbon::parse($request->tanggal)->toDateString(),  // Mengubah string menjadi Carbon
-    'waktu_masuk' => Carbon::parse($request->waktu_masuk)->toTimeString(),  // Mengubah string menjadi Carbon
-    'waktu_pulang' => Carbon::parse($request->waktu_pulang)->toTimeString(),  // Mengubah string menjadi Carbon
-    'status' => 'hadir'
-]);
+    // Ambil tanggal dari request, default ke hari ini jika tidak disediakan
+    $tanggal = Carbon::parse($request->tanggal)->toDateString();
 
-    return redirect()->back()->with('success', 'Absen Telah Behasil');
+    // Cek apakah user sudah absen di tanggal yang sama
+    $absen = Absen::where('user_id', $request->user_id)
+                  ->where('tanggal', $tanggal)
+                  ->first();
+
+    if ($absen) {        
+        return response()->json(['message' => 'Karyawan sudah absen pada tanggal tersebut'], 404);
+    }
+ // Tentukan waktu pulang berdasarkan status
+    $waktuPulang = ($request->status == 'hadir') 
+        ? Carbon::parse($request->waktu_pulang)->toTimeString() 
+        : '00:00:00';
+
+    // Simpan absen jika belum ada
+    Absen::create([
+        'user_id' => $request->user_id,
+        'tanggal' => $tanggal,
+        'waktu_masuk' => Carbon::parse($request->waktu_masuk)->toTimeString(),
+        'waktu_pulang' => $waktuPulang,
+        'status' => $request->status,
+        'keterangan'=>$request->keterangan
+    ]);
+
+    return redirect()->back()->with('success', 'Absen Telah Berhasil');
 }
+
 public function updateAbsen(Request $request, $id)
 {
     $request->validate([
@@ -94,23 +113,27 @@ public function deleteAbsen($id)
 {
     return view('absen.import');
 }
-public function selesaiAbsen($id)
+public function markAsDone($id)
 {
-    $absen = Absen::find($id);
-
-    if (!$absen) {
-        return response()->json(['message' => 'Data absen tidak ditemukan'], 404);
+    $absen = Absen::findOrFail($id);
+    
+    // Validate that the current time is past the clock-out time
+    $waktuPulang = Carbon::parse($absen->tanggal . ' ' . $absen->waktu_pulang);
+    
+    if (now()->lt($waktuPulang)) {
+        return response()->json([
+            'success' => false,
+            'message' => 'Belum waktunya pulang'
+        ], 400);
     }
-
-    // Update status menjadi selesai dan set waktu pulang ke jam sekarang
-    $absen->update([
-        'status' => 'selesai',
-        'waktu_pulang' => now()->toDateTimeString(), // Set waktu pulang ke waktu sekarang
+    
+    $absen->update(['is_selesai' => '1']);
+    
+    return response()->json([
+        'success' => true,
+        'message' => 'Status absensi berhasil diupdate'
     ]);
-
-    return redirect()->back()->with('success', 'Saatnya Jam Waktu Pulang');
 }
-
 public function import(Request $request)
 {
     $request->validate([

@@ -83,6 +83,7 @@
                         <th>Jam Masuk</th>
                         <th>Status</th>
                         <th>Jam Pulang</th>
+                        <th>Keterangan</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -101,7 +102,25 @@
                                     <span class="badge badge-info">Cuti</span>
                                 @endif
                             </td>
-                            <td>{{ $absen->waktu_pulang ?? '-' }}</td>
+                            <td id="waktu-pulang-{{ $absen->id }}">
+                                @if ($absen->status == 'hadir' && !$absen->is_selesai)
+                                    @php
+                                        $waktuPulangDatetime = \Carbon\Carbon::parse(
+                                            $absen->tanggal . ' ' . $absen->waktu_pulang,
+                                        );
+                                    @endphp
+                                    @if (now() >= $waktuPulangDatetime)
+                                        <button class="btn btn-success btn-selesai" data-id="{{ $absen->id }}">
+                                            Selesai
+                                        </button>
+                                    @else
+                                        {{ $absen->waktu_pulang ?? '-' }}
+                                    @endif
+                                @else
+                                    {{ $absen->is_selesai ? 'Selesai' : $absen->waktu_pulang ?? '-' }}
+                                @endif
+                            </td>
+                            <td>{{ $absen->keterangan ?? '-' }}</td>
                             <td>
                                 <button class="btn btn-success" type="button" data-toggle="modal" data-mode="edit"
                                     data-target="#formModal" data-id="{{ $absen->id }}"
@@ -112,10 +131,6 @@
                                     data-pulang="{{ $absen->waktu_pulang }}">Edit</button>
                                 <button class="btn btn-danger" type="button" data-toggle="modal" data-target="#deleteModal"
                                     data-id="{{ $absen->id }}">Delete</button>
-                                @if ($absen->status == 'hadir' && now()->toTimeString() >= '17:00:00')
-                                    <button class="btn btn-success"
-                                        onclick="selesaiAbsen({{ $absen->id }})">Selesai</button>
-                                @endif
                             </td>
                         </tr>
                     @endforeach
@@ -213,6 +228,59 @@
         $(document).on('click', '[data-toggle="modal"][data-target="#deleteModal"]', function() {
             var userId = $(this).data('id');
             $('#deleteForm').attr('action', '/manager/absen/' + userId);
+        });
+
+        function selesaiAbsen(id) {
+            fetch(`/manager/absen/${id}/selesai`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.success) {
+                        // Update the display
+                        const cell = document.querySelector(`#waktu-pulang-${id}`);
+                        cell.innerText = 'Selesai';
+
+                        // Remove the button
+                        const buttons = document.querySelectorAll(`.btn-selesai[data-id="${id}"]`);
+                        buttons.forEach(button => button.remove());
+
+                        // Optional: show success message
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil',
+                            text: 'Status absensi telah diupdate',
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal',
+                        text: 'Terjadi kesalahan saat mengupdate status',
+                    });
+                });
+        }
+
+        // Add event listeners to all selesai buttons
+        document.querySelectorAll('.btn-selesai').forEach(button => {
+            button.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                selesaiAbsen(id);
+            });
         });
     </script>
 @endpush

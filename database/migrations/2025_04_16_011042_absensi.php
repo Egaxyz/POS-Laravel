@@ -19,6 +19,7 @@ return new class extends Migration
         $table->time('waktu_pulang')->nullable(); 
         $table->enum('status', ['hadir', 'sakit', 'cuti']);
         $table->string('keterangan', 200)->nullable();
+        $table->enum('is_selesai', ['0', '1'])->default('0');
         $table->timestamps();
 
         $table->foreign('user_id')->references('id')->on('user');

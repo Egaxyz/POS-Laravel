@@ -49,16 +49,18 @@
                 <th>Waktu Masuk</th>
                 <th>Status</th>
                 <th>Waktu Pulang</th>
+                <th>Keterangan</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($user as $data)
+            @foreach ($absen as $data)
                 <tr>
                     <td>{{ $data->user->nama }}</td>
                     <td>{{ $data->tanggal }}</td>
-                    <tdp>{{ $data->waktu_masuk }}</tdp>
+                    <td>{{ $data->waktu_masuk }}</td>
                     <td>{{ $data->status }}</td>
                     <td>{{ $data->waktu_pulang }}</td>
+                    <td>{{ $data->keterangan ?? '-' }}</td>
                 </tr>
             @endforeach
         </tbody>

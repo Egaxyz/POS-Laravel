@@ -94,7 +94,8 @@ Route::middleware(['role:manager'])->group(function () {
     });
     Route::get('/manager/absen/{id}/edit', [ShiftController::class, 'edit']);
 
-    Route::post('selesai-absen/{id}', [ShiftController::class, 'selesaiAbsen']);
+Route::post('/manager/absen/{id}/selesai', [ShiftController::class, 'markAsDone'])->name('absen.selesai');
+
 
     Route::get('/manager/user',  [UserController::class, 'index'])->name('manager.user');
     Route::post('/manager/user', [UserController::class, 'store']);
