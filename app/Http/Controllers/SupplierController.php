@@ -68,7 +68,7 @@ class SupplierController extends Controller
     }
 
     public function destroy(Request $request, $id){
-        $supplier = Supplier::find($id);
+        $supplier = Supplier::findOrFail($id);
 
       $supplier -> delete();
     $user = auth()->user();

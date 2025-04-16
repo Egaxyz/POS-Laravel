@@ -18,6 +18,7 @@ return new class extends Migration
             $table->enum('role', ['manager', 'karyawan', 'admin', 'member']);
             $table->enum('status',['aktif', 'nonaktif']);
             $table->string('no_hp', 15);
+            $table->softDeletes();
         });
 
     }

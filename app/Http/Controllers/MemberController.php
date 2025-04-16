@@ -111,7 +111,7 @@ class MemberController extends Controller
 
     public function destroy($id)
     {
-        $member = Member::find($id);
+        $member = Member::findOrFail($id);
 
         if (!$member) {
             return redirect()->route('karyawan.member')->with('error', 'Member tidak ditemukan');

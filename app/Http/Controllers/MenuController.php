@@ -119,7 +119,7 @@ class MenuController extends Controller
     public function destroy(Request $request, $id)
     {
 
-        $menu = Menu::find($id);
+        $menu = Menu::findOrFail($id);
         if (!$menu) {
             Log::error('Gagal menghapus menu. Menu ID: ' . $id . ' tidak ditemukan.');
             return back()->with('error', 'Menu tidak ditemukan.');

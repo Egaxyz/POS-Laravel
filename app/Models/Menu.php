@@ -3,11 +3,14 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Menu extends Model
 {
+    use SoftDeletes;
     public $table = 'menu';
     public $timestamps = false;
+    protected $dates = ['deleted_at'];
     protected $fillable = [
         'user_id',
         'nama_makanan',

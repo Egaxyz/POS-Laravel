@@ -48,10 +48,10 @@
                 @csrf
                 <button type="submit" class="btn btn-info d-flex align-items-center gap-1">
                     <i class="fas fa-file-export"></i>
-                    <span>Export</span>
+                    <span>Export Excel</span>
                 </button>
             </form>
-            <a id="exportButton" href="{{ url('/manager/absensi/pdf') }}" class="btn btn-danger">Export
+            <a id="exportButton" href="{{ url('/manager/absensi/pdf') }}" class="btn btn-info">Export
                 PDF</a>
         </div>
         <div class="card-body">
@@ -127,8 +127,8 @@
                                     data-user_id="{{ $absen->user_id }}"
                                     data-nama="{{ $absen->user->nama ?? 'Karyawan Tidak Ditemukan' }}"
                                     data-tanggal="{{ $absen->tanggal }}" data-status="{{ $absen->status }}"
-                                    data-masuk="{{ $absen->waktu_masuk }}"
-                                    data-pulang="{{ $absen->waktu_pulang }}">Edit</button>
+                                    data-masuk="{{ $absen->waktu_masuk }}" data-pulang="{{ $absen->waktu_pulang }}"
+                                    data-keterangan="{{ $absen->keterangan }}">Edit</button>
                                 <button class="btn btn-danger" type="button" data-toggle="modal" data-target="#deleteModal"
                                     data-id="{{ $absen->id }}">Delete</button>
                             </td>
@@ -199,6 +199,7 @@
             const waktu_masuk = btn.data('masuk');
             const status = btn.data('status');
             const waktu_pulang = btn.data('pulang');
+            const keterangan = btn.data('keterangan');
             const modal = $(this);
 
             if (mode == 'edit') {
@@ -208,6 +209,7 @@
                 modal.find('#status').val(status)
                 modal.find('#waktu_masuk').val(waktu_masuk)
                 modal.find('#waktu_pulang').val(waktu_pulang)
+                modal.find('#keterangan').val(keterangan)
                 modal.find('.modal-body form').attr('action', '{{ url('/manager/absen') }}/' +
                     id);
                 modal.find('#method').html('@method('PATCH')');
@@ -218,6 +220,7 @@
                 modal.find('#waktu_masuk').val('');
                 modal.find('#status').val('');
                 modal.find('#waktu_pulang').val('');
+                modal.find('#keterangan').val('');
                 modal.find('#method').html('');
                 modal.find('.modal-body form').attr('action',
                     '{{ url('/manager/absen') }}');

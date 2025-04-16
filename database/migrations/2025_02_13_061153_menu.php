@@ -20,7 +20,7 @@ return new class extends Migration
             $table->enum('kategori', ['makanan', 'minuman', 'snack']);
             $table->string('deskripsi', 200)->nullable();
             $table->string('gambar')->nullable();
-
+            $table->softDeletes();
             
             $table->foreign('user_id')->references('id')->on('user');
         });

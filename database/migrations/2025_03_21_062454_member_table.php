@@ -19,7 +19,8 @@ return new class extends Migration
     $table->string('email', 30);
     $table->string('alamat', 200);
     $table->date('tanggal_bergabung');
-    $table->enum('status', ['aktif', 'nonaktif'])->default('aktif'); 
+    $table->enum('status', ['aktif', 'nonaktif'])->default('aktif');
+    $table->softDeletes(); 
 
     $table->foreign('user_id')->references('id')->on('user');
 });

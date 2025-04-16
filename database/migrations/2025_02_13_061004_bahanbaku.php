@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('stok', 20);
             $table->enum('satuan', ['kg', 'liter', 'gram', 'pcs']);
             $table->string('harga_satuan', 20);
+            $table->softDeletes();
 
             $table->foreign('supplier_id')->references('id')->on('supplier');
         });

@@ -4,11 +4,14 @@ namespace App\Models;
 
 use App\Http\Controllers\MenuController;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class BahanBaku extends Model
 {
+    use SoftDeletes;
     public $table = 'bahan_baku';
     public $timestamps = false;
+    protected $dates = ['deleted_at'];
     protected $fillable = [
         'supplier_id',
         'nama',

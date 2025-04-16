@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('alamat', 100);
             $table->string('email', 100);
             $table->enum('status', ['aktif', 'nonaktif']);
+            $table->softDeletes();
         });
     }
 
