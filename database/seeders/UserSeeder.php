@@ -30,20 +30,7 @@ class UserSeeder extends Seeder
                 'status' => 'aktif',
                 'no_hp' => '081234567891',
             ],
-            [
-                'nama' => 'Novaldi',
-                'password' => Hash::make('admin123'),
-                'role' => 'admin',
-                'status' => 'aktif',
-                'no_hp' => '081234567892',
-            ],
-            [
-                'nama' => 'Ezio',
-                'password' => Hash::make('admin123'),
-                'role' => 'member',
-                'status' => 'aktif',
-                'no_hp' => '081234567893',
-            ],
+            
         ]);
     }
 }

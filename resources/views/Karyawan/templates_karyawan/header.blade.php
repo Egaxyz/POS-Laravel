@@ -48,7 +48,12 @@
                                 <p>Home</p>
                             </a>
                         </li>
-
+                        <li class="nav-item">
+                            <a href="shift" class="nav-link">
+                                <i class="nav-icon fas fa-list"></i>
+                                <p>Jadwal Shift</p>
+                            </a>
+                        </li>
                         <li class="nav-item">
                             <a href="bahan-baku" class="nav-link">
                                 <i class="nav-icon fas fa-box"></i>

@@ -54,6 +54,34 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a href="absen" class="nav-link">
+                                <i class="fas fa-calendar-check nav-icon"></i>
+                                <p>Absensi</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <i class="nav-icon fas fa-exchange-alt"></i>
+                                <p>
+                                    Laporan Transaksi
+                                    <i class="right fas fa-angle-left"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a href="laporan-pembelian" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Pembelian</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="laporan-penjualan" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Penjualan</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        <li class="nav-item">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-exchange-alt"></i>
                                 <p>
@@ -94,6 +122,12 @@
                                     <a href="user" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Pegawai</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="test" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Test</p>
                                     </a>
                                 </li>
                             </ul>

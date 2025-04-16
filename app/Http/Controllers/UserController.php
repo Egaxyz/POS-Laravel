@@ -28,6 +28,7 @@ class UserController extends Controller
             'password' => 'required',
             'no_hp' => 'required',
             'status' => 'required',
+            'role'=>'required'
 
         ]);
         $validated['password'] = bcrypt($validated['password']);

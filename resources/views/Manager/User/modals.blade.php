@@ -26,7 +26,7 @@
                         <select id="role" name="role" class="form-control">
                             <option value="manager">Manager</option>
                             <option value="karyawan">Karyawan</option>
-                            <option value="superuser">SuperUser</option>
+                            <option value="admin">Admin</option>
                         </select>
 
                     </div>

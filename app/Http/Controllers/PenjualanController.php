@@ -97,9 +97,9 @@ class PenjualanController extends Controller
     }
     $user = auth()->user();
     if ($user->role == 'admin') {
-        return redirect()->route('admin.penjualan')->with('success', 'Transaksi Berhaisl Dibuat ');
+        return redirect()->route('admin.penjualan')->with('success', 'Transaksi Berhasil Dibuat ');
     } elseif ($user->role == 'karyawan') {
-        return redirect()->route('karyawan.penjualan')->with('success', 'Transaksi Berhaisl Dibuat');
+        return redirect()->route('karyawan.penjualan')->with('success', 'Transaksi Berhasil Dibuat');
     } else {
         abort(403, 'Unauthorized action.');
     }

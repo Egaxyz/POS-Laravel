@@ -10,8 +10,10 @@ use App\Http\Controllers\MenuBahanBakuController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\PembelianController;
 use App\Http\Controllers\PenjualanController;
+use App\Http\Controllers\ShiftController;
 use App\Http\Controllers\SupplierController;
 use App\Http\Controllers\UserController;
+use App\Models\Absen;
 use App\Models\AjukanMenu;
 use App\Models\BahanBaku;
 use App\Models\Pembelian;
@@ -76,13 +78,32 @@ Route::middleware(['role:manager'])->group(function () {
     });
     Route::get('/manager/laporan-penjualan/excel', [PenjualanController::class, 'exportExcel'])->name('manager.penjualan-excel');
     
+    Route::get('/manager/test',  [ShiftController::class, 'test'])->name('manager.absen.index');
+    Route::get('/manager/absen',  [ShiftController::class, 'absen'])->name('manager.absen.index');
+    Route::post('/manager/absen', [ShiftController::class, 'absenMasuk']);
+    Route::patch('/manager/absen/{id}',  [ShiftController::class, 'updateAbsen']);
+    Route::delete('/manager/absen/{id}', [ShiftController::class, 'deleteAbsen']);
+    Route::get('/manager/absen/import', [ShiftController::class, 'showImportForm'])->name('absen.import.form');
+    Route::post('/manager/absen/import', [ShiftController::class, 'import'])->name('absen.import');
+    Route::post('/manager/absen/export', [ShiftController ::class, 'exportExcel'])->name('absen.export');
+    Route::get('manager/absensi/pdf', function () {
+        $absen = Absen::all(); 
+        $pdf = Pdf::loadView('manager.Absensi.pdf', compact('absen'));
+
+        return $pdf->download('absen.pdf');
+    });
+    Route::get('/manager/absen/{id}/edit', [ShiftController::class, 'edit']);
+
+    Route::post('selesai-absen/{id}', [ShiftController::class, 'selesaiAbsen']);
+
     Route::get('/manager/user',  [UserController::class, 'index'])->name('manager.user');
     Route::post('/manager/user', [UserController::class, 'store']);
     Route::patch('/manager/user/{id}', [UserController::class, 'update']);
     Route::delete('/manager/user/{id}', [UserController::class, 'destroy']);
     Route::get('/manager/user/import', [UserController::class, 'showImportForm'])->name('user.import.form');
     Route::post('/manager/user/import', [UserController::class, 'import'])->name('user.import');
-        
+    
+
     Route::get('/manager/supplier', [SupplierController::class, 'index'])->name('manager.supplier');
     Route::post('/manager/supplier', [SupplierController::class, 'store']);
     Route::patch('/manager/supplier/{id}', [SupplierController::class, 'update']);
@@ -115,7 +136,6 @@ Route::get('/get-logs', function () {
     Route::post('/karyawan/menu', [MenuController::class, 'store']);
     Route::patch('/karyawan/menu/{id}', [MenuController::class, 'update']);
     Route::delete('/karyawan/menu/{id}', [MenuController::class, 'destroy']);
-
     
     Route::get('/karyawan/pembelian', [PembelianController::class, 'index'])->name('karyawan.pembelian');
     Route::post('/karyawan/pembelian', [PembelianController::class, 'store'])->name('pembelian.store');

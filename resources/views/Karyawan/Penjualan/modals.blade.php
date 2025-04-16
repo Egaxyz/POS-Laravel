@@ -31,6 +31,14 @@
                             <option value="Bank">Bank</option>
                         </select>
                     </div>
+                    <div class="form-group" id="bank_group" style="display: none;">
+                        <label for="bank">Pilih Bank</label>
+                        <select id="bank" name="bank" class="form-control">
+                            <option value="BCA">BCA</option>
+                            <option value="BRI">BRI</option>
+                            <option value="Jago">Jago</option>
+                        </select>
+                    </div>
                     <div class="form-group">
                         <label for="total_harga">Total Harga</label>
                         <input type="text" class="form-control" id="total_harga_display" readonly>
@@ -41,12 +49,10 @@
                         <input type="number" class="form-control" id="uang_diberikan" name="uang_diberikan"
                             placeholder="Masukkan jumlah uang" autocomplete="off">
                     </div>
-
                     <div class="form-group" id="kembalian_group" style="display: none;">
                         <label for="kembalian">Kembalian</label>
                         <input type="text" class="form-control" id="kembalian" readonly>
                     </div>
-
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
                         <button type="submit" class="btn btn-primary">Simpan</button>
@@ -132,8 +138,14 @@
         const isCash = this.value === "Cash";
 
         uangDiberikanGroup.style.display = isCash ? "block" : "none";
-        kembalianGroup.style.display = isCash ? "block" : "none"; // <<< Tambahkan ini!
+        kembalianGroup.style.display = isCash ? "block" : "none";
+        const bankGroup = document.getElementById("bank_group");
 
+        if (pembayaran === "Bank") {
+            bankGroup.style.display = "block"; // Tampilkan pilihan bank
+        } else {
+            bankGroup.style.display = "none"; // Sembunyikan pilihan bank
+        }
         document.getElementById("uang_diberikan").required = isCash;
     });
 
