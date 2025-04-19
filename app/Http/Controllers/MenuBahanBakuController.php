@@ -22,57 +22,79 @@ class MenuBahanBakuController extends Controller
  * @param \Illuminate\Http\Request $request
  * @return \Illuminate\Http\RedirectResponse
  */
-    public function store(Request $request)
-    {
-        // Decode data dari input tersembunyi
-        $data = json_decode($request->bahan, true);
+public function store(Request $request)
+{
+    // Decode data dari input tersembunyi
+    $data = json_decode($request->bahan, true);
 
-        // Merge data ke dalam request
-        $request->merge([
-            'bahan_baku_id' => $data['bahan_baku_id'] ?? [],
-            'jumlah' => $data['jumlah'] ?? [],
-        ]);
+    // Merge data ke dalam request
+    $request->merge([
+        'bahan_baku_id' => $data['bahan_baku_id'] ?? [],
+        'jumlah' => $data['jumlah'] ?? [],
+    ]);
 
-        // Validasi data
-        $request->validate([
-            'menu_id' => 'required|exists:menu,id',
-            'bahan_baku_id' => 'required|array',
-            'bahan_baku_id.*' => 'exists:bahan_baku,id',
-            'jumlah' => 'required|array',
-            'jumlah.*' => 'numeric|min:1',
-        ]);
+    // Validasi data
+    $request->validate([
+        'menu_id' => 'required|exists:menu,id',
+        'bahan_baku_id' => 'required|array',
+        'bahan_baku_id.*' => 'exists:bahan_baku,id',
+        'jumlah' => 'required|array',
+        'jumlah.*' => 'numeric|min:1',
+    ]);
 
-        // Simpan data ke database
-        $menu_id = $request->menu_id;
-        $bahan_baku_ids = $request->bahan_baku_id;
-        $jumlahs = $request->jumlah;
+    // Simpan data ke database
+    $menu_id = $request->menu_id;
+    $bahan_baku_ids = $request->bahan_baku_id;
+    $jumlahs = $request->jumlah;
 
-        foreach ($bahan_baku_ids as $index => $bahan_id) {
+    foreach ($bahan_baku_ids as $index => $bahan_id) {
+        // Cek apakah bahan sudah ada di menu
+        $existing = DB::table('menu_bahan_baku')
+                     ->where('menu_id', $menu_id)
+                     ->where('bahan_baku_id', $bahan_id)
+                     ->first();
+
+        if ($existing) {
+            // Update jumlah jika bahan sudah ada
+            DB::table('menu_bahan_baku')
+                ->where('id', $existing->id)
+                ->update([
+                    'jumlah' => $existing->jumlah + $jumlahs[$index],
+                ]);
+        } else {
+            // Buat baru jika bahan belum ada
             DB::table('menu_bahan_baku')->insert([
                 'menu_id' => $menu_id,
                 'bahan_baku_id' => $bahan_id,
                 'jumlah' => $jumlahs[$index],
             ]);
         }
-
-        // Panggil fungsi untuk memperbarui harga menu
-        (new MenuController)->updateMenuPrice($menu_id);
-
-        return redirect()->back()->with('success', 'Bahan baku berhasil ditambahkan ke menu.');
     }
-    public function destroy(Request $request, $id){
-        $data = MenuBahanBaku::findOrFail($id);
 
-      $data -> delete();
-        $user = auth()->user();
-        if ($user->role == 'admin') {
+    // Panggil fungsi untuk memperbarui harga menu
+    (new MenuController)->updateMenuPrice($menu_id);
+
+    return redirect()->back()->with('success', 'Bahan baku berhasil ditambahkan ke menu.');
+}
+public function destroy($id)
+{
+    $data = MenuBahanBaku::findOrFail($id);
+    $menu_id = $data->menu_id; // Ambil menu_id dari data yang akan dihapus
+    
+    $data->delete();
+    
+    // Panggil fungsi update harga
+    (new MenuController)->updateMenuPrice($menu_id);
+    
+    $user = auth()->user();
+    if ($user->role == 'admin') {
         return redirect()->route('admin.menu-bahan-baku')
                 ->with('success', 'Menu Bahan Baku Berhasil Dihapus');
-        } elseif ($user->role == 'karyawan') {
-            return redirect()->route('karyawan.menu-bahan-baku')
+    } elseif ($user->role == 'karyawan') {
+        return redirect()->route('karyawan.menu-bahan-baku')
                 ->with('success', 'Menu Bahan Baku Berhasil Dihapus');
-       } else {
-            abort(403, 'Unauthorized action.');
-        }
+    } else {
+        abort(403, 'Unauthorized action.');
     }
+}
 }

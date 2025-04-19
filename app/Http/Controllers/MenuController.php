@@ -87,7 +87,6 @@ class MenuController extends Controller
             ->where('menu_bahan_baku.menu_id', $menuId)
             ->sum(DB::raw('bahan_baku.harga_satuan * menu_bahan_baku.jumlah'));
 
-        $totalHarga += 10000;
 
         Log::info('Mengupdate harga menu ID: ' . $menuId . ' - Harga Baru: ' . $totalHarga);
 

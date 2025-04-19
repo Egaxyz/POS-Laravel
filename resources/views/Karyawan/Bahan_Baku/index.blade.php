@@ -33,9 +33,6 @@
                 <button class="btn bg-primary" type="button" data-toggle="modal" data-target="#formModal">
                     <i class="fas fa-plus-square"></i> Tambah Data Bahan Baku
                 </button>
-                <button class="btn bg-secondary" type="button" data-toggle="modal" data-target="#formModalBahan">
-                    <i class="fas fa-plus-square"></i> Pilih Bahan untuk Menu
-                </button>
             </div>
 
             <div class="card-body">
@@ -123,7 +120,6 @@
         {{ $bahan->links('vendor/pagination/custom') }}
     </div>
     @include('Karyawan/Bahan_Baku/modals')
-    @include('Karyawan/Bahan_Baku/modalBahan')
 @endsection
 
 @push('script')
