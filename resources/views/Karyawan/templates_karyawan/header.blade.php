@@ -64,7 +64,7 @@
                             <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-book"></i>
                                 <p>
-                                    Menu
+                                    Daftar Menu
                                     <i class="right fas fa-angle-left"></i>
                                 </p>
                             </a>
@@ -72,7 +72,13 @@
                                 <li class="nav-item">
                                     <a href="menu" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
-                                        <p>Daftar Menu</p>
+                                        <p>Menu</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a href="menu-bahan-baku" class="nav-link">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Menu Bahan Baku</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">

@@ -14,6 +14,12 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ShiftController extends Controller
 {
+    /**
+ * Menampilkan daftar absensi karyawan dan data pengguna.
+ * 
+ * @brief Fungsi ini mengambil data absensi karyawan dan data akun yang memiliki role 'karyawan'.
+ * @return \Illuminate\View\View
+ */
     public function absen()
 {
     // Pastikan hanya mengambil data karyawan, bukan semua user
@@ -26,6 +32,15 @@ class ShiftController extends Controller
 
     return view('Manager/Absensi/index', compact('user', 'akun')); 
 }
+
+/**
+ * Melakukan absensi masuk untuk karyawan.
+ * 
+ * @brief Fungsi ini digunakan untuk mencatat absensi masuk karyawan. 
+ *        Cek apakah karyawan sudah absen pada tanggal yang sama dan simpan absen baru.
+ * @param \Illuminate\Http\Request $request
+ * @return \Illuminate\Http\RedirectResponse
+ */
     public function absenMasuk(Request $request)
 {
     $request->validate([
@@ -60,7 +75,15 @@ class ShiftController extends Controller
 
     return redirect()->back()->with('success', 'Absen Telah Berhasil');
 }
-
+/**
+ * Memperbarui data absen untuk karyawan.
+ * 
+ * @brief Fungsi ini digunakan untuk memperbarui data absensi berdasarkan ID. 
+ *        Memeriksa status dan mengubah waktu pulang jika diperlukan.
+ * @param \Illuminate\Http\Request $request
+ * @param int $id
+ * @return \Illuminate\Http\RedirectResponse
+ */
 public function updateAbsen(Request $request, $id)
 {
     $request->validate([
@@ -91,7 +114,13 @@ public function updateAbsen(Request $request, $id)
     return redirect()->back()->with('success', 'Absen Telah Diperbarui');
 }
 
-
+/**
+ * Menghapus data absen berdasarkan ID.
+ * 
+ * @brief Fungsi ini digunakan untuk menghapus data absensi berdasarkan ID.
+ * @param int $id
+ * @return \Illuminate\Http\RedirectResponse
+ */
 public function deleteAbsen($id)
 {
     $absen = Absen::find($id);
@@ -104,15 +133,33 @@ public function deleteAbsen($id)
 
     return redirect()->back()->with('success', 'Absen Telah Dihapus');
 }
+/**
+ * Mengekspor data absensi ke dalam format Excel.
+ * 
+ * @brief Fungsi ini digunakan untuk mengekspor data absensi ke dalam file Excel (.xlsx).
+ * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+ */
   public function exportExcel()
     {
         return Excel::download(new AbsenExport, 'absen.xlsx');
     }
-
+/**
+ * Menampilkan form untuk impor data absensi.
+ * 
+ * @brief Fungsi ini menampilkan form untuk mengimpor data absensi dalam format Excel.
+ * @return \Illuminate\View\View
+ */
      public function showImportForm()
 {
     return view('absen.import');
 }
+/**
+ * Menandai absensi sebagai selesai berdasarkan ID.
+ * 
+ * @brief Fungsi ini memeriksa apakah waktu pulang sudah lewat dan kemudian menandai absensi sebagai selesai.
+ * @param int $id
+ * @return \Illuminate\Http\JsonResponse
+ */
 public function markAsDone($id)
 {
     $absen = Absen::findOrFail($id);
@@ -134,6 +181,13 @@ public function markAsDone($id)
         'message' => 'Status absensi berhasil diupdate'
     ]);
 }
+/**
+ * Mengimpor data absensi dari file Excel.
+ * 
+ * @brief Fungsi ini mengimpor data absensi dari file Excel yang diunggah.
+ * @param \Illuminate\Http\Request $request
+ * @return \Illuminate\Http\RedirectResponse
+ */
 public function import(Request $request)
 {
     $request->validate([

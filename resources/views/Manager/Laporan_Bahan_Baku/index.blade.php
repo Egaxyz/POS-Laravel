@@ -47,11 +47,29 @@
             </div>
         </section>
         <div class="card">
-            <div class="card-header">
-                <button id="printButton" class="btn btn-primary" onclick="window.print()">Print</button>
-                <a id="exportButton" href="{{ url('/manager/laporan-bahan/pdf') }}" class="btn btn-danger">Export
-                    PDF</a>
+            <div class="card-header d-flex justify-content-start align-items-center flex-wrap gap-2 px-3">
+                <!-- Print Button -->
+                <button id="printButton" class="btn btn-primary d-flex align-items-center gap-2" onclick="window.print()">
+                    <i class="fas fa-print"></i>
+                    <span>Print</span>
+                </button>
+
+                <!-- Export PDF Button -->
+                <a id="exportButton" href="{{ url('/manager/laporan-pembelian/pdf') }}"
+                    class="btn btn-danger d-flex align-items-center gap-2">
+                    <i class="fas fa-file-pdf"></i>
+                    <span>Export PDF</span>
+                </a>
+
+                <!-- Export Excel Button -->
+                <a id="exportExcelButton" href="{{ route('manager.pembelian-excel') }}"
+                    class="btn btn-success d-flex align-items-center gap-2">
+                    <i class="fas fa-file-excel"></i>
+                    <span>Export Excel</span>
+                </a>
             </div>
+
+
             <div class="card-body">
                 <h2 id="printTitle" style="text-align: center; display: none;">Data Bahan Baku</h2>
 

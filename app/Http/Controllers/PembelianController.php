@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\LaporanPembelianExport;
 use App\Exports\PembelianExport;
 use App\Models\BahanBaku;
 use App\Models\DetailPembelian;
@@ -15,6 +16,11 @@ use Maatwebsite\Excel\Excel;
 
 class PembelianController extends Controller
 {
+     /**
+     * @brief Menampilkan halaman indeks pembelian dengan data terkait.
+     *
+     * @return \Illuminate\View\View
+     */
     public function index()
     {
 
@@ -36,7 +42,12 @@ class PembelianController extends Controller
             abort(403, 'Unauthorized action.');
         }
     }
-
+/**
+     * @brief Menyimpan data pembelian baru ke dalam database.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
+     */
     public function store(Request $request)
     {
 
@@ -91,7 +102,12 @@ class PembelianController extends Controller
             ], 500);
         }
     }
-
+ /**
+     * @brief Menyelesaikan pembelian dan memperbarui stok bahan baku.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function selesai($id)
     {
         Log::info('Menyelesaikan pembelian', ['pembelian_id' => $id]);
@@ -129,7 +145,12 @@ class PembelianController extends Controller
             return redirect()->back()->with('error', 'Terjadi kesalahan saat menyelesaikan pembelian.');
         }
     }
-
+ /**
+     * @brief Membatalkan pembelian dan mengubah statusnya menjadi 'Gagal'.
+     *
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function batal($id)
     {
         Log::info('Membatalkan pembelian', ['pembelian_id' => $id]);
@@ -140,6 +161,12 @@ class PembelianController extends Controller
 
         return redirect()->back()->with('success', 'Pembelian Telah Digagalkan.');
     }
+      /**
+     * @brief Menampilkan detail pembelian berdasarkan ID.
+     *
+     * @param int $id
+     * @return \Illuminate\View\View
+     */
 
     public function show($id)
     {
@@ -155,7 +182,12 @@ class PembelianController extends Controller
             abort(403, 'Unauthorized action.');
         }
     }
-
+/**
+     * @brief Menampilkan laporan pembelian berdasarkan tahun yang dipilih.
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\View\View
+     */
     public function laporan(Request $request)
     {
         $tahun = $request->input('tahun', Carbon::now()->format('Y'));
@@ -175,11 +207,16 @@ class PembelianController extends Controller
             abort(403, 'Anda tidak memiliki akses.');
         }
     }
-
+  /**
+     * @brief Mengekspor laporan pembelian ke dalam format Excel.
+     *
+     * @param \Maatwebsite\Excel\Excel $excel
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
     public function exportExcel(Excel $excel)
     {
         Log::info('Mengunduh laporan pembelian dalam format Excel');
 
-        return $excel->download(new PembelianExport, 'Laporan_Pembelian.xlsx');
+        return $excel->download(new LaporanPembelianExport, 'Laporan-Pembelian.xlsx');
     }
 }

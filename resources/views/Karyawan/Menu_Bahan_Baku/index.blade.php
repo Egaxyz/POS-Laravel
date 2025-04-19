@@ -1,4 +1,4 @@
-@extends('Manager.templates_manager.header')
+@extends('Karyawan.templates_karyawan.header')
 @push('style')
     <link rel="stylesheet" href="{{ asset('assets') }}/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
     <link rel="stylesheet" href="{{ asset('assets') }}/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
@@ -13,7 +13,7 @@
                 <div class="row mb-2">
                     <nav class="navbar navbar-expand-lg navbar-light bg-light w-100">
                         <div class="container-fluid">
-                            <h1 class="navbar-brand mb-0">Daftar Supplier</h1>
+                            <h1 class="navbar-brand mb-0">Daftar Menu Bahan Baku</h1>
                             <ul class="navbar-nav ms-auto">
                                 <li class="nav-item">
                                     <a href="{{ route('logout') }}" class="nav-link d-flex align-items-center">
@@ -29,33 +29,15 @@
         </section>
 
         <div class="card">
-            <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
-                <button class="btn btn-primary d-flex align-items-center gap-2" type="button" data-toggle="modal"
-                    data-target="#formModal">
-                    <i class="fas fa-plus-square"></i>
-                    <span>Tambah Data Supplier</span>
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <button class="btn bg-primary" type="button" data-toggle="modal" data-target="#formModal">
+                    <i class="fas fa-plus-square"></i> Tambah Data Bahan Baku
                 </button>
-
-                <form action="{{ route('supplier.import') }}" method="POST" enctype="multipart/form-data"
-                    class="d-flex align-items-center">
-                    @csrf
-                    <input type="file" name="file" class="form-control-file">
-                    <button type="submit" class="btn btn-info d-flex align-items-center gap-1">
-                        <i class="fas fa-file-import"></i>
-                        <span>Import</span>
-                    </button>
-                </form>
-                <form action="{{ route('manager.supplier-excel') }}" method="POST" enctype="multipart/form-data"
-                    class="d-flex align-items-center">
-                    @csrf
-                    <button type="submit" class="btn btn-info d-flex align-items-center gap-1">
-                        <i class="fas fa-file-export"></i>
-                        <span>Export Excel</span>
-                    </button>
-                </form>
-                <a id="exportButton" href="{{ url('/manager/supplier/pdf') }}" class="btn btn-info">Export
-                    PDF</a>
+                <button class="btn bg-secondary" type="button" data-toggle="modal" data-target="#formModalBahan">
+                    <i class="fas fa-plus-square"></i> Pilih Bahan untuk Menu
+                </button>
             </div>
+
             <div class="card-body">
                 @if (session('success'))
                     <div class="alert alert-success alert-dismissible">
@@ -80,30 +62,26 @@
                 <table id="example1" class="table table-bordered table-striped">
                     <thead>
                         <tr>
-                            <th>Nama Perusahaan</th>
-                            <th>Kontak</th>
-                            <th>Alamat</th>
-                            <th>Email</th>
-                            <th>Status</th>
+                            <th>Nama Menu</th>
+                            <th>Bahan</th>
+                            <th>Jumlah</th>
                             <th>Menu</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($supplier as $data)
+                        @foreach ($data as $list)
                             <tr>
-                                <td>{{ $data->nama_perusahaan }}</td>
-                                <td>{{ $data->kontak }}</td>
-                                <td>{{ $data->alamat }}</td>
-                                <td>{{ $data->email }}</td>
-                                <td>{{ $data->status }}</td>
+                                <td>{{ $list->menu->nama_makanan }}</td>
+                                <td>{{ $list->bahan->nama }}</td>
+                                <td>{{ $list->jumlah }}</td>
                                 <td>
                                     <button class="btn btn-success" type="button" data-toggle="modal"
-                                        data-target="#formModal" data-mode="edit" data-id="{{ $data->id }}"
-                                        data-nama="{{ $data->nama_perusahaan }}" data-kontak="{{ $data->kontak }}"
-                                        data-alamat="{{ $data->alamat }}" data-email="{{ $data->email }}"
-                                        data-status="{{ $data->status }}">Edit</button>
+                                        data-target="#formModal" data-mode="edit" data-id="{{ $list->id }}"
+                                        data-nama="{{ $list->nama }}" data-stok="{{ $list->stok }}"
+                                        data-satuan="{{ $list->satuan }}"
+                                        data-harga="{{ $list->harga_satuan }}">Edit</button>
                                     <button class="btn btn-danger" type="button" data-toggle="modal"
-                                        data-target="#deleteModal" data-id="{{ $data->id }}">Delete</button>
+                                        data-target="#deleteModal" data-id="{{ $list->id }}">Delete</button>
                                 </td>
                             </tr>
                         @endforeach
@@ -124,7 +102,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    Apakah Anda yakin ingin menghapus suppliler ini?
+                    Apakah Anda yakin ingin menghapus bahan baku ini?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
@@ -138,52 +116,52 @@
         </div>
     </div>
     <div class="d-flex justify-content-center mt-3">
-        {{ $supplier->links('vendor/pagination/custom') }}
+        {{ $data->links('vendor/pagination/custom') }}
     </div>
-    @include('Manager/Supplier/modals')
 @endsection
 
 @push('script')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script>
         $('#formModal').on('show.bs.modal', function(e) {
             const btn = $(e.relatedTarget);
             console.log(btn.data());
             const mode = btn.data('mode');
             const id = btn.data('id');
-            const nama_perusahaan = btn.data('nama');
-            const kontak = btn.data('kontak');
-            const alamat = btn.data('alamat');
-            const email = btn.data('email');
-            const status = btn.data('status');
+            const nama = btn.data('nama');
+            const stok = btn.data('stok');
+            const satuan = btn.data('satuan');
+            const harga_satuan = btn.data('harga');
+            const supplier_id = btn.data('asal');
             const modal = $(this);
 
             if (mode == 'edit') {
-                modal.find('.modal-title').text('Edit Data Supplier');
-                modal.find('#nama_perusahaan').val(nama_perusahaan);
-                modal.find('#kontak').val(kontak);
-                modal.find('#alamat').val(alamat)
-                modal.find('#email').val(email)
-                modal.find('#status').val(status)
-                modal.find('.modal-body form').attr('action', '{{ url('/manager/supplier') }}/' +
+                modal.find('.modal-title').text('Edit Data Bahan Baku');
+                modal.find('#supplier_id').val(supplier_id);
+                modal.find('#nama').val(nama);
+                modal.find('#stok').val(stok);
+                modal.find('#satuan').val(satuan)
+                modal.find('#harga_satuan').val(harga_satuan)
+                modal.find('.modal-body form').attr('action', '{{ url('/karyawan/bahan-baku') }}/' +
                     id);
                 modal.find('#method').html('@method('PATCH')');
             } else {
-                modal.find('.modal-title').text('Input Data Supplier');
-                modal.find('#nama_perusahaan').val('');
-                modal.find('#alamat').val('');
-                modal.find('#email').val('');
-                modal.find('#kontak').val('');
-                modal.find('#status').val('');
+                modal.find('.modal-title').text('Input Data Bahan Baku');
+                modal.find('#supplier_id').val('');
+                modal.find('#nama').val('');
+                modal.find('#satuan').val('');
+                modal.find('#harga_satuan').val('');
+                modal.find('#stok').val('');
                 modal.find('#method').html('');
                 modal.find('.modal-body form').attr('action',
-                    '{{ url('/manager/supplier') }}');
+                    '{{ url('/karyawan/bahan-baku') }}');
 
             }
         });
 
         $(document).on('click', '[data-toggle="modal"][data-target="#deleteModal"]', function() {
             var userId = $(this).data('id');
-            $('#deleteForm').attr('action', '/manager/supplier/' + userId);
+            $('#deleteForm').attr('action', '/karyawan/bahan-baku/' + userId);
         });
     </script>
 @endpush

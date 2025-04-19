@@ -12,6 +12,10 @@ use Log;
 
 class MenuController extends Controller
 {
+    /**
+ * @brief Menampilkan daftar menu yang tersedia dengan stok terhitung dan memperbarui stok menu.
+ * 
+ */
     public function index()
     {
         $menu = Menu::orderBy('nama_makanan', 'asc')->paginate(5);
@@ -33,7 +37,12 @@ class MenuController extends Controller
             abort(403, 'Unauthorized action.');
         }
     }
-
+/**
+ * @brief Menyimpan menu baru ke dalam database setelah memvalidasi dan mengupload gambar.
+ * 
+ * @param \App\Http\Requests\MenuRequest $request
+ * @return \Illuminate\Http\RedirectResponse
+ */
     public function store(MenuRequest $request)
     {
 
@@ -65,7 +74,12 @@ class MenuController extends Controller
 
         return redirect()->route(auth()->user()->role . '.menu')->with('success', 'Menu Berhasil Ditambah');
     }
-
+/**
+ * @brief Memperbarui harga menu berdasarkan total harga bahan baku yang digunakan.
+ * 
+ * @param int $menuId
+ * @return void
+ */
     public function updateMenuPrice($menuId)
     {
         $totalHarga = DB::table('menu_bahan_baku')
@@ -79,7 +93,13 @@ class MenuController extends Controller
 
         Menu::where('id', $menuId)->update(['harga' => $totalHarga]);
     }
-
+/**
+ * @brief Memperbarui menu yang ada dengan data baru, termasuk gambar jika ada perubahan.
+ * 
+ * @param \App\Http\Requests\MenuRequest $request
+ * @param int $id
+ * @return \Illuminate\Http\RedirectResponse
+ */
     public function update(MenuRequest $request, $id)
     {
 
@@ -110,12 +130,16 @@ class MenuController extends Controller
 
         Log::info('Menu ID: ' . $id . ' berhasil diperbarui.');
 
-        $this->updateMenuPrice($menu->id);
-        $this->perbaruiStokMenu($menu->id);
-
         return redirect()->route(auth()->user()->role . '.menu')->with('success', 'Menu Berhasil Diperbarui');
     }
 
+/**
+ * @brief Menghapus menu berdasarkan ID.
+ * 
+ * @param \Illuminate\Http\Request $request
+ * @param int $id
+ * @return \Illuminate\Http\RedirectResponse
+ */
     public function destroy(Request $request, $id)
     {
 
@@ -131,7 +155,12 @@ class MenuController extends Controller
 
         return redirect()->route(auth()->user()->role . '.menu')->with('success', 'Menu Berhasil Dihapus');
     }
-
+/**
+ * @brief Menghitung stok menu berdasarkan stok bahan baku yang ada.
+ * 
+ * @param int $menuId
+ * @return int
+ */
     public function hitungStokMenu($menuId)
     {
 
@@ -156,7 +185,12 @@ class MenuController extends Controller
 
         return $stokMenu ?? 0;
     }
-
+/**
+ * @brief Memperbarui stok menu setelah dihitung.
+ * 
+ * @param int $menuId
+ * @return void
+ */
     public function perbaruiStokMenu($menuId)
     {
         $stokMenu = $this->hitungStokMenu($menuId);

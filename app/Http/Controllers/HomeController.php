@@ -16,90 +16,95 @@ use Illuminate\Support\Facades\Session;
 
 class HomeController extends Controller
 {
-    public function index(){
-        return view('Home.index');
-    } 
+  /**
+ * @brief Menampilkan halaman beranda utama.
+ *
+ * @return \Illuminate\View\View
+ */
+public function index() {
+    return view('Home.index');
+}
 
-
-    public function adminDashboard() {
+/**
+ * @brief Menampilkan dashboard untuk admin.
+ *
+ * @return \Illuminate\View\View
+ */
+public function adminDashboard() {
     return view('Admin.dashboard');
 }
-    public function memberDashboard() {
-    $user = auth()->user(); // Ambil user yang sedang login sebagai objek User
-    $data = AjukanMenu::where('user_id', $user->id)->with('user')->orderBy('nama_makanan', 'asc')->paginate(5);
+
+/**
+ * @brief Menampilkan dashboard untuk member (pengguna biasa).
+ *
+ * Menampilkan data menu yang diajukan oleh user yang sedang login.
+ *
+ * @return \Illuminate\View\View
+ */
+public function memberDashboard() {
+    $user = auth()->user(); // Ambil user yang sedang login
+    $data = AjukanMenu::where('user_id', $user->id)
+        ->with('user')
+        ->orderBy('nama_makanan', 'asc')
+        ->paginate(5);
 
     return view('Member.dashboard', compact('data', 'user'));
 }
 
-
+/**
+ * @brief Menampilkan dashboard untuk manager.
+ *
+ * Menampilkan data penjualan dan pembelian per bulan serta histori login user.
+ *
+ * @return \Illuminate\View\View
+ */
 public function managerDashboard() {
-  // Ambil data penjualan dan kelompokkan berdasarkan bulan
     $penjualan = Penjualan::selectRaw('MONTH(tanggal) as bulan, SUM(total_harga) as total')
         ->groupBy('bulan')
         ->orderBy('bulan')
-        ->get();
+        ->get()
+        ->map(function ($item) {
+            return [
+                'bulan' => Carbon::create()->month($item->bulan)->translatedFormat('F'),
+                'total' => $item->total
+            ];
+        });
 
-    // Konversi angka bulan ke nama bulan
-    $penjualan = $penjualan->map(function ($item) {
-        return [
-            'bulan' => Carbon::create()->month($item->bulan)->translatedFormat('F'),
-            'total' => $item->total
-        ];
-    });
-    
     $pembelian = Pembelian::selectRaw('MONTH(tanggal_pembelian) as bulan, SUM(total_harga) as total')
-    ->groupBy('bulan')
-    ->orderBy('bulan')
-    ->get();
+        ->groupBy('bulan')
+        ->orderBy('bulan')
+        ->get()
+        ->map(function ($item) {
+            return [
+                'bulan' => Carbon::create()->month($item->bulan)->translatedFormat('F'),
+                'total' => $item->total
+            ];
+        });
 
-    $pembelian = $pembelian->map(function ($item) {
-        return [
-            'bulan' => Carbon::create()->month($item->bulan)->translatedFormat('F'),
-            'total' => $item->total
-        ];
-    });
-
-    function paginateCollection($items, $perPage = 5, $pageName = 'supplier_page')
-{
-    $page = Paginator::resolveCurrentPage($pageName) ?: 1;
-    $items = $items instanceof Collection ? $items : collect($items);
-    $total = $items->count();
-    $currentPageItems = $items->slice(($page - 1) * $perPage, $perPage)->values();
-    
-    return new LengthAwarePaginator($currentPageItems, $total, $perPage, $page, [
-        'path' => Paginator::resolveCurrentPath(),
-        'pageName' => $pageName,
-    ]);
-}
     $loginTest = LoginTest::latest()->paginate(5, ['*'], 'login_page');
 
     return view('manager.dashboard', compact('penjualan', 'pembelian', 'loginTest'));
-
 }
 
+/**
+ * @brief Menampilkan dashboard untuk karyawan.
+ *
+ * Menampilkan transaksi yang sedang diproses dan daftar bahan baku berdasarkan stok terendah.
+ *
+ * @return \Illuminate\View\View
+ */
 public function karyawanDashboard() {
     $transaksi = Penjualan::where('status_penjualan', 'Proses')
         ->orderBy('tanggal', 'desc')
-        ->paginate(5, ['*'], 'transaksi_page'); // Ubah nama parameter page
+        ->paginate(5, ['*'], 'transaksi_page');
 
-    // Ambil stok bahan baku yang tersedia
     $bahanBaku = BahanBaku::orderBy('stok', 'asc')
-        ->paginate(5, ['*'], 'bahan_page'); 
-    function paginateCollection($items, $perPage = 5, $pageName = 'supplier_page')
-{
-    $page = Paginator::resolveCurrentPage($pageName) ?: 1;
-    $items = $items instanceof Collection ? $items : collect($items);
-    $total = $items->count();
-    $currentPageItems = $items->slice(($page - 1) * $perPage, $perPage)->values();
-    
-    return new LengthAwarePaginator($currentPageItems, $total, $perPage, $page, [
-        'path' => Paginator::resolveCurrentPath(),
-        'pageName' => $pageName,
-    ]);
-}
+        ->paginate(5, ['*'], 'bahan_page');
+
     $loginTest = LoginTest::latest()->paginate(5, ['*'], 'login_page');
 
-    return view('Karyawan.dashboard', compact('transaksi', 'bahanBaku',));
+    return view('Karyawan.dashboard', compact('transaksi', 'bahanBaku'));
 }
+
 
 }

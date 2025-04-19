@@ -19,7 +19,6 @@ class Absen extends Model
         'created_at',
         'updated_at',
     ];
-// App\Models\Absen.php
 public function user()
 {
     return $this->belongsTo(User::class)->withDefault([

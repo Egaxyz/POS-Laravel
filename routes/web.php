@@ -18,11 +18,19 @@ use App\Models\AjukanMenu;
 use App\Models\BahanBaku;
 use App\Models\Pembelian;
 use App\Models\Penjualan;
+use App\Models\Supplier;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Tests\Feature\AuthControllerTest;
 
+/**
+ * @brief Mengecehk Role yang ada di user  
+ * 
+ * pengguna akan diarahkan ke halaman login jika tidak dikenali atau belum login
+ *
+ */
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -45,12 +53,21 @@ Route::get('/', function () {
     return redirect()->route('login');
 });
 
+/**
+ * @brief Menampilkan halaman login, proses login dan logout
+ * 
+ * pengguna akan diarahkan ke halaman login dan ketika menyimpan data yang sudah sesuai dengan data di tabel user akan bisa login
+ * pengguna logout saat berada di halaman sesuai dengan rolenya dan akan diarahkan ke halaman login jika sudah logout
+ */
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
-// Route::post('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
-
+/**
+ * @brief Menampilkan halaman yang diakses oleh Manager
+ * 
+ * Secara garis besar Role Manager adalah Melihat Laporan Transaksi, CRUD User dan supplier, Absensi dengan user yang memiliki role karyawan
+ */
 Route::middleware(['role:manager'])->group(function () {
     Route::get('/manager/dashboard', [homeController::class, 'managerDashboard'])->name('manager.dashboard');
     
@@ -60,8 +77,9 @@ Route::middleware(['role:manager'])->group(function () {
             $bahan = BahanBaku::all(); 
             $pdf = Pdf::loadView('manager.Laporan_Bahan_Baku.pdf', compact('bahan'));
             return $pdf->download('laporan-bahan.pdf');
-    });
-    
+        });
+    Route::post('/manager/laporan-bahan/export', [BahanBakuController ::class, 'exportExcel'])->name('manager.laporan-bahan-baku-excel');
+        
     Route::get('/manager/laporan-pembelian', [PembelianController::class, 'laporan'])->name('manager.laporan-pembelian');
     Route::get('/manager/laporan-pembelian/pdf', function () {
             $pembelian = Pembelian::all(); 
@@ -93,8 +111,8 @@ Route::middleware(['role:manager'])->group(function () {
         return $pdf->download('absen.pdf');
     });
     Route::get('/manager/absen/{id}/edit', [ShiftController::class, 'edit']);
-
-Route::post('/manager/absen/{id}/selesai', [ShiftController::class, 'markAsDone'])->name('absen.selesai');
+    
+    Route::post('/manager/absen/{id}/selesai', [ShiftController::class, 'markAsDone'])->name('absen.selesai');
 
 
     Route::get('/manager/user',  [UserController::class, 'index'])->name('manager.user');
@@ -103,17 +121,36 @@ Route::post('/manager/absen/{id}/selesai', [ShiftController::class, 'markAsDone'
     Route::delete('/manager/user/{id}', [UserController::class, 'destroy']);
     Route::get('/manager/user/import', [UserController::class, 'showImportForm'])->name('user.import.form');
     Route::post('/manager/user/import', [UserController::class, 'import'])->name('user.import');
-    
+    Route::post('/manager/user/export', [UserController ::class, 'exportExcel'])->name('manager.user-excel');
+    Route::get('manager/user/pdf', function () {
+        $user = User::all(); 
+        $pdf = Pdf::loadView('manager.User.pdf', compact('user'));
 
+        return $pdf->download('Daftar-Pegawai.pdf');
+    });
+    
+    
     Route::get('/manager/supplier', [SupplierController::class, 'index'])->name('manager.supplier');
     Route::post('/manager/supplier', [SupplierController::class, 'store']);
     Route::patch('/manager/supplier/{id}', [SupplierController::class, 'update']);
     Route::delete('/manager/supplier/{id}', [SupplierController::class, 'destroy']);
     Route::get('/manager/supplier/import', [SupplierController::class, 'showImportForm'])->name('supplier.import.form');
     Route::post('/manager/supplier/import', [SupplierController::class, 'import'])->name('supplier.import');
+    Route::post('/manager/supplier/export', [SupplierController ::class, 'exportExcel'])->name('manager.supplier-excel');
+    Route::get('manager/supplier/pdf', function () {
+        $supplier = Supplier::all(); 
+        $pdf = Pdf::loadView('manager.Supplier.pdf', compact('supplier'));
+
+        return $pdf->download('Daftar-Supplier.pdf');
+    });
+    
 
 });
-
+/**
+ * @brief Menampilkan halaman yang diakses oleh Karyawan
+ * 
+ * Secara garis besar Role Karyawan adalah Menjalankan Transaksi, CRUD bahan baku, CRUD Menu, Membuat Member untuk customer, Menyetujui Menu yang diajukan Member
+ */
 Route::middleware(['role:karyawan'])->group(function () {
     Route::get('/karyawan/dashboard', [homeController::class, 'karyawanDashboard'])->name('karyawan.dashboard');
 Route::get('/get-logs', function () {
@@ -153,6 +190,7 @@ Route::get('/get-logs', function () {
     Route::patch('/karyawan/penjualan/batalkan/{id}', [PenjualanController::class, 'batal']);
     Route::get('/karyawan/penjualan/struk/{no_faktur}', [PenjualanController::class, 'cetakStruk'])->name('penjualan.struk');
 
+    Route::get('/karyawan/menu-bahan-baku', [MenuBahanBakuController::class, 'index']);
     Route::post('/karyawan/menu-bahan-baku', [MenuBahanBakuController::class, 'store'])->name('menu.bahan-baku.store');
     
     Route::get('/karyawan/pengajuan', [AjukanMenuController::class, 'index'])->name('karyawan.ajukan');
@@ -179,6 +217,11 @@ Route::get('/get-logs', function () {
     Route::delete('/karyawan/bahan-baku/{id}', [BahanBakuController::class, 'destroy'])
         ->withoutMiddleware([VerifyCsrfToken::class]);
 });
+/**
+ * @brief Menampilkan halaman yang diakses oleh Member
+ * 
+ * Secara garis besar Role Member adalah CRUD Pengajuan Menu 
+ */
 Route::middleware(['role:member'])->group(function () {
     Route::get('/member/dashboard', [homeController::class, 'memberDashboard'])->name('member.dashboard');
     

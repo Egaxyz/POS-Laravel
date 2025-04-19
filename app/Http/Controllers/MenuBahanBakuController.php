@@ -1,12 +1,24 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\MenuBahanBaku;
 use DB;
 use Illuminate\Http\Request;
 use App\Models\Menu; // Pastikan untuk mengimpor model Menu
 
 class MenuBahanBakuController extends Controller
 {
+    public function index(){
+        $data = MenuBahanBaku::orderBy('menu_id', 'asc')->paginate(4);
+
+        return view('Karyawan/Menu_Bahan_Baku/index', compact('data'));
+    }
+    /**
+ * @brief Menyimpan bahan baku yang ditambahkan ke menu dan memperbarui harga menu.
+ * 
+ * @param \Illuminate\Http\Request $request
+ * @return \Illuminate\Http\RedirectResponse
+ */
     public function store(Request $request)
     {
         // Decode data dari input tersembunyi

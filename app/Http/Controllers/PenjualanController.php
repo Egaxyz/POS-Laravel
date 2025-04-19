@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\LaporanPenjualanExport;
 use App\Exports\PenjualanExport;
 use App\Models\DetailPenjualan;
 use App\Models\Menu;
@@ -18,6 +19,16 @@ use WindowsPrintConnectorTest;
 
 class PenjualanController extends Controller
 {
+    /**
+ * @brief Menampilkan daftar penjualan dan menu berdasarkan peran pengguna.
+ *
+ * Fungsi ini mengambil data penjualan dan menu untuk ditampilkan pada halaman 
+ * index. Penjualan diurutkan berdasarkan status dan tanggal, lalu dipaginasikan.
+ * Jika pengguna adalah admin atau karyawan, mereka akan diarahkan ke halaman 
+ * yang sesuai.
+ *
+ * @return \Illuminate\View\View
+ */
     public function index() {
     $menu = Menu::all();
     $penjualan = Penjualan::orderByRaw("CASE WHEN status_penjualan = 'Proses' THEN 0 ELSE 1 END")
@@ -34,7 +45,15 @@ class PenjualanController extends Controller
         abort(403, 'Unauthorized action.');
     }
 }
-
+/**
+ * @brief Menyimpan transaksi penjualan baru.
+ *
+ * Fungsi ini akan membuat transaksi penjualan baru berdasarkan data yang diterima dari request.
+ * Termasuk pembuatan nomor faktur baru dan pengurangan stok menu serta bahan baku terkait.
+ *
+ * @param \Illuminate\Http\Request $request
+ * @return \Illuminate\Http\RedirectResponse
+ */
     public function store(Request $request)
 {
     $request->validate([
@@ -105,6 +124,16 @@ class PenjualanController extends Controller
     }
 }
 
+/**
+ * @brief Menandai transaksi sebagai selesai dan mengurangi stok menu serta bahan baku.
+ *
+ * Fungsi ini akan memproses transaksi menjadi selesai, mengurangi stok menu dan bahan baku terkait.
+ * Jika stok bahan baku atau menu tidak mencukupi, transaksi akan gagal dan error akan dilempar.
+ *
+ * @param \Illuminate\Http\Request $request
+ * @param int $id
+ * @return \Illuminate\Http\RedirectResponse
+ */
 public function selesai(Request $request, $id)
 {
     DB::beginTransaction();
@@ -161,7 +190,15 @@ public function selesai(Request $request, $id)
         ], 500);
     }
 }
-
+/**
+ * @brief Mencetak struk untuk transaksi penjualan.
+ *
+ * Fungsi ini mencetak struk untuk transaksi penjualan, menampilkan informasi 
+ * tentang transaksi seperti menu, harga, diskon, pajak, dan kembalian (jika ada).
+ * 
+ * @param Penjualan $penjualan
+ * @param float $uangDiberikan
+ */
 private function printReceipt($penjualan, $uangDiberikan = 0)
 {
     try {
@@ -223,7 +260,14 @@ return view('karyawan.Penjualan.struk', [
         ]);
 }
 
-
+/**
+ * @brief Mengurangi stok bahan baku terkait menu.
+ *
+ * Fungsi ini mengurangi stok bahan baku yang diperlukan untuk menu berdasarkan jumlah pesanan.
+ * 
+ * @param int $menu_id
+ * @param int $jumlah_pesanan
+ */
 private function kurangiStokBahanBaku($menu_id, $jumlah_pesanan) {
 $menu = Menu::find($menu_id);
 
@@ -240,7 +284,13 @@ foreach ($menu->bahanBaku as $bahan) {
     $bahan->decrement('stok', $stok_terpakai);
 }
 }
-    public function batal($id)
+/**
+ * @brief Membatalkan pesanana
+ *
+ * 
+ * @param int $penjualan_id
+ */
+public function batal($id)
 {
     $penjualan = Penjualan::findOrFail($id);
     $penjualan->status_penjualan = 'Gagal';
@@ -250,7 +300,12 @@ foreach ($menu->bahanBaku as $bahan) {
 
     return redirect()->back()->with('success', 'Pembelian Telah Digagalkan.');
 }
-
+/**
+ * @brief Meampilkan Laporan.
+ *
+ * 
+ * @param int $penjualan_id
+ */
 public function laporan(Request $request)
 {
     // Tahun default adalah tahun sekarang
@@ -272,8 +327,13 @@ public function laporan(Request $request)
     }
 }
     
-
+  /**
+     * @brief Mengekspor laporan pembelian ke dalam format Excel.
+     *
+     * @param \Maatwebsite\Excel\Excel $excel
+     * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
+     */
 public function exportExcel(Excel $excel){
-        return $excel->download(new PenjualanExport, 'Laporan_Penjualan.xlsx');
+        return $excel->download(new LaporanPenjualanExport, 'Laporan-Penjualan.xlsx');
     }
 }

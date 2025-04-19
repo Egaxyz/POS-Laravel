@@ -47,13 +47,28 @@
             </div>
         </section>
         <div class="card">
-            <div class="card-header">
-                <button id="printButton" class="btn btn-primary" onclick="window.print()">Print</button>
-                <a id="exportButton" href="{{ url('/manager/laporan-penjualan/pdf') }}" class="btn btn-danger">Export
-                    PDF</a>
-                <a id="exportExcelButton" href="{{ route('manager.penjualan-excel') }}" class="btn btn-success">Export
-                    Excel</a>
+            <div class="card-header d-flex justify-content-start align-items-center flex-wrap gap-2 px-3">
+                <!-- Tombol Print -->
+                <button id="printButton" class="btn btn-primary d-flex align-items-center gap-2" onclick="window.print()">
+                    <i class="fas fa-print"></i>
+                    <span>Print</span>
+                </button>
+
+                <!-- Tombol Export PDF -->
+                <a id="exportButton" href="{{ url('/manager/laporan-penjualan/pdf') }}"
+                    class="btn btn-danger d-flex align-items-center gap-2">
+                    <i class="fas fa-file-pdf"></i>
+                    <span>Export PDF</span>
+                </a>
+
+                <!-- Tombol Export Excel -->
+                <a id="exportExcelButton" href="{{ route('manager.penjualan-excel') }}"
+                    class="btn btn-success d-flex align-items-center gap-2">
+                    <i class="fas fa-file-excel"></i>
+                    <span>Export Excel</span>
+                </a>
             </div>
+
             <div class="card-body">
                 <h2 id="printTitle" style="text-align: center; display: none;">Data Penjualan</h2>
 

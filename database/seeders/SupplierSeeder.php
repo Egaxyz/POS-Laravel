@@ -18,14 +18,14 @@ class SupplierSeeder extends Seeder
                 'nama_perusahaan' => 'PT. MENCARI CINTA SEJATI',
                 'kontak' => '0801',
                 'alamat' => 'Jl. Semawur',
-                'email' => 'nigga@black.com',
+                'email' => 'ega@black.com',
                 'status' => 'aktif',
             ],
             [
                 'nama_perusahaan' => 'PT. Kecap',
                 'kontak' => '123',
                 'alamat' => 'Jalan Jalan',
-                'email' => 'jawa@hama.com',
+                'email' => 'jkw@yahoo.com',
                 'status' => 'aktif',
             ],
         ]);

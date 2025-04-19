@@ -44,6 +44,16 @@
                     <span>Import</span>
                 </button>
             </form>
+            <form action="{{ route('manager.user-excel') }}" method="POST" enctype="multipart/form-data"
+                class="d-flex align-items-center">
+                @csrf
+                <button type="submit" class="btn btn-info d-flex align-items-center gap-1">
+                    <i class="fas fa-file-export"></i>
+                    <span>Export Excel</span>
+                </button>
+            </form>
+            <a id="exportButton" href="{{ url('/manager/user/pdf') }}" class="btn btn-info">Export
+                PDF</a>
         </div>
 
         <div class="card-body">

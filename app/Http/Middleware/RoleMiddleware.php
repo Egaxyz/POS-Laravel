@@ -8,6 +8,19 @@ use Illuminate\Support\Facades\Auth;
 
 class RoleMiddleware
 {
+/**
+ * @brief Middleware untuk memeriksa akses berdasarkan peran (role) pengguna dan status aktifitasnya.
+ *
+ *
+ * @param \Illuminate\Http\Request $request Request yang diterima.
+ * @param \Closure $next Fungsi penanganan berikutnya dalam middleware pipeline.
+ * @param string ...$roles Daftar peran yang diizinkan untuk mengakses route ini.
+ *
+ * @return \Illuminate\Http\Response|mixed Response atau redirect berdasarkan hasil pengecekan akses.
+ *
+ * @throws \Illuminate\Auth\AuthenticationException Jika pengguna tidak terautentikasi.
+ * @throws \Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException Jika pengguna tidak memiliki akses.
+ */
     public function handle(Request $request, Closure $next, ...$roles)
     {
         $user = Auth::user();
@@ -27,6 +40,10 @@ class RoleMiddleware
             abort(403, 'Anda tidak memiliki akses');
         }
 
-        return $next($request);
+        $response = $next($request);
+
+    return $response->header('Cache-Control','no-cache, no-store, max-age=0, must-revalidate')
+                    ->header('Pragma','no-cache')
+                    ->header('Expires','Sat, 01 Jan 1990 00:00:00 GMT');
     }
 }

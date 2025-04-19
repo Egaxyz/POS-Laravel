@@ -10,7 +10,7 @@ use Maatwebsite\Excel\Concerns\WithHeadingRow;
 
 class SupplierImport implements ToModel, WithHeadingRow
 {
-    public function Model(array $row){
+    public function model(array $row){
         return new Supplier([
         'nama_perusahaan'=> $row['nama_perusahaan'],
         'kontak'=> $row['kontak'],
