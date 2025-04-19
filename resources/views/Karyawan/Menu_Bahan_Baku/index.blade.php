@@ -30,9 +30,6 @@
 
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <button class="btn bg-primary" type="button" data-toggle="modal" data-target="#formModal">
-                    <i class="fas fa-plus-square"></i> Tambah Data Bahan Baku
-                </button>
                 <button class="btn bg-secondary" type="button" data-toggle="modal" data-target="#formModalBahan">
                     <i class="fas fa-plus-square"></i> Pilih Bahan untuk Menu
                 </button>
@@ -64,24 +61,17 @@
                         <tr>
                             <th>Nama Menu</th>
                             <th>Bahan</th>
-                            <th>Jumlah</th>
-                            <th>Menu</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @foreach ($data as $list)
+                        @foreach ($data as $menu)
                             <tr>
-                                <td>{{ $list->menu->nama_makanan }}</td>
-                                <td>{{ $list->bahan->nama }}</td>
-                                <td>{{ $list->jumlah }}</td>
+                                <td>{{ $menu->nama_makanan }}</td>
                                 <td>
-                                    <button class="btn btn-success" type="button" data-toggle="modal"
-                                        data-target="#formModal" data-mode="edit" data-id="{{ $list->id }}"
-                                        data-nama="{{ $list->nama }}" data-stok="{{ $list->stok }}"
-                                        data-satuan="{{ $list->satuan }}"
-                                        data-harga="{{ $list->harga_satuan }}">Edit</button>
-                                    <button class="btn btn-danger" type="button" data-toggle="modal"
-                                        data-target="#deleteModal" data-id="{{ $list->id }}">Delete</button>
+                                    <button class="btn btn-info btn-sm" data-toggle="modal"
+                                        data-target="#detailModal-{{ $menu->id }}">
+                                        Lihat Detail
+                                    </button>
                                 </td>
                             </tr>
                         @endforeach
@@ -90,7 +80,61 @@
             </div>
         </div>
     </div>
-
+    @foreach ($data as $menu)
+        <div class="modal fade" id="detailModal-{{ $menu->id }}" tabindex="-1" role="dialog">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title">Bahan Baku untuk {{ $menu->nama_makanan }}</h5>
+                        <button type="button" class="close text-white" data-dismiss="modal">
+                            &times;
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Nama Bahan</th>
+                                        <th>Jumlah</th>
+                                        <th>Harga Satuan</th>
+                                        <th>Total</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($menu->menuBahanBaku as $bahan)
+                                        <tr>
+                                            <td>{{ $bahan->bahanBaku->nama ?? 'Data tidak tersedia' }}</td>
+                                            <td>{{ $bahan->jumlah }}</td>
+                                            <td>Rp. {{ number_format($bahan->bahanBaku->harga_satuan, 0, ',', '.') }}</td>
+                                            <td>Rp.
+                                                {{ number_format($bahan->bahanBaku->harga_satuan * $bahan->jumlah, 0, ',', '.') }}
+                                            </td>
+                                            <td>
+                                                <button class="btn btn-sm btn-danger" data-toggle="modal"
+                                                    data-target="#deleteModal" data-id="{{ $bahan->id }}"
+                                                    data-name="{{ $bahan->bahanBaku->nama ?? 'Bahan Baku' }}">
+                                                    <i class="fas fa-trash"></i> Hapus
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="5" class="text-center">Tidak ada bahan baku</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
     <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
         aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -102,7 +146,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    Apakah Anda yakin ingin menghapus bahan baku ini?
+                    Apakah Anda yakin ingin menghapus menu bahan baku ini?
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
@@ -118,50 +162,15 @@
     <div class="d-flex justify-content-center mt-3">
         {{ $data->links('vendor/pagination/custom') }}
     </div>
+    @include('Karyawan/Menu_Bahan_Baku/modalBahan')
 @endsection
 
 @push('script')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
     <script>
-        $('#formModal').on('show.bs.modal', function(e) {
-            const btn = $(e.relatedTarget);
-            console.log(btn.data());
-            const mode = btn.data('mode');
-            const id = btn.data('id');
-            const nama = btn.data('nama');
-            const stok = btn.data('stok');
-            const satuan = btn.data('satuan');
-            const harga_satuan = btn.data('harga');
-            const supplier_id = btn.data('asal');
-            const modal = $(this);
-
-            if (mode == 'edit') {
-                modal.find('.modal-title').text('Edit Data Bahan Baku');
-                modal.find('#supplier_id').val(supplier_id);
-                modal.find('#nama').val(nama);
-                modal.find('#stok').val(stok);
-                modal.find('#satuan').val(satuan)
-                modal.find('#harga_satuan').val(harga_satuan)
-                modal.find('.modal-body form').attr('action', '{{ url('/karyawan/bahan-baku') }}/' +
-                    id);
-                modal.find('#method').html('@method('PATCH')');
-            } else {
-                modal.find('.modal-title').text('Input Data Bahan Baku');
-                modal.find('#supplier_id').val('');
-                modal.find('#nama').val('');
-                modal.find('#satuan').val('');
-                modal.find('#harga_satuan').val('');
-                modal.find('#stok').val('');
-                modal.find('#method').html('');
-                modal.find('.modal-body form').attr('action',
-                    '{{ url('/karyawan/bahan-baku') }}');
-
-            }
-        });
-
         $(document).on('click', '[data-toggle="modal"][data-target="#deleteModal"]', function() {
             var userId = $(this).data('id');
-            $('#deleteForm').attr('action', '/karyawan/bahan-baku/' + userId);
+            $('#deleteForm').attr('action', '/karyawan/menu-bahan-baku/' + userId);
         });
     </script>
 @endpush

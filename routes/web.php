@@ -189,9 +189,10 @@ Route::get('/get-logs', function () {
     Route::patch('/karyawan/penjualan/selesai/{id}', [PenjualanController::class, 'selesai']);
     Route::patch('/karyawan/penjualan/batalkan/{id}', [PenjualanController::class, 'batal']);
     Route::get('/karyawan/penjualan/struk/{no_faktur}', [PenjualanController::class, 'cetakStruk'])->name('penjualan.struk');
-
-    Route::get('/karyawan/menu-bahan-baku', [MenuBahanBakuController::class, 'index']);
+    
+    Route::get('/karyawan/menu-bahan-baku', [MenuBahanBakuController::class, 'index'])->name('karyawan.menu-bahan-baku');
     Route::post('/karyawan/menu-bahan-baku', [MenuBahanBakuController::class, 'store'])->name('menu.bahan-baku.store');
+    Route::delete('/karyawan/menu-bahan-baku/{id}', [MenuBahanBakuController::class, 'destroy'])->name('menu-bahan.destroy');
     
     Route::get('/karyawan/pengajuan', [AjukanMenuController::class, 'index'])->name('karyawan.ajukan');
     Route::post('/karyawan/pengajuan', [AjukanMenuController::class, 'store'])->name('karyawan.ajukan.store');

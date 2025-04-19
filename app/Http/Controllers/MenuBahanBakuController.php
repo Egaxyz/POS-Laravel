@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\Models\BahanBaku;
 use App\Models\MenuBahanBaku;
 use DB;
 use Illuminate\Http\Request;
@@ -9,9 +10,11 @@ use App\Models\Menu; // Pastikan untuk mengimpor model Menu
 class MenuBahanBakuController extends Controller
 {
     public function index(){
-        $data = MenuBahanBaku::orderBy('menu_id', 'asc')->paginate(4);
-
-        return view('Karyawan/Menu_Bahan_Baku/index', compact('data'));
+        $bb = BahanBaku::all();
+        $list = MenuBahanBaku::all();
+        $data = Menu::with(['menuBahanBaku.bahanBaku']) // relasi hingga bahanBaku
+                ->paginate(4);
+        return view('Karyawan/Menu_Bahan_Baku/index', compact('data', 'list', 'bb'));
     }
     /**
  * @brief Menyimpan bahan baku yang ditambahkan ke menu dan memperbarui harga menu.
@@ -56,5 +59,20 @@ class MenuBahanBakuController extends Controller
         (new MenuController)->updateMenuPrice($menu_id);
 
         return redirect()->back()->with('success', 'Bahan baku berhasil ditambahkan ke menu.');
+    }
+    public function destroy(Request $request, $id){
+        $data = MenuBahanBaku::findOrFail($id);
+
+      $data -> delete();
+        $user = auth()->user();
+        if ($user->role == 'admin') {
+        return redirect()->route('admin.menu-bahan-baku')
+                ->with('success', 'Menu Bahan Baku Berhasil Dihapus');
+        } elseif ($user->role == 'karyawan') {
+            return redirect()->route('karyawan.menu-bahan-baku')
+                ->with('success', 'Menu Bahan Baku Berhasil Dihapus');
+       } else {
+            abort(403, 'Unauthorized action.');
+        }
     }
 }

@@ -29,4 +29,9 @@ class Menu extends Model
     return $this->belongsToMany(BahanBaku::class, 'menu_bahan_baku', 'menu_id', 'bahan_baku_id')
                 ->withPivot('jumlah');
 }
+public function menuBahanBaku()
+{
+    return $this->hasMany(MenuBahanBaku::class);
+}
+
 }
