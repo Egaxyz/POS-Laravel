@@ -41,26 +41,29 @@ RestoPOS adalah aplikasi Point of Sale berbasis web yang dibuat menggunakan Lara
 - **Styling**: Bootstrap 
 
 ## 📷 Screenshot
+Absensi
+![Screenshot 2025-04-17 133512](https://github.com/user-attachments/assets/0cd91b7d-9223-45b9-b540-6c6a9bedfc14)
+
 > *(Tambahkan di sini gambar tampilan aplikasi atau form transaksi, menu, receipt, dll.)*
 
 ## 💾 Instalasi
 
 1. Clone repository ini:
    git clone https://github.com/Egaxyz/RestoPOS.git
-   cd RestoPOS
+   > cd RestoPOS
    
 2. Install Depedensi Laravel
-   composer install
+   > composer install
 
 3. Copy file .env dan buat konfigurasi
-   cp .env.example .env
-   php artisan key:generate
+   > cp .env.example .env
+   > php artisan key:generate
 
 4. Atur koneksi database di file .env, lalu jalankan migrasi:
-   php artisan migrate --seed
+   > php artisan migrate --seed
 
 5. Jalankan Aplikasi:
-   php artisan serve
+   > php artisan serve
 
 ✨ Catatan Tambahan
 Proyek ini masih bisa dikembangkan lebih lanjut, misalnya dengan fitur laporan bulanan, analitik penjualan, atau integrasi dengan printer struk.
