@@ -1,3 +1,6 @@
+## 🔗 Demo Aplikasi
+restopos-production.up.railway.app
+
 # 🍽️ RestoPOS
 
 RestoPOS adalah aplikasi Point of Sale berbasis web yang dibuat menggunakan Laravel, dirancang untuk mengelola transaksi restoran secara efisien dan real-time.
